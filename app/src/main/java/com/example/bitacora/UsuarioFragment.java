@@ -66,16 +66,16 @@ public class UsuarioFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
 
-        String idusuario = sharedPreferences.getString("idusuario", "");
+        String ID_usuario = sharedPreferences.getString("ID_usuario", "");
         String nombre = sharedPreferences.getString("nombre", "");
         String estado = sharedPreferences.getString("estado", "");
-        String correo = sharedPreferences.getString("email", "");
+        String correo = sharedPreferences.getString("correo", "");
         String permisos = sharedPreferences.getString("permisos", "");
 
 
         tvEstadoMecanico.setText(estado);
         tvCorreoMecanico.setText(correo);
-        tvNombreMecanico.setText( idusuario + " - " +nombre);
+        tvNombreMecanico.setText( ID_usuario + " - " +nombre);
 
 
         customButton.setOnClickListener(new View.OnClickListener() {
@@ -93,8 +93,8 @@ public class UsuarioFragment extends Fragment {
     private void cerrarSesion() {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("email");
-        editor.remove("password");
+        editor.remove("correo");
+        editor.remove("clave");
         editor.remove("rememberMe");
         editor.apply();
 

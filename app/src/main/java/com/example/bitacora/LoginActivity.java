@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.125/android/mostrar.php";
 
     private RequestQueue rq;
     Context context;
@@ -149,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (error instanceof NoConnectionError) {
                         Toast.makeText(context, "ERROR AL CONECTAR", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(context, "SERVIDORES EN MANTENIMIENTO... VUELVA A INTENTAR MAS TARDE ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "SERVIDORES EN MANTENIMIENTO, VUELVA A INTENTAR MAS TARDE ", Toast.LENGTH_LONG).show();
                     }
                 }
 

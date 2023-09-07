@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/FrameActividades"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/FrameActividades"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginStart="16dp"
     android:layout_marginTop="10dp"
     android:layout_marginEnd="16dp"
     android:layout_marginBottom="9dp"
-    android:elevation="4dp"
-    android:padding="8dp"
     android:background="@drawable/roundedbackground"
-    >
+    android:elevation="4dp"
+    android:padding="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,18 +21,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="3">
+
+            <TextView
+
+                android:id="@+id/textIdActividad"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:hint="id de Actividad"
+                android:textColor="@color/azul"
+                android:textSize="14sp" />
+
             <TextView
                 android:id="@+id/textFechaActividad"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:hint="Fecha de Actividad"
                 android:layout_gravity="right"
+                android:layout_weight="2"
                 android:gravity="right"
-                android:textColor="@color/azul"
-                android:textSize="15sp"
-                />
+                android:hint="Fecha de Actividad"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <!-- Image and textMarca LinearLayout -->
@@ -41,7 +51,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
 
 
             <!-- Parte derecha para textMarca y textStatus -->
@@ -59,9 +68,9 @@
                     android:layout_gravity="end"
                     android:hint="ESTADO"
                     android:padding="5dp"
-                    android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textActividad"
@@ -70,8 +79,9 @@
                     android:gravity="center"
                     android:hint="Actividad Realizada"
                     android:textColor="@color/azul"
-                    android:textStyle="bold"
-                    android:textSize="19sp" />
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/textDetallesActividad"
                     android:layout_width="match_parent"
@@ -118,6 +128,44 @@
             </LinearLayout>
 
 
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:weightSum="3">
+
+
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_access_time_24"
+                android:id="@+id/EstadoPendiente"
+                android:clickable="true"
+                android:visibility="invisible"
+                android:layout_weight="1"
+                />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_checklist_24"
+                android:id="@+id/EstadoIniciado"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:clickable="true"
+                />
+
+            <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_done_24"
+            android:id="@+id/EstadoFinalizado"
+            android:layout_weight="1"
+                android:visibility="invisible"
+            android:clickable="true"
+            />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

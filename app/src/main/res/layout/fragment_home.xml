@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/yourConstraintLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="11dp"
-        android:layout_marginBottom="11dp"
         android:padding="11dp">
 
         <ImageView
-            android:id="@+id/searchButtonArrastres"
+           android:id="@+id/searchButtonArrastres"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:contentDescription="Buscar"
-            android:padding="8dp"
+            android:padding="4dp"
             android:src="@drawable/baseline_search_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,32 +30,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:hint="Buscar por placa, modelo, o QR"
+            android:hint="Buscar por ID, fecha, etc"
             android:inputType="textEmailAddress"
-            android:text=""
             android:textColor="@color/gris"
-            android:textColorHint="@color/azul"
+            android:textColorHint="@color/gris"
             android:textSize="16sp"
+            android:layout_margin="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/searchButtonArrastres"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Agregar el botón flotante encima del RecyclerView -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/baseline_search_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFragmentArrastres"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/floatingActionButton" />
+        android:layout_below="@id/yourConstraintLayoutId" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/botonAgregarActividad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/baseline_library_add_24" />
 
 </RelativeLayout>
