@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SubirFotoActivity">
+
+    <TextView
+        android:id="@+id/txtId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MODIFICANDO:"
+        android:gravity="center"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:textColor="@color/azulito"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="25dp"
+        />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginStart="9dp"
+        android:id="@+id/ViewPagerImagenes"
+
+        />
+    <!--
+        <ImageView
+            android:id="@+id/imageFoto"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    -->
+    <Button
+        android:id="@+id/guardarFoto"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:text="Subir foto"
+
+        android:backgroundTint="@color/azulito"
+        android:layout_gravity="center_horizontal" />
+
+
+</LinearLayout>

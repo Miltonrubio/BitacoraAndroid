@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -41,13 +42,13 @@ import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
+    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    String url = "http://192.168.1.124/android/mostrar.php";
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
     private EditText editTextBusqueda;
-
     private FloatingActionButton botonAgregarActividad;
-    String url = "http://192.168.1.125/android/mostrar.php";
 
 
     @Override
@@ -98,6 +99,67 @@ public class HomeFragment extends Fragment {
         }else {
             ActividadesPorUsuario(ID_usuario);
             botonAgregarActividad.setVisibility(View.VISIBLE);
+
+/*
+            botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Obtener el contexto del adaptador
+                    Context context = v.getContext();
+
+                    // Crear el AlertDialog previo
+                    AlertDialog.Builder opcionesBuilder = new AlertDialog.Builder(context);
+                    opcionesBuilder.setTitle("Selecciona una opción");
+
+                    // Opción 1: Subir foto
+                    opcionesBuilder.setPositiveButton("Subir foto", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(context, "Subida", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    // Opción 2: Actualizar actividad
+                    opcionesBuilder.setNegativeButton("Actualizar actividad", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Crear el AlertDialog principal para actualizar la actividad
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                            // Inflar el diseño personalizado para el AlertDialog principal
+                            LayoutInflater inflater = getLayoutInflater();
+                            View dialogView = inflater.inflate(R.layout.insertar_actividad, null);
+                            builder.setView(dialogView);
+
+                            // Obtener las referencias a los EditText dentro del diálogo
+                            final EditText editText1 = dialogView.findViewById(R.id.editText1);
+                            final EditText editText2 = dialogView.findViewById(R.id.editText2);
+
+                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String nombreActividad = editText1.getText().toString();
+                                    String descripcionActividad = editText2.getText().toString();
+
+                                    AgregarActividad(nombreActividad, descripcionActividad, ID_usuario);
+                                }
+                            });
+                            builder.setNegativeButton("Cancelar", null);
+
+                            // Mostrar el AlertDialog principal
+                            AlertDialog activityDialog = builder.create();
+                            activityDialog.show();
+                        }
+                    });
+
+                    // Mostrar el AlertDialog de opciones
+                    AlertDialog opcionesDialog = opcionesBuilder.create();
+                    opcionesDialog.show();
+                }
+            });
+*/
+
+
             botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

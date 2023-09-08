@@ -1,11 +1,27 @@
 package com.example.bitacora;
 
 
+import static android.app.Activity.RESULT_OK;
+import static android.app.PendingIntent.getActivity;
+
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +36,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -28,11 +46,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.bitacora.databinding.ActivitySubirFotoBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,10 +66,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.Manifest;
+
+
 public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActividades.ViewHolder> {
 
     String siguienteEstado = "";
-
+    String url = "http://192.168.1.124/android/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -53,6 +80,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
+    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+
 
     public AdaptadorActividades(List<JSONObject> data, Context context) {
         this.data = data;
@@ -78,6 +107,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+
 
         if (getItemViewType(position) == VIEW_TYPE_ITEM) {
             try {
@@ -125,7 +155,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 }
 
 
-
                 setTextViewText(holder.textStatus, estadoActividad.toUpperCase(), "Estado no disponible");
                 actualizarEstadoYVista(holder, estadoActividad);
 
@@ -151,6 +180,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
                         LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
                         LinearLayout LayoutFinalizado = customView.findViewById(R.id.LayoutFinalizado);
+                        LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
+                        LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
 
                         builder.setView(customView);
 
@@ -181,6 +212,33 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
                             }
                         });
+
+                        LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                             /*   String selectedEstado = "Finalizado";
+                                ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                            */
+
+
+                                obtenerUbicacion(context, ID_usuario, ID_actividad);
+
+                                //    Toast.makeText(view.getContext(),"Ubicacion Mandada", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
+                        LayoutMandarFoto.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                              //  Toast.makeText(view.getContext(), "Evidencia Mandada", Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent(view.getContext(), SubirFotoActivity.class);
+                                view.getContext().startActivity(intent);
+                            }
+                        });
+
 
                         builder.setNegativeButton("Cancelar", null);
 
@@ -327,7 +385,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     }
 
     private void ActualizarEstado(String ID_actividad, String nuevoEstado, Context context, ViewHolder holder, AlertDialog dialog) {
-        String url = "http://192.168.1.125/android/mostrar.php";
+
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -358,6 +416,62 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         Volley.newRequestQueue(context).add(postrequest);
     }
+
+    private void obtenerUbicacion(Context context, String ID_usuario, String ID_actividad) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+            return;
+        }
+
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+
+                            MandarUbicacion(ID_usuario, ID_actividad, longitude, latitude, context);
+
+                        } else {
+                            Toast.makeText(context, "No se pudo obtener la ubicación.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+    private void MandarUbicacion(String ID_usuario, String ID_actividad, Double longitud, Double latitud, Context context) {
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "8");
+                params.put("ID_actividad", ID_actividad);
+                params.put("ID_usuario", ID_usuario);
+                params.put("longitud", longitud.toString());
+                params.put("latitud", latitud.toString());
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
 
 
 }

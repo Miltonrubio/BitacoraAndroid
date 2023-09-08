@@ -25,7 +25,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Pendiente"
-            android:textSize="34dp" />
+            android:textSize="30dp" />
     </LinearLayout>
 
     <!-- Segundo LinearLayout -->
@@ -48,7 +48,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Iniciado"
-            android:textSize="34dp" />
+            android:textSize="30dp" />
     </LinearLayout>
 
     <!-- Tercer LinearLayout -->
@@ -71,6 +71,51 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Finalizado"
-            android:textSize="34dp" />
+            android:textSize="30dp" />
+    </LinearLayout>
+
+    <!-- Tercer LinearLayout -->
+    <LinearLayout
+        android:id="@+id/LayoutMandarUbicacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_location_on_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Mandar Ubicacion"
+            android:textSize="30dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LayoutMandarFoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_photo_camera_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Mandar Evidencia"
+            android:textSize="30dp" />
     </LinearLayout>
 </LinearLayout>
