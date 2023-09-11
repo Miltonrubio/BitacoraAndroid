@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!--
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
@@ -14,6 +15,16 @@
         android:hint="Nombre de actividad"
         android:padding="16dp"
         android:textSize="18dp" />
+-->
+
+    <Spinner
+        android:id="@+id/SpinnerActividades"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:padding="16dp"
+        android:textSize="18dp"
+        />
 
     <EditText
         android:id="@+id/editText2"

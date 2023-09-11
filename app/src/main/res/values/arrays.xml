@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="opciones_rol">
+        <item>SUPERADMIN</item>
+        <item>USUARIO</item>
+    </string-array>
+</resources>

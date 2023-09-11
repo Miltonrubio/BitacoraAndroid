@@ -28,11 +28,35 @@ public class Activity_Binding extends AppCompatActivity {
         binding = ActivityBindingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        replaceFragment(new HomeFragment());
+        if ("SUPERADMIN".equals(permisosUsuario)) {
 
-            replaceFragment(new HomeFragment());
+            getMenuInflater().inflate(R.menu.menu_admin, binding.bottomNavigationView.getMenu());
+
             binding.bottomNavigationView.setOnItemSelectedListener(item -> {
                 switch (item.getItemId()) {
+                    case (R.id.menuadmin_home):
+                        replaceFragment(new HomeFragment());
+                        break;
+                    case (R.id.menu_admin_usuarios):
+                        replaceFragment(new UsuarioFragment());
+                        break;
+                    case (R.id.menu_admin_agregar_usuarios):
+                        replaceFragment(new CrudUsuariosFragment());
+                        break;
+                    case (R.id.menuadmin_actividades):
+                        replaceFragment(new ActividadesFragment());
+                        break;
+                }
+                return true;
+            });
 
+        } else {
+            // Usuario normal, inflar el menú normal
+            getMenuInflater().inflate(R.menu.menu, binding.bottomNavigationView.getMenu());
+
+            binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+                switch (item.getItemId()) {
                     case (R.id.menu_home):
                         replaceFragment(new HomeFragment());
                         break;
@@ -42,6 +66,7 @@ public class Activity_Binding extends AppCompatActivity {
                 }
                 return true;
             });
+        }
 
 
     }
@@ -50,9 +75,8 @@ public class Activity_Binding extends AppCompatActivity {
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layoutCoches, fragment);
+        fragmentTransaction.replace(R.id.frame_layouts_fragments, fragment);
         fragmentTransaction.commit();
-
     }
 
 }

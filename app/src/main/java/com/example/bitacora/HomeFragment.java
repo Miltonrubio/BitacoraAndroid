@@ -19,9 +19,11 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -42,7 +44,8 @@ import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    private ArrayList<String> nombresActividades = new ArrayList<>();
+
     String url = "http://192.168.1.124/android/mostrar.php";
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
@@ -66,7 +69,6 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewFragmentArrastres);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        dataList = new ArrayList<>();
         adaptadorActividades = new AdaptadorActividades(dataList, requireContext());
         recyclerView.setAdapter(adaptadorActividades);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
@@ -172,13 +174,24 @@ public class HomeFragment extends Fragment {
                     builder.setView(dialogView);
 
                     // Obtener las referencias a los EditText dentro del diálogo
-                    final EditText editText1 = dialogView.findViewById(R.id.editText1);
+
+                    final Spinner spinnerNmbreActividades = dialogView.findViewById(R.id.SpinnerActividades);
                     final EditText editText2 = dialogView.findViewById(R.id.editText2);
+
+
+                    ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nombresActividades);
+
+                    // Especificar el diseño del Spinner cuando se despliega
+                    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    // Asignar el adaptador al Spinner
+                    spinnerNmbreActividades.setAdapter(spinnerAdapter);
+
 
                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String nombreActividad = editText1.getText().toString();
+                            String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
                             String descripcionActividad = editText2.getText().toString();
 
                             AgregarActividad(nombreActividad, descripcionActividad, ID_usuario);
@@ -288,9 +301,43 @@ public class HomeFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("opcion", "4");
-                     params.put("nombreActividad", nombreActividad);
-                  params.put("descripcionActividad", descripcionActividad);
+                params.put("nombreActividad", nombreActividad);
+                params.put("descripcionActividad", descripcionActividad);
                 params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+    private void VerNombresActividades() {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    nombresActividades.clear(); // Limpia la lista antes de agregar los nuevos nombres
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String nombreActividad = jsonObject.getString("nombreActividad");
+                        nombresActividades.add(nombreActividad); // Agrega el nombre de la actividad a la lista
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "11");
                 return params;
             }
         };

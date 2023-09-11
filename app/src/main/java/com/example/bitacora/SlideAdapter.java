@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SlideAdapter {}//extends RecyclerView.Adapter<SlideAdapter.SlideViewHolder> {
+public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHolder> {
 
-/*
+
     private List<SlideItem> slideItems;
     private ViewPager2 viewPager2;
 
@@ -125,7 +125,6 @@ public class SlideAdapter {}//extends RecyclerView.Adapter<SlideAdapter.SlideVie
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         String imageUri = item.getImage(); // URL de la imagen
-        String idSerVenta = item.getId_ser_venta(); // ID de la venta
 
 
         builder.setTitle("Confirmación");
@@ -136,7 +135,7 @@ public class SlideAdapter {}//extends RecyclerView.Adapter<SlideAdapter.SlideVie
             public void onClick(DialogInterface dialog, int which) {
                 Uri uri = Uri.parse(imageUri);
                 String fileName = uri.getLastPathSegment();
-                cambiarImagenPrincipal(context, idSerVenta, fileName);
+        //        cambiarImagenPrincipal(context, fileName);
             }
         });
 
@@ -151,8 +150,8 @@ public class SlideAdapter {}//extends RecyclerView.Adapter<SlideAdapter.SlideVie
         alertDialog.show();
     }
 
-
-    private void cambiarImagenPrincipal(Context context, String id_ser_Venta, String foto) {
+/*
+    private void cambiarImagenPrincipal(Context context, String foto) {
         String url = "http://tallergeorgio.hopto.org:5611/georgioapp/georgioapi/Controllers/Apiback.php";
 
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -183,5 +182,6 @@ public class SlideAdapter {}//extends RecyclerView.Adapter<SlideAdapter.SlideVie
 
     }
 
+*/
 
-}*/
+}

@@ -1,0 +1,173 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Primer LinearLayout -->
+    <LinearLayout
+        android:id="@+id/LayoutEditar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_edit_24"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Editar"
+            android:textSize="30dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/editTextNombreUsuario"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:hint="Ingrese Nombre de Usuario"
+            android:visibility="gone"
+            android:textSize="22sp"
+            android:padding="6dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LayoutCorreo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+
+        <!-- EditText -->
+        <EditText
+            android:id="@+id/editTextCorreoUsuario"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:hint="Ingrese Correo de Usuario"
+            android:textSize="22sp"
+            android:padding="6dp"
+            />
+    </LinearLayout>
+
+    <!-- Tercer conjunto de ImageView y EditText -->
+    <LinearLayout
+        android:id="@+id/LayoutClave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <!-- Icono -->
+        <ImageView
+            android:id="@+id/VerClave"
+            android:visibility="gone"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_remove_red_eye_24" />
+
+        <!-- EditText -->
+        <EditText
+            android:id="@+id/editTextClaveUsuario"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:hint="Ingrese Clave de Usuario"
+            android:textSize="22sp"
+            android:padding="6dp"
+            />
+    </LinearLayout>
+
+    <!-- Cuarto conjunto de ImageView y EditText -->
+    <LinearLayout
+        android:id="@+id/LayoutTelefono"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/editTextTelefonoUsuario"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:hint="Ingrese Telefono de Usuario"
+
+            android:visibility="gone"
+            android:textSize="22sp"
+            android:padding="6dp"
+            />
+    </LinearLayout>
+    <Spinner
+        android:id="@+id/opcionesActualizarRol"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="18dp"
+        />
+
+    <Button
+
+        android:layout_marginTop="12dp"
+        android:id="@+id/BotonActualizarUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:visibility="gone"
+        android:text="Actualizar Usuario"
+        android:textSize="22sp"
+        android:backgroundTint="@color/azul"
+        android:layout_marginBottom="25dp"
+        />
+
+    <!-- Segundo LinearLayout -->
+    <LinearLayout
+        android:id="@+id/LayoutEliminar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+
+
+
+        android:layout_marginTop="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_delete_forever_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Eliminar"
+            android:textSize="30dp" />
+    </LinearLayout>
+
+</LinearLayout>

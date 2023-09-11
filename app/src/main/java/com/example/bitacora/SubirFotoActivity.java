@@ -57,16 +57,18 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SubirFotoActivity extends AppCompatActivity{}
-/*
+public class SubirFotoActivity extends AppCompatActivity{
+
     private Handler sliderHandler = new Handler();
 
-    private String urlApi = "192.168.1.114/prueba/mostrar.php";
+    private String urlApi = "http://192.168.1.114/pruebas/mostrar.php";
 
     ViewPager2 viewPager2;
     private CameraManager cameraManager;
@@ -87,11 +89,11 @@ public class SubirFotoActivity extends AppCompatActivity{}
         viewPager2 = findViewById(R.id.ViewPagerImagenes);
 
         Intent intent = getIntent();
-        idSerVenta = intent.getStringExtra("id_ser_venta");
-        txtId.setText("Id de venta: " + idSerVenta);
+        idSerVenta = intent.getStringExtra("ID_foto_actividad");
+        txtId.setText("Prueba de carrusel: " );
 
 
-        CargarImagenes(idSerVenta);
+        CargarImagenes();
 
 
         btnGuardarFoto.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +138,7 @@ public class SubirFotoActivity extends AppCompatActivity{}
 
 
     private File crearImagen() throws IOException {
-        String nombreFoto = "image";
+        String nombreFoto = "imagen";
         File directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File imagenTemporal = File.createTempFile(nombreFoto, ".jpg", directorio);
         rutaImagen = imagenTemporal.getAbsolutePath();
@@ -168,16 +170,18 @@ public class SubirFotoActivity extends AppCompatActivity{}
             Bitmap imageBitmap = bitmaps[0];
 
             OkHttpClient client = new OkHttpClient();
-            String url = "http://tallergeorgio.hopto.org:5611/georgioapp/georgioapi/Controllers/Apiback.php";
+            String url = "http://192.168.1.114/pruebas/mostrar.php";
 
             String nombreArchivo = "imagen" + System.currentTimeMillis() + ".jpg";
-            File imageFile = bitmapToFile(imageBitmap, "image.jpg");
+            File imageFile = bitmapToFile(imageBitmap, "imagen.jpg");
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("opcion", "9")
-                    .addFormDataPart("idventa",idSerVenta)
-                    .addFormDataPart("image", nombreArchivo,
+                    .addFormDataPart("ID_actividad","1")
+                    .addFormDataPart("ID_usuario","1")
+
+                    .addFormDataPart("imagen", nombreArchivo,
                             RequestBody.create(MediaType.parse("image/jpeg"), imageFile))
                     .build();
             Request request = new Request.Builder()
@@ -203,13 +207,13 @@ public class SubirFotoActivity extends AppCompatActivity{}
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             //   imageFoto.setImageBitmap(null); // Limpia la imagen mostrada en ImageView
-            Toast.makeText(SubirFotoActivity.this, "Imagen "+ idSerVenta +" Enviada al servidor", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SubirFotoActivity.this, "Imagen Enviada al servidor", Toast.LENGTH_SHORT).show();
         }
     }
 
 
 
-    private void CargarImagenes(String idventa) {
+    private void CargarImagenes() {
 
         StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, urlApi,
                 new com.android.volley.Response.Listener<String>() {
@@ -222,12 +226,11 @@ public class SubirFotoActivity extends AppCompatActivity{}
                                 JSONArray jsonArray = new JSONArray(response);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
-                                    String foto = fotoObj.getString("foto");
+                                    String nombreFoto = fotoObj.getString("nombreFoto");
 
-                                    String id_ser_venta = fotoObj.getString("id_ser_venta");
-                                    String fotoUrl = "http://tallergeorgio.hopto.org:5613/tallergeorgio/imagenes/unidades/";
+                                    String fotoUrl = "http://192.168.1.114/pruebas/fotos/";
 
-                                    slideItems.add(new SlideItem(fotoUrl + foto, id_ser_venta));
+                                    slideItems.add(new SlideItem(fotoUrl + nombreFoto));
                                 }
                                 viewPager2.setAdapter(new SlideAdapter(slideItems, viewPager2));
                                 viewPager2.setClipToPadding(false);
@@ -254,9 +257,12 @@ public class SubirFotoActivity extends AppCompatActivity{}
                                 });
                             } catch (JSONException e) {
                                 e.printStackTrace();
+
+                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Log.d("API Response", "Respuesta vacía");
+                            Toast.makeText(context, "Respuesta vacia", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -270,8 +276,7 @@ public class SubirFotoActivity extends AppCompatActivity{}
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("opcion", "8");
-                params.put("idventa", idSerVenta);
+                params.put("opcion", "10");
                 return params;
             }
         };
@@ -302,4 +307,3 @@ public class SubirFotoActivity extends AppCompatActivity{}
 
 
 }
-*/

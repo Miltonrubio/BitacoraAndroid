@@ -216,14 +216,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                             /*   String selectedEstado = "Finalizado";
-                                ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                            */
-
 
                                 obtenerUbicacion(context, ID_usuario, ID_actividad);
-
-                                //    Toast.makeText(view.getContext(),"Ubicacion Mandada", Toast.LENGTH_SHORT).show();
 
                             }
                         });
@@ -231,9 +225,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         LayoutMandarFoto.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
-                              //  Toast.makeText(view.getContext(), "Evidencia Mandada", Toast.LENGTH_SHORT).show();
-
                                 Intent intent = new Intent(view.getContext(), SubirFotoActivity.class);
                                 view.getContext().startActivity(intent);
                             }

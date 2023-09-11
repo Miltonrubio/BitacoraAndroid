@@ -9,7 +9,7 @@
 
 
     <FrameLayout
-        android:id="@+id/frame_layoutCoches"
+        android:id="@+id/frame_layouts_fragments"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/azul"
@@ -35,7 +35,7 @@
 
         android:background="@color/gris"
         app:itemIconTint="@color/azul"
-        app:menu="@menu/menu"
+
         app:labelVisibilityMode="unlabeled"
         app:itemRippleColor="@color/azul"
         android:outlineSpotShadowColor="@color/azul"

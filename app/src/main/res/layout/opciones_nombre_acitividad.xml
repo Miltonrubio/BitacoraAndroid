@@ -1,0 +1,84 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Primer LinearLayout -->
+    <LinearLayout
+        android:id="@+id/LayoutEditar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_edit_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Editar"
+            android:textSize="30dp"
+            />
+
+    </LinearLayout>
+
+    <!-- Agregar EditText aquí dentro del LinearLayout LayoutEditar -->
+    <EditText
+        android:id="@+id/editTextNombreActividad"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:hint="Ingrese texto"
+
+        android:visibility="gone"
+        android:textSize="30sp"
+        android:padding="6dp"
+        />
+
+    <Button
+
+        android:layout_marginTop="12dp"
+        android:id="@+id/BotonActualizarNombre"
+        android:layout_width="match_parent"
+        android:backgroundTint="@color/azul"
+        android:layout_height="60dp"
+        android:text="Editar"
+        android:visibility="gone"
+        android:layout_marginBottom="25dp"
+        />
+
+    <!-- Segundo LinearLayout -->
+    <LinearLayout
+        android:id="@+id/LayoutEliminar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+
+
+
+        android:layout_marginTop="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_delete_forever_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Eliminar"
+            android:textSize="30dp" />
+    </LinearLayout>
+
+</LinearLayout>
