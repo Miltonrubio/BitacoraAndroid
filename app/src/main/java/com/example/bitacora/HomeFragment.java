@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
 
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.125/android/mostrar.php";
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -72,6 +72,7 @@ public class HomeFragment extends Fragment {
         adaptadorActividades = new AdaptadorActividades(dataList, requireContext());
         recyclerView.setAdapter(adaptadorActividades);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
+
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuario = sharedPreferences.getString("ID_usuario", "");
@@ -101,70 +102,12 @@ public class HomeFragment extends Fragment {
         }else {
             ActividadesPorUsuario(ID_usuario);
             botonAgregarActividad.setVisibility(View.VISIBLE);
-
-/*
             botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Obtener el contexto del adaptador
-                    Context context = v.getContext();
+                    // Llama a VerNombresActividades() para obtener los nombres de las actividades
+                    VerNombresActividades();
 
-                    // Crear el AlertDialog previo
-                    AlertDialog.Builder opcionesBuilder = new AlertDialog.Builder(context);
-                    opcionesBuilder.setTitle("Selecciona una opción");
-
-                    // Opción 1: Subir foto
-                    opcionesBuilder.setPositiveButton("Subir foto", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context, "Subida", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    // Opción 2: Actualizar actividad
-                    opcionesBuilder.setNegativeButton("Actualizar actividad", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Crear el AlertDialog principal para actualizar la actividad
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                            // Inflar el diseño personalizado para el AlertDialog principal
-                            LayoutInflater inflater = getLayoutInflater();
-                            View dialogView = inflater.inflate(R.layout.insertar_actividad, null);
-                            builder.setView(dialogView);
-
-                            // Obtener las referencias a los EditText dentro del diálogo
-                            final EditText editText1 = dialogView.findViewById(R.id.editText1);
-                            final EditText editText2 = dialogView.findViewById(R.id.editText2);
-
-                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String nombreActividad = editText1.getText().toString();
-                                    String descripcionActividad = editText2.getText().toString();
-
-                                    AgregarActividad(nombreActividad, descripcionActividad, ID_usuario);
-                                }
-                            });
-                            builder.setNegativeButton("Cancelar", null);
-
-                            // Mostrar el AlertDialog principal
-                            AlertDialog activityDialog = builder.create();
-                            activityDialog.show();
-                        }
-                    });
-
-                    // Mostrar el AlertDialog de opciones
-                    AlertDialog opcionesDialog = opcionesBuilder.create();
-                    opcionesDialog.show();
-                }
-            });
-*/
-
-
-            botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
                     // Crear el AlertDialog
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
@@ -174,27 +117,35 @@ public class HomeFragment extends Fragment {
                     builder.setView(dialogView);
 
                     // Obtener las referencias a los EditText dentro del diálogo
-
                     final Spinner spinnerNmbreActividades = dialogView.findViewById(R.id.SpinnerActividades);
                     final EditText editText2 = dialogView.findViewById(R.id.editText2);
 
+                    // Agregar el hint al principio de la lista de nombres de actividades
+                    nombresActividades.add(0, "Selecciona una opción");
 
+                    // Configurar el adaptador del Spinner con los nombres de las actividades
                     ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nombresActividades);
-
-                    // Especificar el diseño del Spinner cuando se despliega
                     spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                     // Asignar el adaptador al Spinner
                     spinnerNmbreActividades.setAdapter(spinnerAdapter);
 
+                    String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
+                    String    selectedID = obtenerIDDesdeNombre(nombreActividad);
+
+
 
                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
-                            String descripcionActividad = editText2.getText().toString();
-
-                            AgregarActividad(nombreActividad, descripcionActividad, ID_usuario);
+                            // Verificar si se seleccionó el hint
+                            if (!nombreActividad.equals("Selecciona una opción")) {
+                                String descripcionActividad = editText2.getText().toString();
+                                AgregarActividad(selectedID, descripcionActividad, ID_usuario);
+                            } else {
+                                // Mostrar un mensaje de error o realizar la acción deseada
+                                Toast.makeText(requireContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                     builder.setNegativeButton("Cancelar", null);
@@ -204,6 +155,7 @@ public class HomeFragment extends Fragment {
                     dialog.show();
                 }
             });
+
         }
 
 
@@ -285,7 +237,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void AgregarActividad(String nombreActividad, String descripcionActividad, String ID_usuario) {
+    private void AgregarActividad(String ID_nombre_actividad, String descripcionActividad, String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -301,7 +253,7 @@ public class HomeFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("opcion", "4");
-                params.put("nombreActividad", nombreActividad);
+                params.put("ID_nombre_actividad", ID_nombre_actividad);
                 params.put("descripcionActividad", descripcionActividad);
                 params.put("ID_usuario", ID_usuario);
                 return params;
@@ -320,13 +272,14 @@ public class HomeFragment extends Fragment {
                     nombresActividades.clear(); // Limpia la lista antes de agregar los nuevos nombres
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String nombreActividad = jsonObject.getString("nombreActividad");
-                        nombresActividades.add(nombreActividad); // Agrega el nombre de la actividad a la lista
+                        String ID_nombre_actividad = jsonObject.getString("ID_nombre_actividad");
+                        String nombre_actividad = jsonObject.getString("nombre_actividad");
+                        nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad); // Agrega el ID y nombre de la actividad a la lista
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -343,6 +296,19 @@ public class HomeFragment extends Fragment {
         };
 
         Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+    private String obtenerIDDesdeNombre(String nombreSeleccionado) {
+        for (String actividad : nombresActividades) {
+            if (actividad.equals(nombreSeleccionado)) {
+                // Dividir la cadena para obtener el ID (asumiendo que esté separado por ":")
+                String[] partes = actividad.split(":");
+                if (partes.length > 0) {
+                    return partes[0].trim(); // Devuelve el ID (eliminando espacios en blanco)
+                }
+            }
+        }
+        return null; // Si no se encuentra el ID, puedes devolver null o un valor predeterminado
     }
 
 }

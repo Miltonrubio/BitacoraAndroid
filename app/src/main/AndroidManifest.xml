@@ -34,6 +34,9 @@
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@xml/file_paths" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCkF9dXkDa3GjKlrLUdLc7BEx5031MELDQ" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

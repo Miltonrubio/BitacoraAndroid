@@ -1,4 +1,4 @@
-package com.example.validacion;
+package com.example.bitacora;
 
 import android.content.Context;
 import android.content.Intent;

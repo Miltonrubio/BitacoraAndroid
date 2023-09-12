@@ -10,7 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.bitacora.databinding.ActivityBindingBinding;
-import com.example.validacion.UsuarioFragment;
+import com.example.bitacora.UsuarioFragment;
 
 public class Activity_Binding extends AppCompatActivity {
 

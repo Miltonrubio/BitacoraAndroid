@@ -64,7 +64,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SubirFotoActivity extends AppCompatActivity{
+public class SubirFotoActivity extends AppCompatActivity {
 
     private Handler sliderHandler = new Handler();
 
@@ -76,6 +76,7 @@ public class SubirFotoActivity extends AppCompatActivity{
     String rutaImagen;
     String idSerVenta;
     Context context;
+    String ID_actividad, ID_usuario;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -88,9 +89,15 @@ public class SubirFotoActivity extends AppCompatActivity{
 
         viewPager2 = findViewById(R.id.ViewPagerImagenes);
 
-        Intent intent = getIntent();
-        idSerVenta = intent.getStringExtra("ID_foto_actividad");
-        txtId.setText("Prueba de carrusel: " );
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            ID_actividad = bundle.getString("ID_actividad");
+            ID_usuario = bundle.getString("ID_usuario");
+
+
+            txtId.setText("Prueba de carrusel para actividad: " + ID_actividad+ " Subidas por usuario "+ ID_usuario);
+        }
 
 
         CargarImagenes();
@@ -170,7 +177,6 @@ public class SubirFotoActivity extends AppCompatActivity{
             Bitmap imageBitmap = bitmaps[0];
 
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.1.114/pruebas/mostrar.php";
 
             String nombreArchivo = "imagen" + System.currentTimeMillis() + ".jpg";
             File imageFile = bitmapToFile(imageBitmap, "imagen.jpg");
@@ -178,14 +184,14 @@ public class SubirFotoActivity extends AppCompatActivity{
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("opcion", "9")
-                    .addFormDataPart("ID_actividad","1")
-                    .addFormDataPart("ID_usuario","1")
+                    .addFormDataPart("ID_actividad", ID_actividad)
+                    .addFormDataPart("ID_usuario", ID_usuario)
 
                     .addFormDataPart("imagen", nombreArchivo,
                             RequestBody.create(MediaType.parse("image/jpeg"), imageFile))
                     .build();
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(urlApi)
                     .post(requestBody)
                     .build();
             try {
@@ -210,7 +216,6 @@ public class SubirFotoActivity extends AppCompatActivity{
             Toast.makeText(SubirFotoActivity.this, "Imagen Enviada al servidor", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     private void CargarImagenes() {

@@ -55,11 +55,13 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
+    implementation ("com.google.android.gms:play-services-maps:17.0.1")
 
-/*
-    implementation ("androidx.paging:paging-runtime:3.0.0")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
-    implementation ("androidx.lifecycle:lifecycle-livedata:2.5.1")
-*/
+
+    /*
+        implementation ("androidx.paging:paging-runtime:3.0.0")
+        implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
+        implementation ("androidx.lifecycle:lifecycle-livedata:2.5.1")
+    */
 
 }
