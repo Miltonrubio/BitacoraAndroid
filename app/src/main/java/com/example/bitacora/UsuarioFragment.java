@@ -63,6 +63,8 @@ public class UsuarioFragment extends Fragment {
 
         Button customButton= view.findViewById(R.id.customButton);
 
+        Button customButtonMandarAPrueba= view.findViewById(R.id.customButtonMandarAPrueba);
+
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
 
@@ -81,12 +83,17 @@ public class UsuarioFragment extends Fragment {
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cerrarSesion();
-                //  IrASlider();
+              cerrarSesion();
             }
         });
 
+        customButtonMandarAPrueba.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                IrAPrueba();
+            }
+        });
         return view;
     }
 
@@ -103,5 +110,9 @@ public class UsuarioFragment extends Fragment {
         requireActivity().finish();
     }
 
+    public  void IrAPrueba(){
+        Intent intent = new Intent(requireContext(), PruebaActivity.class);
+        startActivity(intent);
+    }
 
 }

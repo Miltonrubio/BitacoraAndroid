@@ -76,7 +76,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
     String siguienteEstado = "";
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.124/android/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -138,6 +138,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 String nombre = jsonObject2.optString("nombre", "");
                 String correo = jsonObject2.optString("correo", "");
                 String telefono = jsonObject2.optString("telefono", "");
+                String foto_usuario= jsonObject2.optString("foto_usuario", "");
 
                 Bundle bundle = new Bundle();
                 bundle.putString("ID_actividad", ID_actividad);
@@ -151,6 +152,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 bundle.putString("nombre", nombre);
                 bundle.putString("correo", correo);
                 bundle.putString("telefono", telefono);
+                bundle.putString("foto_usuario", foto_usuario);
+
 
 
                 if(!permisosUsuario.equals("SUPERADMIN")){
@@ -230,7 +233,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         // Crear un AlertDialog
                                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                                         builder.setTitle("Confirmacion para mandar ubicaciòn");
-                                        builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
+                                        builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
 
                                         // Agregar el botón de Aceptar
                                         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {

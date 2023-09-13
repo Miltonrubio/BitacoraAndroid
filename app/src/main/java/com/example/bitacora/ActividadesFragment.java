@@ -42,7 +42,7 @@ import java.util.Map;
 
 public class ActividadesFragment extends Fragment {
 
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.124/android/mostrar.php";
     private RecyclerView recyclerViewNombreActividades;
     private AdaptadorNombreActividades adaptadorNombreActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -70,7 +70,7 @@ public class ActividadesFragment extends Fragment {
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-        String ID_usuario = sharedPreferences.getString("ID_usuario", "");
+        String ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
 
         MostrarActividades();
 

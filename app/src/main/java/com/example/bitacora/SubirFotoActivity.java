@@ -67,16 +67,15 @@ import org.json.JSONObject;
 public class SubirFotoActivity extends AppCompatActivity {
 
     private Handler sliderHandler = new Handler();
-
-    private String urlApi = "http://192.168.1.114/pruebas/mostrar.php";
-
+    private String urlApi = "http://192.168.1.114/milton/bitacoraPHP/mostrar.php";
     ViewPager2 viewPager2;
-    private CameraManager cameraManager;
-    Button btnGuardarFoto;
+
+    Button btnGuardarFoto, SubirDesdeGaleria;
     String rutaImagen;
-    String idSerVenta;
     Context context;
     String ID_actividad, ID_usuario;
+
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -86,7 +85,7 @@ public class SubirFotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_subir_foto);
         btnGuardarFoto = findViewById(R.id.guardarFoto);
         TextView txtId = findViewById(R.id.txtId);
-
+        SubirDesdeGaleria = findViewById(R.id.SubirDesdeGaleria);
         viewPager2 = findViewById(R.id.ViewPagerImagenes);
 
         Bundle bundle = getIntent().getExtras();
@@ -94,14 +93,9 @@ public class SubirFotoActivity extends AppCompatActivity {
         if (bundle != null) {
             ID_actividad = bundle.getString("ID_actividad");
             ID_usuario = bundle.getString("ID_usuario");
-
-
-            txtId.setText("Prueba de carrusel para actividad: " + ID_actividad+ " Subidas por usuario "+ ID_usuario);
         }
-
-
+        txtId.setText("Prueba de carrusel para actividad: " + ID_actividad + " Subidas por usuario " + ID_usuario);
         CargarImagenes();
-
 
         btnGuardarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +103,17 @@ public class SubirFotoActivity extends AppCompatActivity {
                 AbrirCamara();
             }
         });
+        SubirDesdeGaleria.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AbrirGaleria();
+            }
+        });
+    }
 
+    private void AbrirGaleria() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
     }
 
 
@@ -137,12 +141,24 @@ public class SubirFotoActivity extends AppCompatActivity {
             Bitmap imgBitmap = BitmapFactory.decodeFile(rutaImagen);
             MandarFoto2(imgBitmap);
         }
+/*
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                FotoDesdeGaleria.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        */
+
     }
+
 
     private void MandarFoto2(Bitmap imageBitmap) {
         new SendImageTask().execute(imageBitmap);
     }
-
 
     private File crearImagen() throws IOException {
         String nombreFoto = "imagen";
@@ -233,7 +249,7 @@ public class SubirFotoActivity extends AppCompatActivity {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
                                     String nombreFoto = fotoObj.getString("nombreFoto");
 
-                                    String fotoUrl = "http://192.168.1.114/pruebas/fotos/";
+                                    String fotoUrl = "http://192.168.1.114/milton/bitacoraPHP/fotos/";
 
                                     slideItems.add(new SlideItem(fotoUrl + nombreFoto));
                                 }
@@ -282,6 +298,7 @@ public class SubirFotoActivity extends AppCompatActivity {
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("opcion", "10");
+                params.put("ID_actividad", ID_actividad);
                 return params;
             }
         };

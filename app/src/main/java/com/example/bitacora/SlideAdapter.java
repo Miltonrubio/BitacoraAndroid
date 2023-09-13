@@ -60,8 +60,8 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
 
 
                 if (position != RecyclerView.NO_POSITION) {
-                    showAlertDialog(parent.getContext(), position, clickedItem);
-                    // Toast.makeText(parent.getContext(), clickedItem.getImage(), Toast.LENGTH_LONG).show();
+                 //   showAlertDialog(parent.getContext(), position, clickedItem);
+                  Toast.makeText(parent.getContext(), clickedItem.getImage(), Toast.LENGTH_LONG).show();
                 }
             }
         });

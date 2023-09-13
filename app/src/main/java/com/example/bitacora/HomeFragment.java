@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
 
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.124/android/mostrar.php";
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -130,14 +130,13 @@ public class HomeFragment extends Fragment {
                     // Asignar el adaptador al Spinner
                     spinnerNmbreActividades.setAdapter(spinnerAdapter);
 
-                    String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
-                    String    selectedID = obtenerIDDesdeNombre(nombreActividad);
-
-
-
                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            // Obtener el valor del Spinner después de que el usuario haya hecho una selección
+                            String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
+                            String selectedID = obtenerIDDesdeNombre(nombreActividad);
+
                             // Verificar si se seleccionó el hint
                             if (!nombreActividad.equals("Selecciona una opción")) {
                                 String descripcionActividad = editText2.getText().toString();

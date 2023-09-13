@@ -1,0 +1,56 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ImageViewImagenDesdeGaleria"
+                android:layout_width="match_parent"
+                android:layout_height="600dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/CancelarSubida"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
+                android:layout_weight="5"
+                android:src="@drawable/baseline_delete_forever_24"
+                android:text="Subir desde galeria" />
+
+            <Button
+                android:id="@+id/BtnSubirDesdeGaleria"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/rosa"
+                android:text="Subir desde galeria" />
+
+            <ImageView
+                android:id="@+id/AceptarSubida"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
+                android:layout_weight="5"
+                android:src="@drawable/baseline_done_24"
+                android:text="Subir desde galeria" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

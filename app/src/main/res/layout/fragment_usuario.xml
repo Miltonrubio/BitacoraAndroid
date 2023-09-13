@@ -93,6 +93,29 @@
     </LinearLayout>
 
 
+
+    <LinearLayout
+        android:id="@+id/MandarAPrueba"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginBottom="20dp"
+        android:elevation="25dp"
+        >
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/customButtonMandarAPrueba"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mandar a prueba"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+
 </LinearLayout>
 
 
