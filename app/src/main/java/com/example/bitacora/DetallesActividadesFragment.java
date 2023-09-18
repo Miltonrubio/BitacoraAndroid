@@ -51,13 +51,14 @@ import java.util.Map;
 public class DetallesActividadesFragment extends Fragment {
 
     private MapView mapView;
-    String url ="http://192.168.1.114/milton/bitacoraPHP/mostrar.php";
+    String url = "http://192.168.1.114/milton/bitacoraPHP/mostrar.php";
 
-    String urlApi= "http://192.168.1.124/android/mostrar.php";
+    String urlApi = "http://192.168.1.124/android/mostrar.php";
 
     private Handler sliderHandler = new Handler();
 
     ViewPager2 ViewPagerImagenesEvidencia;
+    TextView ubicacionesDeActividad;
 
     public static DetallesActividadesFragment newInstance(String param1, String param2) {
         DetallesActividadesFragment fragment = new DetallesActividadesFragment();
@@ -90,10 +91,13 @@ public class DetallesActividadesFragment extends Fragment {
         TextView tvFechaInicio = view.findViewById(R.id.tvFechaInicio);
         TextView tvFechaFinalizado = view.findViewById(R.id.tvFechaFinalizado);
 
+        ubicacionesDeActividad = view.findViewById(R.id.ubicacionesDeActividad);
+
+        TextView evidenciasDeActividad = view.findViewById(R.id.evidenciasDeActividad);
+
+
         mapView = view.findViewById(R.id.mapView);
         ViewPagerImagenesEvidencia = view.findViewById(R.id.ViewPagerImagenesEvidencia);
-
-
 
         int colorBlanco = ContextCompat.getColor(requireContext(), R.color.white);
         int colorAmarillo = ContextCompat.getColor(requireContext(), R.color.amarillo);
@@ -127,7 +131,6 @@ public class DetallesActividadesFragment extends Fragment {
             CargarImagenes(ID_actividad);
 
 
-
             // Crear un objeto SimpleDateFormat para el formato deseado
             SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy ' a las' HH:mm", Locale.getDefault());
@@ -135,10 +138,15 @@ public class DetallesActividadesFragment extends Fragment {
             try {
                 Date fecha = formatoOriginal.parse(fecha_inicio);
                 String fechaFormateada = formatoDeseado.format(fecha);
-                Date fechafin = formatoOriginal.parse(fecha_fin);
-                String fechaFormateadafin = formatoDeseado.format(fechafin);
 
                 tvFechaInicio.setText("Fecha de inicio: \n" + fechaFormateada);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Date fechafin = formatoOriginal.parse(fecha_fin);
+                String fechaFormateadafin = formatoDeseado.format(fechafin);
                 tvFechaFinalizado.setText("Fecha de finalizacion: \n" + fechaFormateadafin);
 
             } catch (Exception e) {
@@ -153,45 +161,6 @@ public class DetallesActividadesFragment extends Fragment {
 
 
         mapView.onCreate(savedInstanceState);
-        /*
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                // Configura tu mapa aquí
-
-                // Habilitar controles UI (botones de zoom, brújula, etc.)
-                googleMap.getUiSettings().setZoomControlsEnabled(true);
-                googleMap.getUiSettings().setCompassEnabled(true);
-
-                // Establecer el tipo de mapa (normal, satélite, terreno, etc.)
-                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-                // Configurar marcadores, líneas, polígonos, etc.
-                LatLng point1 = new LatLng(18.7749, -97.4194); // Coordenadas del primer punto
-                LatLng point2 = new LatLng(18.0522, -97.2437); // Coordenadas del segundo punto
-
-                // Agregar marcadores
-                googleMap.addMarker(new MarkerOptions().position(point1).title("Punto 1"));
-                googleMap.addMarker(new MarkerOptions().position(point2).title("Punto 2"));
-
-                // Utilizar un ViewTreeObserver para esperar a que la vista del mapa se complete
-                mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Remover el listener después de la primera llamada para evitar duplicados
-                        mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                        // Mover la cámara para mostrar los marcadores
-                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                        builder.include(point1);
-                        builder.include(point2);
-                        LatLngBounds bounds = builder.build();
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100)); // 100 es el padding
-                    }
-                });
-            }
-        });
-*/
         return view;
     }
 
@@ -221,7 +190,6 @@ public class DetallesActividadesFragment extends Fragment {
     }
 
 
-
     private void CargarImagenes(String ID_actividad) {
 
         StringRequest stringRequest3 = new StringRequest(Request.Method.POST, url,
@@ -230,14 +198,14 @@ public class DetallesActividadesFragment extends Fragment {
                     public void onResponse(String response) {
                         List<SlideItem> slideItems = new ArrayList<>();
 
-                        if (!TextUtils.isEmpty(response)|| !response.equals("No se encontraron evidencias")) {
+                        if (!TextUtils.isEmpty(response) || !response.equals("No se encontraron evidencias")) {
                             try {
                                 JSONArray jsonArray = new JSONArray(response);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
                                     String nombreFoto = fotoObj.getString("nombreFoto");
                                     String fotoUrl = "http://192.168.1.114/milton/bitacoraPHP/fotos/";
-                                    slideItems.add(new SlideItem(fotoUrl+nombreFoto));
+                                    slideItems.add(new SlideItem(fotoUrl + nombreFoto));
                                 }
 
                                 SlideAdapter slideAdapter = new SlideAdapter(slideItems, ViewPagerImagenesEvidencia);
@@ -300,7 +268,6 @@ public class DetallesActividadesFragment extends Fragment {
     }
 
 
-
     private void CargarUbicaciones(String ID_actividad) {
         StringRequest stringRequest3 = new StringRequest(Request.Method.POST, urlApi,
                 new Response.Listener<String>() {
@@ -324,7 +291,7 @@ public class DetallesActividadesFragment extends Fragment {
                                 }
 
                                 // Llamar al método para mostrar las coordenadas en el mapa
-                                mostrarCoordenadasEnMapa(coordenadas);
+                              //  mostrarCoordenadasEnMapa(coordenadas);
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -365,7 +332,7 @@ public class DetallesActividadesFragment extends Fragment {
         }
     };
 
-
+/*
     private void mostrarCoordenadasEnMapa(List<LatLng> coordenadas) {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -391,18 +358,26 @@ public class DetallesActividadesFragment extends Fragment {
                         // Remover el listener después de la primera llamada para evitar duplicados
                         mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                        // Mover la cámara para mostrar todos los marcadores
                         LatLngBounds.Builder builder = new LatLngBounds.Builder();
                         for (LatLng ubicacion : coordenadas) {
                             builder.include(ubicacion);
                         }
                         LatLngBounds bounds = builder.build();
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100)); // 100 es el padding
+
+// Obtén el ancho y alto del mapa (en píxeles)
+                        int width = mapView.getWidth();
+                        int height = mapView.getHeight();
+
+// Calcula el padding (en píxeles)
+                        int padding = 100; // Ajusta este valor según tus necesidades
+
+// Mueve la cámara para mostrar todos los marcadores con el padding especificado
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding));
                     }
                 });
             }
         });
     }
-
+*/
 }
 

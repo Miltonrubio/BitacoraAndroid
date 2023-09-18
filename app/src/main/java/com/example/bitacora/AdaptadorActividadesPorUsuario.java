@@ -72,7 +72,7 @@ import java.util.Map;
 import android.Manifest;
 
 
-public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActividades.ViewHolder> {
+public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<AdaptadorActividadesPorUsuario.ViewHolder> {
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
     String siguienteEstado = "";
@@ -89,7 +89,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
 
-    public AdaptadorActividades(List<JSONObject> data, Context context) {
+    public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
@@ -230,35 +230,35 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 @Override
                                 public void onClick(View v) {
 
-                                        // Crear un AlertDialog
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                        builder.setTitle("Confirmacion para mandar ubicaciòn");
-                                        builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
+                                    // Crear un AlertDialog
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                    builder.setTitle("Confirmacion para mandar ubicaciòn");
+                                    builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
 
-                                        // Agregar el botón de Aceptar
-                                        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                            @Override
+                                    // Agregar el botón de Aceptar
+                                    builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                        @Override
 
-                                            public void onClick(DialogInterface dialog, int which) {
+                                        public void onClick(DialogInterface dialog, int which) {
 
-                                                obtenerUbicacion(context, ID_usuario, ID_actividad);
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                            obtenerUbicacion(context, ID_usuario, ID_actividad);
+                                            dialog.dismiss();
+                                        }
+                                    });
 
-                                        // Agregar el botón de Cancelar
-                                        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // Cerrar el diálogo
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                    // Agregar el botón de Cancelar
+                                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Cerrar el diálogo
+                                            dialog.dismiss();
+                                        }
+                                    });
 
-                                        // Mostrar el diálogo
-                                        AlertDialog dialog = builder.create();
-                                        dialog.show();
-                                    }
+                                    // Mostrar el diálogo
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
 
                             });
 

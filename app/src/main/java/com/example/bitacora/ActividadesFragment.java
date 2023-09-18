@@ -165,6 +165,7 @@ public class ActividadesFragment extends Fragment {
             public void onResponse(String response) {
 
                 Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                MostrarActividades();
             }
         }, new Response.ErrorListener() {
             @Override

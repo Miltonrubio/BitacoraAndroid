@@ -45,6 +45,7 @@ import java.util.Map;
 public class HomeFragment extends Fragment {
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
+    String permisos;
 
     String url = "http://192.168.1.124/android/mostrar.php";
     private RecyclerView recyclerView;
@@ -76,7 +77,7 @@ public class HomeFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuario = sharedPreferences.getString("ID_usuario", "");
-        String permisos = sharedPreferences.getString("permisos", "");
+         permisos = sharedPreferences.getString("permisos", "");
         editTextBusqueda.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -97,66 +98,65 @@ public class HomeFragment extends Fragment {
 
         if(permisos.equals("SUPERADMIN")){
             MostrarActividades();
-            botonAgregarActividad.setVisibility(View.GONE);
-
         }else {
             ActividadesPorUsuario(ID_usuario);
-            botonAgregarActividad.setVisibility(View.VISIBLE);
-            botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Llama a VerNombresActividades() para obtener los nombres de las actividades
-                    VerNombresActividades();
-
-                    // Crear el AlertDialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-
-                    // Inflar el diseño personalizado para el AlertDialog
-                    LayoutInflater inflater = getLayoutInflater();
-                    View dialogView = inflater.inflate(R.layout.insertar_actividad, null);
-                    builder.setView(dialogView);
-
-                    // Obtener las referencias a los EditText dentro del diálogo
-                    final Spinner spinnerNmbreActividades = dialogView.findViewById(R.id.SpinnerActividades);
-                    final EditText editText2 = dialogView.findViewById(R.id.editText2);
-
-                    // Agregar el hint al principio de la lista de nombres de actividades
-                    nombresActividades.add(0, "Selecciona una opción");
-
-                    // Configurar el adaptador del Spinner con los nombres de las actividades
-                    ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nombresActividades);
-                    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                    // Asignar el adaptador al Spinner
-                    spinnerNmbreActividades.setAdapter(spinnerAdapter);
-
-                    builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Obtener el valor del Spinner después de que el usuario haya hecho una selección
-                            String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
-                            String selectedID = obtenerIDDesdeNombre(nombreActividad);
-
-                            // Verificar si se seleccionó el hint
-                            if (!nombreActividad.equals("Selecciona una opción")) {
-                                String descripcionActividad = editText2.getText().toString();
-                                AgregarActividad(selectedID, descripcionActividad, ID_usuario);
-                            } else {
-                                // Mostrar un mensaje de error o realizar la acción deseada
-                                Toast.makeText(requireContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                    builder.setNegativeButton("Cancelar", null);
-
-                    // Mostrar el AlertDialog
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            });
 
         }
 
+
+        botonAgregarActividad.setVisibility(View.VISIBLE);
+        botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Llama a VerNombresActividades() para obtener los nombres de las actividades
+                VerNombresActividades();
+
+                // Crear el AlertDialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+                // Inflar el diseño personalizado para el AlertDialog
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.insertar_actividad, null);
+                builder.setView(dialogView);
+
+                // Obtener las referencias a los EditText dentro del diálogo
+                final Spinner spinnerNmbreActividades = dialogView.findViewById(R.id.SpinnerActividades);
+                final EditText editText2 = dialogView.findViewById(R.id.editText2);
+
+                // Agregar el hint al principio de la lista de nombres de actividades
+                nombresActividades.add(0, "Selecciona una opción");
+
+                // Configurar el adaptador del Spinner con los nombres de las actividades
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, nombresActividades);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                // Asignar el adaptador al Spinner
+                spinnerNmbreActividades.setAdapter(spinnerAdapter);
+
+                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Obtener el valor del Spinner después de que el usuario haya hecho una selección
+                        String nombreActividad = spinnerNmbreActividades.getSelectedItem().toString();
+                        String selectedID = obtenerIDDesdeNombre(nombreActividad);
+
+                        // Verificar si se seleccionó el hint
+                        if (!nombreActividad.equals("Selecciona una opción")) {
+                            String descripcionActividad = editText2.getText().toString();
+                            AgregarActividad(selectedID, descripcionActividad, ID_usuario);
+                        } else {
+                            // Mostrar un mensaje de error o realizar la acción deseada
+                            Toast.makeText(requireContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancelar", null);
+
+                // Mostrar el AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
     }
 
@@ -240,7 +240,14 @@ public class HomeFragment extends Fragment {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+
                 Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                if(permisos.equals("SUPERADMIN")){
+                    MostrarActividades();
+                }else{
+                    ActividadesPorUsuario(ID_usuario);
+                }
+
             }
         }, new Response.ErrorListener() {
             @Override

@@ -74,7 +74,7 @@ public class CrudUsuariosFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuario = sharedPreferences.getString("ID_usuario", "");
 
-        MostrarActividades();
+        MostrarUsuarios();
 
         editTextBusqueda.addTextChangedListener(new TextWatcher() {
             @Override
@@ -144,7 +144,7 @@ public class CrudUsuariosFragment extends Fragment {
 
     }
 
-    private void MostrarActividades() {
+    private void MostrarUsuarios() {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -190,6 +190,7 @@ public class CrudUsuariosFragment extends Fragment {
                     Toast.makeText(requireContext(), "No puedes insertar Datos repetidos", Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                    MostrarUsuarios();
                 }
 
             }
@@ -197,7 +198,7 @@ public class CrudUsuariosFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "No se insertò el usuario", Toast.LENGTH_SHORT).show();
             }
         }) {
             protected Map<String, String> getParams() {

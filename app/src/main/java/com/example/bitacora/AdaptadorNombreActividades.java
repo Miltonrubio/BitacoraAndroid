@@ -72,7 +72,7 @@ import android.Manifest;
 
 public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNombreActividades.ViewHolder> {
 
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.124/android/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -284,6 +284,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
             public void onResponse(String response) {
                 // Aquí puedes realizar acciones adicionales si es necesario
                 Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
+                notifyDataSetChanged();
 
             }
         }, new Response.ErrorListener() {
@@ -312,7 +313,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
             public void onResponse(String response) {
                 // Aquí puedes realizar acciones adicionales si es necesario
                 Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
-
+                notifyDataSetChanged();
                 dialog.dismiss();
             }
         }, new Response.ErrorListener() {

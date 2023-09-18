@@ -141,6 +141,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                         LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                        LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
                         builder.setView(customView);
 
                         final AlertDialog dialogConBotones = builder.create();
@@ -248,6 +249,14 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         });
 
 
+                        LayoutVerActividades.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+
+
                         builder.setNegativeButton("Cancelar", null);
 
                         dialogConBotones.show(); // Muestra el diálogo
@@ -350,7 +359,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             public void onResponse(String response) {
                 // Aquí puedes realizar acciones adicionales si es necesario
                 Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
-
+                notifyDataSetChanged();
                 dialog.dismiss();
             }
         }, new Response.ErrorListener() {
@@ -386,6 +395,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             public void onResponse(String response) {
                 // Aquí puedes realizar acciones adicionales si es necesario
                 Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
+                notifyDataSetChanged();
 
             }
         }, new Response.ErrorListener() {

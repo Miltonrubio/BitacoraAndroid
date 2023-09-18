@@ -46,10 +46,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="left"
-                    android:text="Nombre de Cliente"
+                    android:text="Nombre de actividad"
                     android:textColor="@color/azulito"
-                    android:textSize="28dp"
-                    android:textStyle="bold" />
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="15dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -146,28 +147,28 @@
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:gravity="left"
-                    android:text="Fecha de finalizacion"
+                    android:text="Aun no se ha finalizado"
                     android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:orientation="horizontal">
 
                 <TextView
+
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
+                    android:id="@+id/evidenciasDeActividad"
                     android:gravity="left"
-                    android:text="Evidencias de actividad"
-                    android:textSize="16sp" />
+                    android:text="Evidencias de actividad:"
+                    android:textSize="24sp" />
             </LinearLayout>
             <androidx.viewpager2.widget.ViewPager2
-                android:layout_marginTop="25dp"
                 android:layout_width="match_parent"
                 android:layout_height="600dp"
                 android:layout_marginEnd="9dp"
@@ -184,6 +185,14 @@
                 android:layout_marginTop="25dp"
                 android:padding="12dp">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ubicacionesDeActividad"
+                    android:text="Ubicaciones de la actividad: "
+                    android:textSize="23sp"
+                    />
+
 
                 <com.google.android.gms.maps.MapView
 
@@ -193,8 +202,6 @@
                     map:cameraZoom="12"
                     map:liteMode="false"
                     map:mapType="normal" />
-
-
 
             </LinearLayout>
         </LinearLayout>
