@@ -59,7 +59,7 @@ dependencies {
 
     implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
     implementation ("com.google.android.gms:play-services-maps:17.0.1")
-
+    implementation ("com.itextpdf:itextg:5.5.10")
 
     /*
         implementation ("androidx.paging:paging-runtime:3.0.0")

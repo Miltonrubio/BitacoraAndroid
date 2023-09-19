@@ -11,7 +11,8 @@
     <LinearLayout
         android:id="@+id/contenedorClickeable"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="230dp"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:background="@color/gris"
         android:gravity="center"
@@ -24,29 +25,51 @@
             android:layout_gravity="center"
             android:src="@drawable/baseline_person_24" />
 
-        <TextView
-            android:id="@+id/tvNombreMecanico"
+        <LinearLayout
+            android:id="@+id/contenedorNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:text="Usuario"
-            android:textColor="@color/azulito"
-            android:textSize="36dp"
-            android:textStyle="bold" />
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnEditar"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:contentDescription="Icono de Nombre"
+
+                android:src="@drawable/baseline_edit_24" />
+
+            <EditText
+                android:id="@+id/tvNombreMecanico"
+                style="@style/EditTextNoBorder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:enabled="false"
+                android:text="Usuario"
+                android:textColor="@color/azulito"
+                android:textSize="32dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
 
     </LinearLayout>
 
 
 
-    <TextView
-        android:id="@+id/tvCorreoMecanico"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/tvCorreo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        style="@style/EditTextNoBorder"
         android:layout_marginEnd="10dp"
+        android:enabled="false"
         android:layout_marginBottom="10dp"
         android:text="Correo"
         android:textColor="@color/azulito"
@@ -54,18 +77,20 @@
         tools:ignore="NotSibling" />
 
 
-    <TextView
-        android:id="@+id/tvEstadoMecanico"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/tvRol"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvCorreoMecanico"
+        android:layout_below="@id/tvCorreo"
         android:layout_centerHorizontal="true"
+        android:enabled="false"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Estado"
+        android:text="Rol"
         android:textColor="@color/azulito"
+        style="@style/EditTextNoBorder"
         android:textSize="26dp"
         tools:ignore="NotSibling" />
 
@@ -114,7 +139,27 @@
             android:layout_gravity="center"/>
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LayoutActualizarDatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginBottom="20dp"
+        android:elevation="25dp"
+        >
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/BtnActualizarDatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Actualizad datos"
+            android:visibility="gone"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
 
 </LinearLayout>
 

@@ -2,6 +2,6 @@
 
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-files-path
-        name="misimagenes"
+        name="external_files"
         path="."></external-files-path>
 </paths>

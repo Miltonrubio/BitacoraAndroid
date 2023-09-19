@@ -1,17 +1,22 @@
 package com.example.bitacora;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,15 +27,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class UsuarioFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     public UsuarioFragment() {
         // Required empty public constructor
     }
@@ -38,8 +34,6 @@ public class UsuarioFragment extends Fragment {
     public static UsuarioFragment newInstance(String param1, String param2) {
         UsuarioFragment fragment = new UsuarioFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,13 +51,16 @@ public class UsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_usuario, container, false);
 
-        TextView tvNombreMecanico = view.findViewById(R.id.tvNombreMecanico);
-        TextView tvCorreoMecanico = view.findViewById(R.id.tvCorreoMecanico);
-        TextView tvEstadoMecanico = view.findViewById(R.id.tvEstadoMecanico);
+        EditText tvNombreMecanico = view.findViewById(R.id.tvNombreMecanico);
+        EditText tvCorreo = view.findViewById(R.id.tvCorreo);
+        EditText tvRol = view.findViewById(R.id.tvRol);
 
-        Button customButton= view.findViewById(R.id.customButton);
+        ImageView btnEditar = view.findViewById(R.id.btnEditar);
 
-        Button customButtonMandarAPrueba= view.findViewById(R.id.customButtonMandarAPrueba);
+        Button customButton = view.findViewById(R.id.customButton);
+        Button BtnActualizarDatos = view.findViewById(R.id.BtnActualizarDatos);
+
+        Button customButtonMandarAPrueba = view.findViewById(R.id.customButtonMandarAPrueba);
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
@@ -72,18 +69,46 @@ public class UsuarioFragment extends Fragment {
         String nombre = sharedPreferences.getString("nombre", "");
         String estado = sharedPreferences.getString("estado", "");
         String correo = sharedPreferences.getString("correo", "");
+        String clave = sharedPreferences.getString("clave", "");
         String permisos = sharedPreferences.getString("permisos", "");
 
 
-        tvEstadoMecanico.setText(estado);
-        tvCorreoMecanico.setText(correo);
-        tvNombreMecanico.setText( ID_usuario + " - " +nombre);
+        tvRol.setText(permisos);
+        tvCorreo.setText(correo);
+        tvNombreMecanico.setText(nombre);
 
+
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+/*
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle("Selecciona el nuevo estado de la actividad");
+
+                View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.spinner_dropdown_item, null);
+
+                LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
+                LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
+                LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+
+                builder.setView(customView);
+
+                final AlertDialog dialog = builder.create();
+
+
+                builder.setNegativeButton("Cancelar", null);
+
+                dialog.show(); // Muestra el diálogo
+            }
+*/
+
+            }
+        });
 
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              cerrarSesion();
+                cerrarSesion();
             }
         });
 
@@ -110,7 +135,7 @@ public class UsuarioFragment extends Fragment {
         requireActivity().finish();
     }
 
-    public  void IrAPrueba(){
+    public void IrAPrueba() {
         Intent intent = new Intent(requireContext(), PruebaActivity.class);
         startActivity(intent);
     }

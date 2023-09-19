@@ -5,5 +5,9 @@
         <item name="android:windowBackground">@drawable/roundedbackground</item>
     </style>
 
+    <style name="EditTextNoBorder">
+        <item name="android:background">@null</item>
+        <!-- Otros atributos de estilo que desees aplicar -->
+    </style>
 
 </resources>

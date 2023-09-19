@@ -38,9 +38,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -117,12 +119,15 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                 String permisos = jsonObject2.optString("permisos", "");
                 String telefono= jsonObject2.optString("telefono", "");
                 String clave= jsonObject2.optString("clave", "");
+                String foto_usuario= jsonObject2.optString("foto_usuario", "");
 
                 Bundle bundle = new Bundle();
                 bundle.putString("ID_usuario", ID_usuario);
                 bundle.putString("permisos", permisos);
                 bundle.putString("nombre", nombre);
                 bundle.putString("correo", correo);
+                bundle.putString("telefono", telefono);
+                bundle.putString("foto_usuario", foto_usuario);
 
 
                 setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
@@ -252,7 +257,16 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         LayoutVerActividades.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                ActividadesPorUsuarioFragment actividadesPorUsuarioFragment = new ActividadesPorUsuarioFragment();
+                                actividadesPorUsuarioFragment.setArguments(bundle);
 
+                                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                                fragmentManager.beginTransaction()
+                                        .replace(R.id.frame_layouts_fragments, actividadesPorUsuarioFragment)
+                                        .addToBackStack(null)
+                                        .commit();
+
+                                dialogConBotones.dismiss();
                             }
                         });
 
