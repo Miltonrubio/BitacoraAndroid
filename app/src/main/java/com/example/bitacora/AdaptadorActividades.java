@@ -206,7 +206,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
 
                             builder.setView(customView);
-
                             final AlertDialog dialog = builder.create();
 
 
