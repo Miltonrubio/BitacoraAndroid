@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:map="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/black">
 
 
     <ScrollView
@@ -185,23 +186,11 @@
                 android:layout_marginTop="25dp"
                 android:padding="12dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ubicacionesDeActividad"
-                    android:text="Ubicaciones de la actividad: "
-                    android:textSize="23sp"
-                    />
-
 
                 <com.google.android.gms.maps.MapView
-
                     android:id="@+id/mapView"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    map:cameraZoom="12"
-                    map:liteMode="false"
-                    map:mapType="normal" />
+                    android:layout_height="400dp"/>
 
             </LinearLayout>
         </LinearLayout>

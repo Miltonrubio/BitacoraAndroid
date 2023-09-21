@@ -48,15 +48,11 @@ public class MainActivity2 extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK && data != null) {
-            // Obtiene la URI de la imagen seleccionada
             Uri selectedImageUri = data.getData();
 
             try {
-                // Convierte la URI en un Bitmap y lo muestra en el ImageView
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                 imageView.setImageBitmap(bitmap);
-
-                // Envia la imagen a la API
                 sendImageToAPI(bitmap);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -68,15 +64,12 @@ public class MainActivity2 extends Activity {
         try {
             String apiUrl = "http://192.168.1.114/milton/bitacoraPHP/mostrar.php";
 
-            // Convierte el Bitmap en bytes
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
-            // Crea un cliente OkHttp
             OkHttpClient client = new OkHttpClient();
 
-            // Construye el cuerpo de la solicitud multipart para enviar la imagen
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("opcion", "9")
@@ -86,20 +79,15 @@ public class MainActivity2 extends Activity {
                             RequestBody.create(MediaType.parse("image/jpeg"), imageBytes))
                     .build();
 
-            // Construye la solicitud POST
             Request request = new Request.Builder()
                     .url(apiUrl)
                     .post(requestBody)
                     .build();
 
-            // Ejecuta la solicitud
             Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                // Procesa la respuesta de la API aquí
                 String responseBody = response.body().string();
-                // Puedes mostrar o procesar la respuesta según tus necesidades
-                // En este ejemplo, simplemente mostraremos la respuesta en un Toast
                 runOnUiThread(() -> {
                     Toast.makeText(MainActivity2.this, responseBody, Toast.LENGTH_SHORT).show();
                 });

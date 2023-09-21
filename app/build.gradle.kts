@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.bitacora"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -58,7 +58,13 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
 
     implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
+
     implementation ("com.google.android.gms:play-services-maps:17.0.1")
+    implementation ("com.google.maps:google-maps-services:0.17.0")
+    implementation ("com.google.maps.android:android-maps-utils:2.2.4")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+
     implementation ("com.itextpdf:itextg:5.5.10")
 
     /*

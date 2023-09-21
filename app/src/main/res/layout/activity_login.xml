@@ -9,7 +9,8 @@
     android:paddingBottom="30dp"
     android:elevation="4dp"
     android:padding="1dp"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:background="@color/black">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -41,7 +42,7 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/baseline_phone_24"
+            android:src="@drawable/logotaller"
             android:layout_gravity="center"
             android:clickable="true"
             android:onClick="enviarACamara"

@@ -136,7 +136,7 @@ public class UsuarioFragment extends Fragment {
     }
 
     public void IrAPrueba() {
-        Intent intent = new Intent(requireContext(), MainActivity3.class);
+        Intent intent = new Intent(requireContext(), SubirFotoActivity.class);
         startActivity(intent);
     }
 

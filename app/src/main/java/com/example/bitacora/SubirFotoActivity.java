@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -66,6 +67,295 @@ import org.json.JSONObject;
 
 public class SubirFotoActivity extends AppCompatActivity {
 
+
+    private Handler sliderHandler = new Handler();
+
+    private String urlApi = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+
+    ViewPager2 viewPager2;
+    private CameraManager cameraManager;
+
+    String rutaImagen;
+    String idActividad, ID_usuario;
+    Context context;
+
+
+    //Para api
+    Bitmap bitmapDesdeGaleria;
+    int PICK_IMAGE_REQUEST = 2;
+    String imageKey = "fotoImagen";
+
+    String nombreImagenKey = "nombreFoto";
+
+
+    ImageView imagenDesdeGaleriaIM;
+
+    @SuppressLint("MissingInflatedId")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        context = this;
+        setContentView(R.layout.activity_subir_foto);
+
+        Button btnGuardarFoto = findViewById(R.id.guardarFoto);
+        TextView txtId = findViewById(R.id.txtId);
+        Button fotoDesdeGaleria = findViewById(R.id.fotoDesdeGaleria);
+        viewPager2 = findViewById(R.id.ViewPagerImagenes);
+        imagenDesdeGaleriaIM = findViewById(R.id.imagenDesdeGaleriaIM);
+
+
+        // Intent intent = getIntent();
+
+        Bundle receivedBundle = getIntent().getExtras();
+
+        if (receivedBundle != null) {
+            idActividad = receivedBundle.getString("ID_actividad");
+            ID_usuario = receivedBundle.getString("ID_usuario");
+
+            txtId.setText("ID_actividad" + idActividad);
+            CargarImagenes();
+        }
+
+        fotoDesdeGaleria.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AbrirGaleria();
+            }
+        });
+
+        btnGuardarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AbrirCamara();
+
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 2 && resultCode == RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+
+            try {
+                Bitmap selectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                MandarFoto2(selectedBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            Bitmap imgBitmap = BitmapFactory.decodeFile(rutaImagen);
+            MandarFoto2(imgBitmap);
+        }
+
+    }
+
+    private void AbrirCamara() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            File imagenArchivo = null;
+            try {
+                imagenArchivo = crearImagen();
+            } catch (IOException e) {
+                Log.e("Error al obtener la imagen", e.toString());
+            }
+            if (imagenArchivo != null) {
+                Uri fotoUri = FileProvider.getUriForFile(SubirFotoActivity.this, "com.example.bitacora.fileprovider", imagenArchivo);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fotoUri);
+                startActivityForResult(intent, 1);
+            }
+        }
+    }
+
+
+    private void AbrirGaleria() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 2);
+    }
+
+
+    private void MandarFoto2(Bitmap imageBitmap) {
+        new SendImageTask().execute(imageBitmap);
+    }
+
+
+    private File crearImagen() throws IOException {
+        String nombreFoto = "image";
+        File directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imagenTemporal = File.createTempFile(nombreFoto, ".jpg", directorio);
+        rutaImagen = imagenTemporal.getAbsolutePath();
+        return imagenTemporal;
+    }
+
+    private File bitmapToFile(Bitmap bitmap, String fileName) {
+        File file = new File(getCacheDir(), fileName);
+        try {
+            file.createNewFile();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, bos);
+            byte[] bitmapData = bos.toByteArray();
+
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapData);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    private class SendImageTask extends AsyncTask<Bitmap, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Bitmap... bitmaps) {
+            Bitmap imageBitmap = bitmaps[0];
+
+            OkHttpClient client = new OkHttpClient();
+            String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+
+            String nombreArchivo = "imagen" + System.currentTimeMillis() + ".jpg";
+            File imageFile = bitmapToFile(imageBitmap, "image.jpg");
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("opcion", "9")
+                    .addFormDataPart("ID_actividad", idActividad)
+                    .addFormDataPart("ID_usuario", ID_usuario)
+                    .addFormDataPart("imagen", nombreArchivo,
+                            RequestBody.create(MediaType.parse("image/jpeg"), imageFile))
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    Log.d("Respuesta del servidor", responseData);
+                } else {
+                    Log.e("Error en la solicitud", String.valueOf(response.code()));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(SubirFotoActivity.this, "Imagen " + idActividad + " Enviada al servidor", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SubirFotoActivity.this, Activity_Binding.class);
+            startActivity(intent);
+        }
+    }
+
+
+    private void CargarImagenes() {
+
+        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, urlApi,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        List<SlideItem> slideItems = new ArrayList<>();
+
+                        if (!TextUtils.isEmpty(response)) {
+                            try {
+                                JSONArray jsonArray = new JSONArray(response);
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject fotoObj = jsonArray.getJSONObject(i);
+                                    String nombreFoto = fotoObj.getString("nombreFoto");
+
+                                    String fotoUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/";
+
+                                    slideItems.add(new SlideItem(fotoUrl + nombreFoto));
+                                }
+                                viewPager2.setAdapter(new SlideAdapter(slideItems, viewPager2));
+                                viewPager2.setClipToPadding(false);
+                                viewPager2.setClipChildren(false);
+                                viewPager2.setOffscreenPageLimit(4);
+                                viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+                                CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+                                compositePageTransformer.addTransformer(new MarginPageTransformer(10));
+                                compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+                                    @Override
+                                    public void transformPage(@NonNull View page, float position) {
+                                        float r = 1 - Math.abs(position);
+                                        page.setScaleY(0.85f + 0.15f);
+                                    }
+                                });
+
+                                viewPager2.setPageTransformer(compositePageTransformer);
+                                viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                                    public void onPageSelected(int position) {
+                                        super.onPageSelected(position);
+                                        sliderHandler.removeCallbacks(sliderRunnable);
+                                        sliderHandler.postDelayed(sliderRunnable, 3000);
+                                    }
+                                });
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.d("API Response", "Respuesta vacía");
+                        }
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("API Error", "Error en la solicitud: " + error.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("opcion", "10");
+                params.put("ID_actividad", idActividad);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue3 = Volley.newRequestQueue(context);
+        requestQueue3.add(stringRequest3);
+
+    }
+
+
+    private Runnable sliderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1);
+        }
+    };
+
+
+    public void onPause() {
+        super.onPause();
+        sliderHandler.removeCallbacks(sliderRunnable);
+    }
+
+    public void onResume() {
+        super.onResume();
+        sliderHandler.postDelayed(sliderRunnable, 3000);
+    }
+
+}
+
+
+
+/*
     private Handler sliderHandler = new Handler();
     private String urlApi = "http://192.168.1.114/milton/bitacoraPHP/mostrar.php";
     ViewPager2 viewPager2;
@@ -109,8 +399,14 @@ public class SubirFotoActivity extends AppCompatActivity {
                 AbrirGaleria();
             }
         });
-    }
 
+
+
+
+
+} */
+
+/*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
