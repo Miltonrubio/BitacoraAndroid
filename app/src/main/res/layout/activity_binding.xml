@@ -12,7 +12,7 @@
         android:id="@+id/frame_layouts_fragments"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/azul"
+        android:background="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -33,13 +33,13 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
 
-        android:background="@color/gris"
-        app:itemIconTint="@color/azul"
+        android:background="@color/naranjita"
+        app:itemIconTint="@color/naranja"
 
         app:labelVisibilityMode="unlabeled"
-        app:itemRippleColor="@color/azul"
-        android:outlineSpotShadowColor="@color/azul"
-        android:outlineAmbientShadowColor="@color/azul"
+        app:itemRippleColor="@color/naranja"
+        android:outlineSpotShadowColor="@color/naranja"
+        android:outlineAmbientShadowColor="@color/naranja"
         />
 
 

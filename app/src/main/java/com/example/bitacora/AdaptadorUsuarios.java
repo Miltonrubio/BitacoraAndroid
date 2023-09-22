@@ -50,10 +50,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.bitacora.databinding.ActivitySubirFotoBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.transition.Hold;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,8 +79,7 @@ import android.Manifest;
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
 
-    String siguienteEstado = "";
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.125/android/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -100,7 +103,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             return new ViewHolder(view);
         } else {
 
-            View errorView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_error, parent, false);
+            View errorView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_sinusuarios, parent, false);
             return new ViewHolder(errorView);
         }
 
@@ -136,6 +139,20 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                 setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
 
 
+
+                String imageUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+
+                RequestOptions options = new RequestOptions()
+                        .placeholder(R.drawable.imagendefault)
+                        .error(R.drawable.imagendefault)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE);
+
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .apply(options)
+                        .into(holder.fotoDeUsuario);
+
+
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -146,7 +163,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                         LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                        LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
                         LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
+                        Button BotonActualizarFotoUsuario=  customView.findViewById(R.id.BotonActualizarFotoUsuario);
                         builder.setView(customView);
 
                         final AlertDialog dialogConBotones = builder.create();
@@ -154,6 +173,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                             @Override
                             public void onClick(View v) {
 
+                                LayoutVerActividades.setVisibility(View.GONE);
                                 LayoutEliminar.setVisibility(View.GONE);
                                 // Hacer visible el EditText
                                 EditText editTextNombreUsuario = customView.findViewById(R.id.editTextNombreUsuario);
@@ -163,7 +183,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                 Spinner opcionesActualizarRol= customView.findViewById(R.id.opcionesActualizarRol);
                                 Button BotonActualizarUsuario = customView.findViewById(R.id.BotonActualizarUsuario);
                                 ImageView btnMostrarClave= customView.findViewById(R.id.VerClave);
-
 
                                 editTextNombreUsuario.setText(nombre);
                                 editTextCorreoUsuario.setText(correo);
@@ -213,6 +232,29 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
 
                                  EditarUsuario(ID_usuario, nuevoNombreUsuario,nuevoCorreoUsuario , nuevaClaveUsuario ,nuevOTelefonoUsuario ,nuevoRolUsuario, view.getContext(), holder, dialogConBotones);
+                                    }
+                                });
+
+                            }
+                        });
+
+
+                        LayoutActualizarFoto.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                LayoutVerActividades.setVisibility(View.GONE);
+                                LayoutEliminar.setVisibility(View.GONE);
+                                LayoutEditar.setVisibility(View.GONE);
+                                BotonActualizarFotoUsuario.setVisibility(View.VISIBLE);
+
+
+                                BotonActualizarFotoUsuario.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // Crear un Intent y adjuntar el Bundle
+                                        Intent intent = new Intent(v.getContext(), SubirFotoUsuarioActivity.class);
+                                        intent.putExtras(bundle);
+                                        v.getContext().startActivity(intent);
                                     }
                                 });
 
@@ -301,6 +343,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textNombreUsuario, textCorreoUsuario, textRol, textTelefonoUsuario;
         FrameLayout FrameActividades;
+        ImageView fotoDeUsuario;
 
 
 
@@ -310,6 +353,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
             textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
             textRol = itemView.findViewById(R.id.textRol);
+            fotoDeUsuario= itemView.findViewById(R.id.fotoDeUsuario);
 
             textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
 
@@ -326,18 +370,18 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             String[] keywords = query.toLowerCase().split(" ");
 
             for (JSONObject item : data) {
-                String ID_actividad = item.optString("ID_actividad", "").toLowerCase();
-                String nombreActividad = item.optString("nombreActividad", "").toLowerCase();
-                String descripcionActividad = item.optString("descripcionActividad", "").toLowerCase();
-                String estadoActividad = item.optString("estadoActividad", "").toLowerCase();
-                String fecha_inicio = item.optString("fecha_inicio", "").toLowerCase();
-                String fecha_fin = item.optString("fecha_fin", "").toLowerCase();
+
+                String ID_usuario = item.optString("ID_usuario", "").toLowerCase();
+                String correo = item.optString("correo", "").toLowerCase();
+                String nombre = item.optString("nombre", "").toLowerCase();
+                String permisos = item.optString("permisos", "").toLowerCase();
+                String telefono = item.optString("telefono", "").toLowerCase();
 
                 boolean matchesAllKeywords = true;
 
                 for (String keyword : keywords) {
-                    if (!(estadoActividad.contains(keyword) || descripcionActividad.contains(keyword) || nombreActividad.contains(keyword) || ID_actividad.contains(keyword) ||
-                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword))) {
+                    if (!(ID_usuario.contains(keyword) || correo.contains(keyword) || nombre.contains(keyword) || permisos.contains(keyword) ||
+                            telefono.contains(keyword) )) {
                         matchesAllKeywords = false;
                         break;
                     }

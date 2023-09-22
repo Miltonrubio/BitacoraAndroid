@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.util.List;
 
-public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicaciones.ViewHolder>{
+public class AdaptadorUbicaciones {
+
+}/* extends RecyclerView.Adapter<AdaptadorUbicaciones.ViewHolder>{
 
     private OnItemClickListener onItemClickListener;
 
@@ -28,7 +30,7 @@ public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicacio
     @NonNull
     @Override
     public AdaptadorUbicaciones.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rutas, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
         return new AdaptadorUbicaciones.ViewHolder(view);
     }
 
@@ -120,3 +122,4 @@ public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicacio
 
 
 }
+*/

@@ -5,12 +5,10 @@
     <item android:title="Inicio"
         android:id="@+id/menu_home"
         android:icon="@drawable/baseline_home_24"
-        android:iconTint="@color/azul"
         />
     <item android:title="Usuario"
         android:id="@+id/menu_usuario"
         android:icon="@drawable/baseline_person_24"
-        android:iconTint="@color/azul"
         />
 
 

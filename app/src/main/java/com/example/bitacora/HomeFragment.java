@@ -42,12 +42,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements AdaptadorActividades.OnActivityActionListener {
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
     String permisos;
 
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.125/android/mostrar.php";
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -307,14 +307,28 @@ public class HomeFragment extends Fragment {
     private String obtenerIDDesdeNombre(String nombreSeleccionado) {
         for (String actividad : nombresActividades) {
             if (actividad.equals(nombreSeleccionado)) {
-                // Dividir la cadena para obtener el ID (asumiendo que esté separado por ":")
+
                 String[] partes = actividad.split(":");
                 if (partes.length > 0) {
-                    return partes[0].trim(); // Devuelve el ID (eliminando espacios en blanco)
+                    return partes[0].trim();
                 }
             }
         }
-        return null; // Si no se encuentra el ID, puedes devolver null o un valor predeterminado
+        return null;
+    }
+
+
+
+    @Override
+    public void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad) {
+    //    EditarNombreActividad(ID_nombre_actividad, nuevoNombreActividad);
+
+
+    }
+
+    @Override
+    public void onDeleteActivity(String ID_nombre_actividad) {
+     //   EliminarNombreActividad(ID_nombre_actividad);
     }
 
 }

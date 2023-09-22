@@ -76,7 +76,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
     String siguienteEstado = "";
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.125/android/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -85,8 +85,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
-
-
 
 
     public AdaptadorActividades(List<JSONObject> data, Context context) {
@@ -138,7 +136,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 String nombre = jsonObject2.optString("nombre", "");
                 String correo = jsonObject2.optString("correo", "");
                 String telefono = jsonObject2.optString("telefono", "");
-                String foto_usuario= jsonObject2.optString("foto_usuario", "");
+                String foto_usuario = jsonObject2.optString("foto_usuario", "");
 
                 Bundle bundle = new Bundle();
                 bundle.putString("ID_actividad", ID_actividad);
@@ -155,8 +153,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 bundle.putString("foto_usuario", foto_usuario);
 
 
-
-                if(!permisosUsuario.equals("SUPERADMIN")){
+                if (!permisosUsuario.equals("SUPERADMIN")) {
                     holder.textNombreUsuario.setVisibility(View.GONE);
                     holder.textIdActividad.setVisibility(View.GONE);
                     holder.textTelefonoUsuario.setVisibility(View.GONE);
@@ -229,35 +226,35 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 @Override
                                 public void onClick(View v) {
 
-                                        // Crear un AlertDialog
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                        builder.setTitle("Confirmacion para mandar ubicaciòn");
-                                        builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
+                                    // Crear un AlertDialog
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                    builder.setTitle("Confirmacion para mandar ubicaciòn");
+                                    builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
 
-                                        // Agregar el botón de Aceptar
-                                        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                            @Override
+                                    // Agregar el botón de Aceptar
+                                    builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                        @Override
 
-                                            public void onClick(DialogInterface dialog, int which) {
+                                        public void onClick(DialogInterface dialog, int which) {
 
-                                                obtenerUbicacion(context, ID_usuario, ID_actividad);
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                            obtenerUbicacion(context, ID_usuario, ID_actividad);
+                                            dialog.dismiss();
+                                        }
+                                    });
 
-                                        // Agregar el botón de Cancelar
-                                        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // Cerrar el diálogo
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                    // Agregar el botón de Cancelar
+                                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Cerrar el diálogo
+                                            dialog.dismiss();
+                                        }
+                                    });
 
-                                        // Mostrar el diálogo
-                                        AlertDialog dialog = builder.create();
-                                        dialog.show();
-                                    }
+                                    // Mostrar el diálogo
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
 
                             });
 
@@ -452,7 +449,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     private void actualizarEstadoYVista(ViewHolder holder, String estadoActividad) {
         int colorVerde = ContextCompat.getColor(context, R.color.verde);
-        int fondoPersonalizado = R.drawable.roundedbackgroundgris;
+        // int fondoPersonalizado = R.drawable.roundedbackgroundgris;
 
         holder.textStatus.setText(estadoActividad);
         if (estadoActividad.equals("Pendiente")) {
@@ -483,11 +480,11 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         } else if (estadoActividad.equals("Cancelado")) {
             int colorRojo = ContextCompat.getColor(context, R.color.rojo);
             holder.textStatus.setTextColor(colorRojo);
-            holder.FrameActividades.setBackgroundResource(fondoPersonalizado);
+            //  holder.FrameActividades.setBackgroundResource(fondoPersonalizado);
         } else {
             int colorRojo = ContextCompat.getColor(context, R.color.rojo);
             holder.textStatus.setTextColor(colorRojo);
-            holder.FrameActividades.setBackgroundResource(fondoPersonalizado);
+            //     holder.FrameActividades.setBackgroundResource(fondoPersonalizado);
         }
     }
 
@@ -543,17 +540,24 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
             for (JSONObject item : data) {
                 String ID_actividad = item.optString("ID_actividad", "").toLowerCase();
-                String nombreActividad = item.optString("nombreActividad", "").toLowerCase();
+                String nombre_actividad = item.optString("nombre_actividad", "").toLowerCase();
                 String descripcionActividad = item.optString("descripcionActividad", "").toLowerCase();
                 String estadoActividad = item.optString("estadoActividad", "").toLowerCase();
                 String fecha_inicio = item.optString("fecha_inicio", "").toLowerCase();
                 String fecha_fin = item.optString("fecha_fin", "").toLowerCase();
 
+
+                String ID_usuario = item.optString("ID_usuario", "").toLowerCase();
+                String ID_nombre_actividad = item.optString("ID_nombre_actividad", "").toLowerCase();
+                String permisos = item.optString("permisos", "").toLowerCase();
+                String correo = item.optString("correo", "").toLowerCase();
+                String telefono = item.optString("telefono", "").toLowerCase();
+
                 boolean matchesAllKeywords = true;
 
                 for (String keyword : keywords) {
-                    if (!(estadoActividad.contains(keyword) || descripcionActividad.contains(keyword) || nombreActividad.contains(keyword) || ID_actividad.contains(keyword) ||
-                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword))) {
+                    if (!(estadoActividad.contains(keyword) || descripcionActividad.contains(keyword) || nombre_actividad.contains(keyword) || ID_actividad.contains(keyword) ||
+                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword)||ID_usuario.contains(keyword)  || ID_nombre_actividad.contains(keyword) || permisos.contains(keyword) || telefono.contains(keyword) || correo.contains(keyword))) {
                         matchesAllKeywords = false;
                         break;
                     }
@@ -734,6 +738,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         Volley.newRequestQueue(context).add(postrequest);
     }
+
     private void EliminarActividad(String ID_actividad, Context context) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -771,6 +776,26 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         }
         return null; // Si no se encuentra el ID, puedes devolver null o un valor predeterminado
     }
+
+
+
+    public interface OnActivityActionListener {
+        void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad);
+
+        void onDeleteActivity(String ID_nombre_actividad);
+    }
+
+
+    private AdaptadorActividades.OnActivityActionListener actionListener;
+
+    public AdaptadorActividades(List<JSONObject> data, Context context, AdaptadorActividades.OnActivityActionListener actionListener) {
+        this.data = data;
+        this.context = context;
+        this.filteredData = new ArrayList<>(data);
+        this.actionListener = actionListener; // Asigna el listener
+    }
+
+
 
 }
 

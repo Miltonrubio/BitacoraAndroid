@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/textStatus"
@@ -77,8 +77,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:hint="Actividad Realizada"
-                    android:textColor="@color/azul"
+                    android:text="Actividad Realizada"
+                    android:textColor="@color/naranjita"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 
@@ -119,10 +119,10 @@
                     android:id="@+id/textTelefonoUsuario"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Telefono usuario"
+                    android:text="Telefono usuario"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/naranjita"
                     android:textSize="15dp"
                     android:textStyle="bold" />
             </LinearLayout>

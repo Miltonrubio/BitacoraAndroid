@@ -81,7 +81,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     String ID_usuario, permisos, nombre, correo, telefono, foto_usuario;
 
-    String urlApi = "http://192.168.1.124/android/mostrar.php";
+    String urlApi = "http://192.168.1.125/android/mostrar.php";
 
 
     private AdaptadorActividades adaptadorActividades;
@@ -119,6 +119,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         adaptadorActividades = new AdaptadorActividades(dataList, requireContext());
         rvActividadesUsuario.setAdapter(adaptadorActividades);
 
+
+       ImageView IVFotoDeUsuario= view.findViewById(R.id.IVFotoDeUsuario);
+
+
         Bundle bundle = getArguments();
         if (bundle != null) {
 
@@ -131,10 +135,9 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
             TextView tvNombreActividad = view.findViewById(R.id.tvNombreActividad);
-            ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
             TextView tvRolDeUsuario = view.findViewById(R.id.tvRolDeUsuario);
 
-            String imagenUrl = "http://192.168.1.124/android/fotos/fotos_usuarios/" + foto_usuario;
+            String imagenUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
 
 
             Glide.with(this)
@@ -148,6 +151,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             ActividadesPorUsuario(ID_usuario);
         }
 
+
         fabBotonFlotante.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,6 +162,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
                         generarPDF(dataList);
                     } else {
+
                         generarPDF(datosDependiendoDeFecha);
                     }
 

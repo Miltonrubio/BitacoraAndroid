@@ -40,9 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ActividadesFragment extends Fragment {
+public class ActividadesFragment extends Fragment implements AdaptadorNombreActividades.OnActivityActionListener {
 
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.125/android/mostrar.php";
     private RecyclerView recyclerViewNombreActividades;
     private AdaptadorNombreActividades adaptadorNombreActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -65,7 +65,7 @@ public class ActividadesFragment extends Fragment {
         recyclerViewNombreActividades = view.findViewById(R.id.recyclerViewNombreActividades);
         recyclerViewNombreActividades.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adaptadorNombreActividades = new AdaptadorNombreActividades(dataList, requireContext());
+        adaptadorNombreActividades = new AdaptadorNombreActividades(dataList, requireContext(), this);
         recyclerViewNombreActividades.setAdapter(adaptadorNombreActividades);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
@@ -185,4 +185,67 @@ public class ActividadesFragment extends Fragment {
         Volley.newRequestQueue(requireContext()).add(postrequest);
     }
 
+
+    private void EditarNombreActividad(String ID_nombre_actividad, String nuevoNombreActividad) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // Aquí puedes realizar acciones adicionales si es necesario
+                Toast.makeText(requireContext(), "Editado con exito el " + ID_nombre_actividad, Toast.LENGTH_SHORT).show();
+                MostrarActividades();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "7");
+                params.put("ID_nombre_actividad", ID_nombre_actividad);
+                params.put("nuevoNombreActividad", nuevoNombreActividad);
+                return params;
+            }
+        };
+        Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+
+    private void EliminarNombreActividad(String ID_nombre_actividad) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(requireContext(), "Se elimino correctamente", Toast.LENGTH_SHORT).show();
+                MostrarActividades();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(requireContext(), "Error al eliminar", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "12");
+                params.put("ID_nombre_actividad", ID_nombre_actividad);
+                return params;
+            }
+        };
+        Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+
+    @Override
+    public void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad) {
+        EditarNombreActividad(ID_nombre_actividad, nuevoNombreActividad);
+    }
+
+    @Override
+    public void onDeleteActivity(String ID_nombre_actividad) {
+
+        EliminarNombreActividad(ID_nombre_actividad);
+    }
 }

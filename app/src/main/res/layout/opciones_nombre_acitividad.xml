@@ -47,7 +47,7 @@
         android:layout_marginTop="12dp"
         android:id="@+id/BotonActualizarNombre"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/azul"
+        android:backgroundTint="@color/naranjita"
         android:layout_height="60dp"
         android:text="Editar"
         android:visibility="gone"

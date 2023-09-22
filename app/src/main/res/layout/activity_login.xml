@@ -10,7 +10,7 @@
     android:elevation="4dp"
     android:padding="1dp"
     tools:context=".LoginActivity"
-    android:background="@color/black">
+    android:background="@color/white">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:text="Bienvenido"
-                android:textColor="@color/azul"
+                android:textColor="@color/naranjita"
                 android:textSize="36dp"
                 android:textStyle="bold"
                 android:gravity="left"
@@ -42,7 +42,7 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/logotaller"
+            android:src="@drawable/logo"
             android:layout_gravity="center"
             android:clickable="true"
             android:onClick="enviarACamara"
@@ -52,13 +52,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bitacora"
-                android:textColor="@color/azul"
+                android:text="Bitacora de actividades"
+                android:textColor="@color/naranjita"
                 android:textSize="30dp"
                 android:textStyle="bold"
                 android:layout_marginEnd="5dp"
@@ -80,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Ingresa con Correo o Telefono"
-                android:textColorHint="@color/azul"
+                android:textColorHint="@color/naranja"
                 android:textColor="#1A237E"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -101,7 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Contraseña"
-                android:textColorHint="@color/azul"
+                android:textColorHint="@color/naranja"
                 android:inputType="textPassword"
                 android:textColor="#1A237E"
                 android:textSize="16sp"
@@ -114,7 +115,7 @@
             android:id="@+id/btnLogear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/azul"
+            android:backgroundTint="@color/naranjita"
             android:paddingBottom="15dp"
             android:clickable="true"
             android:onClick="IniciarSession"
@@ -140,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Recordar datos"
-            android:textColor="@color/azul"
+            android:textColor="@color/naranjita"
             android:textSize="16sp"
             android:textStyle="bold" />
 

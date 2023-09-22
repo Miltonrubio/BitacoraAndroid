@@ -14,7 +14,7 @@
         android:layout_height="230dp"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
-        android:background="@color/gris"
+        android:backgroundTint="@color/azul"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -33,14 +33,6 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/btnEditar"
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:clickable="true"
-                android:contentDescription="Icono de Nombre"
-
-                android:src="@drawable/baseline_edit_24" />
 
             <EditText
                 android:id="@+id/tvNombreMecanico"
@@ -50,7 +42,7 @@
                 android:layout_margin="10dp"
                 android:enabled="false"
                 android:text="Usuario"
-                android:textColor="@color/azulito"
+                android:textColor="@color/naranjita"
                 android:textSize="32dp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -109,52 +101,9 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/customButton"
             android:layout_width="match_parent"
+            android:backgroundTint="@color/naranjita"
             android:layout_height="wrap_content"
             android:text="Cerrar Sesion"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:layout_gravity="center"/>
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:id="@+id/MandarAPrueba"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginBottom="20dp"
-        android:elevation="25dp"
-        >
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/customButtonMandarAPrueba"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Mandar a prueba"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:layout_gravity="center"/>
-
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/LayoutActualizarDatos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginBottom="20dp"
-        android:elevation="25dp"
-        >
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/BtnActualizarDatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Actualizad datos"
-            android:visibility="gone"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:layout_gravity="center"/>

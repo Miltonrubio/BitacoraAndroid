@@ -21,18 +21,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- ImageView a la izquierda -->
             <ImageView
-                android:layout_width="90dp"
+                android:id="@+id/fotoDeUsuario"
+                android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/baseline_person_24"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="Descripción de la imagen" />
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Descripción de la imagen"/>
 
-            <!-- LinearLayout para los TextViews -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -45,8 +43,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:hint="Nombre De Usuario"
-                    android:textColor="@color/azul"
+                    android:text="Nombre De Usuario"
+                    android:textColor="@color/naranjita"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 
@@ -71,11 +69,11 @@
                     android:id="@+id/textTelefonoUsuario"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Telefono usuario"
-                    android:paddingLeft="10dp"
                     android:gravity="right"
+                    android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:textColor="@color/black"
+                    android:text="Telefono usuario"
+                    android:textColor="@color/naranja"
                     android:textSize="15dp"
                     android:textStyle="bold" />
             </LinearLayout>

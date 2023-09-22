@@ -44,7 +44,7 @@ import java.util.Map;
 
 public class CrudUsuariosFragment extends Fragment {
 
-    String url = "http://192.168.1.124/android/mostrar.php";
+    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
     private RecyclerView recyclerViewUsuarios;
     private AdaptadorUsuarios adaptadorUsuarios;
     private List<JSONObject> dataList = new ArrayList<>();

@@ -4,7 +4,7 @@
     xmlns:map="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -41,7 +41,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="Nombre de usuario"
-                        android:textColor="@color/azulito"
+                        android:textColor="@color/naranjita"
                         android:textSize="22dp"
                         android:textStyle="bold" />
 
@@ -90,7 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:backgroundTint="@color/azul"
+                android:backgroundTint="@color/naranjita"
                 android:src="@drawable/baseline_date_range_24"
                 android:text="HOY"
                 app:elevation="6dp" />
@@ -109,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:backgroundTint="@color/azul"
+                android:backgroundTint="@color/naranjita"
                 android:src="@drawable/baseline_date_range_24"
                 android:text="MES"
                 app:elevation="6dp" />
@@ -130,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:backgroundTint="@color/azul"
+                android:backgroundTint="@color/naranjita"
                 android:src="@drawable/baseline_date_range_24"
                 android:text="AÑO"
                 app:elevation="6dp" />
@@ -153,6 +153,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
+            android:backgroundTint="@color/naranjita"
             android:layout_margin="16dp"
             android:src="@drawable/baseline_picture_as_pdf_24"
             app:elevation="6dp" />

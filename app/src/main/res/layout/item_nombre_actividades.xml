@@ -37,8 +37,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:hint="NombreDeActividad"
-                    android:textColor="@color/azul"
+                    android:text="NombreDeActividad"
+                    android:textColor="@color/naranjita"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 

@@ -135,7 +135,7 @@ public class PruebaActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://192.168.1.114/milton/bitacoraPHP/mostrar.php")
+                    .url("http://192.168.1.113/milton/bitacoraPHP/mostrar.php")
                     .post(requestBody)
                     .build();
 

@@ -55,12 +55,7 @@ public class UsuarioFragment extends Fragment {
         EditText tvCorreo = view.findViewById(R.id.tvCorreo);
         EditText tvRol = view.findViewById(R.id.tvRol);
 
-        ImageView btnEditar = view.findViewById(R.id.btnEditar);
-
         Button customButton = view.findViewById(R.id.customButton);
-        Button BtnActualizarDatos = view.findViewById(R.id.BtnActualizarDatos);
-
-        Button customButtonMandarAPrueba = view.findViewById(R.id.customButtonMandarAPrueba);
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
@@ -78,33 +73,6 @@ public class UsuarioFragment extends Fragment {
         tvNombreMecanico.setText(nombre);
 
 
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-/*
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("Selecciona el nuevo estado de la actividad");
-
-                View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.spinner_dropdown_item, null);
-
-                LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
-                LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
-                LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
-
-                builder.setView(customView);
-
-                final AlertDialog dialog = builder.create();
-
-
-                builder.setNegativeButton("Cancelar", null);
-
-                dialog.show(); // Muestra el diálogo
-            }
-*/
-
-            }
-        });
-
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,13 +80,6 @@ public class UsuarioFragment extends Fragment {
             }
         });
 
-        customButtonMandarAPrueba.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                IrAPrueba();
-            }
-        });
         return view;
     }
 

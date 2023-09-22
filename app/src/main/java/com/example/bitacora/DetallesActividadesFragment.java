@@ -77,7 +77,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
     String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
 
-    String urlApi = "http://192.168.1.124/android/mostrar.php";
+    String urlApi = "http://192.168.1.125/android/mostrar.php";
 
     private Handler sliderHandler = new Handler();
 

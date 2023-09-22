@@ -31,6 +31,8 @@
 
     </LinearLayout>
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,7 +141,7 @@
         android:visibility="gone"
         android:text="Actualizar Usuario"
         android:textSize="22sp"
-        android:backgroundTint="@color/azul"
+        android:backgroundTint="@color/naranjita"
         android:layout_marginBottom="25dp"
         />
 
@@ -149,9 +151,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
-
-
-
         android:layout_marginTop="25dp"
         android:clickable="true"
         android:orientation="horizontal">
@@ -169,6 +168,41 @@
             android:text="Eliminar"
             android:textSize="30dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LayoutActualizarFoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_photo_camera_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Actualizar Foto"
+            android:textSize="30dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_marginTop="12dp"
+        android:id="@+id/BotonActualizarFotoUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Actualizar foto"
+        android:visibility="gone"
+        android:textSize="22sp"
+        android:backgroundTint="@color/naranjita"
+        android:layout_marginBottom="25dp"
+        />
 
     <LinearLayout
         android:id="@+id/LayoutVerActividades"
@@ -191,5 +225,7 @@
             android:text="Ver Actividades"
             android:textSize="30dp" />
     </LinearLayout>
+
+
 
 </LinearLayout>
