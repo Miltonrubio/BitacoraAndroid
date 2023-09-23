@@ -81,7 +81,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     String ID_usuario, permisos, nombre, correo, telefono, foto_usuario;
 
-    String urlApi = "http://192.168.1.125/android/mostrar.php";
+    String urlApi = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
 
 
     private AdaptadorActividades adaptadorActividades;
@@ -327,7 +327,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
             document.open();
 
-            Drawable drawable = getResources().getDrawable(R.drawable.logotaller);
+            Drawable drawable = getResources().getDrawable(R.drawable.logo);
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             Bitmap bitmap = bitmapDrawable.getBitmap();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

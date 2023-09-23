@@ -79,7 +79,8 @@ import android.Manifest;
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
 
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String urlImagen="http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -138,9 +139,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                 setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
                 setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
 
-
-
-                String imageUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+                String image = urlImagen+ID_usuario+".jpg";
 
                 RequestOptions options = new RequestOptions()
                         .placeholder(R.drawable.imagendefault)
@@ -148,7 +147,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         .diskCacheStrategy(DiskCacheStrategy.NONE);
 
                 Glide.with(holder.itemView.getContext())
-                        .load(imageUrl)
+                        .load(image)
                         .apply(options)
                         .into(holder.fotoDeUsuario);
 
@@ -231,7 +230,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                         String nuevoRolUsuario = opcionesActualizarRol.getSelectedItem().toString();
 
 
-                                 EditarUsuario(ID_usuario, nuevoNombreUsuario,nuevoCorreoUsuario , nuevaClaveUsuario ,nuevOTelefonoUsuario ,nuevoRolUsuario, view.getContext(), holder, dialogConBotones);
+                              //   EditarUsuario(ID_usuario, nuevoNombreUsuario,nuevoCorreoUsuario , nuevaClaveUsuario ,nuevOTelefonoUsuario ,nuevoRolUsuario, view.getContext(), holder, dialogConBotones);
+                                actionListener.onEditarUsuarioActivity(ID_usuario, nuevoNombreUsuario,nuevoCorreoUsuario , nuevaClaveUsuario ,nuevOTelefonoUsuario ,nuevoRolUsuario);
+                                dialogConBotones.dismiss();
                                     }
                                 });
 
@@ -274,22 +275,20 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                 builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        // Llamar al método para eliminar
-                                        EliminarUsuario(ID_usuario, view.getContext(), holder);
+
+                                   //     EliminarUsuario(ID_usuario, view.getContext(), holder);
+                                        actionListener.onEliminarUsuarioActivity(ID_usuario);
                                         dialogConBotones.dismiss();
                                     }
                                 });
 
-                                // Agregar el botón de Cancelar
                                 builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        // Cerrar el diálogo
                                         dialog.dismiss();
                                     }
                                 });
 
-                                // Mostrar el diálogo
                                 AlertDialog dialog = builder.create();
                                 dialog.show();
                             }
@@ -328,8 +327,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
     @Override
     public int getItemCount() {
-
-        //return filteredData.size();
         return filteredData.isEmpty() ? 1 : filteredData.size();
 
     }
@@ -410,69 +407,22 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         }
     }
 
-    private void EditarUsuario(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario, Context context, AdaptadorUsuarios.ViewHolder holder, AlertDialog dialog) {
+    public interface OnActivityActionListener {
+     void   onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario);
 
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                // Aquí puedes realizar acciones adicionales si es necesario
-                Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
-                notifyDataSetChanged();
-                dialog.dismiss();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "15");
-                params.put("ID_usuario", ID_usuario);
-                params.put("permisos", rolUsuario);
-                params.put("nombre", nombreUsuario);
-                params.put("correo", correoUsuario);
-                params.put("clave", claveUsuario);
-                params.put("telefono", telefonoUsuario);
-                return params;
-            }
-        };
+     void  onEliminarUsuarioActivity(String ID_usuario);
+    }
 
-        Volley.newRequestQueue(context).add(postrequest);
+    private AdaptadorUsuarios.OnActivityActionListener actionListener;
+
+    public AdaptadorUsuarios(List<JSONObject> data, Context context, AdaptadorUsuarios.OnActivityActionListener actionListener) {
+        this.data = data;
+        this.context = context;
+        this.filteredData = new ArrayList<>(data);
+        this.actionListener = actionListener;
     }
 
 
-
-
-    private void EliminarUsuario(String ID_usuario, Context context, AdaptadorUsuarios.ViewHolder holder) {
-
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                // Aquí puedes realizar acciones adicionales si es necesario
-                Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
-                notifyDataSetChanged();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "16");
-                params.put("ID_usuario", ID_usuario);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
 
 
 }

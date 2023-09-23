@@ -71,7 +71,7 @@ import android.Manifest;
 
 
 public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNombreActividades.ViewHolder> {
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
     private Context context;
@@ -143,8 +143,9 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                                     public void onClick(View view) {
                                         LayoutEliminar.setVisibility(View.GONE);
                                         String nuevoNombreActividad = editTextNombreActividad.getText().toString();
-                                        dialogConBotones.dismiss();
+
                                         actionListener.onEditActivity(ID_nombre_actividad, nuevoNombreActividad);
+                                        dialogConBotones.dismiss();
                                     }
                                 });
 
@@ -258,10 +259,8 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
 
     public interface OnActivityActionListener {
         void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad);
-
         void onDeleteActivity(String ID_nombre_actividad);
     }
-
 
     private OnActivityActionListener actionListener;
 

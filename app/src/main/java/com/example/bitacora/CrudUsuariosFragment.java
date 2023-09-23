@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CrudUsuariosFragment extends Fragment {
+public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
 
     String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
     private RecyclerView recyclerViewUsuarios;
@@ -67,7 +67,7 @@ public class CrudUsuariosFragment extends Fragment {
         recyclerViewUsuarios = view.findViewById(R.id.recyclerViewUsuarios);
         recyclerViewUsuarios.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adaptadorUsuarios = new AdaptadorUsuarios(dataList, requireContext());
+        adaptadorUsuarios = new AdaptadorUsuarios(dataList, requireContext(), this);
         recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
@@ -205,6 +205,83 @@ public class CrudUsuariosFragment extends Fragment {
                 Map<String, String> params = new HashMap<>();
                 params.put("opcion", "14");
                 params.put("permisos", permisos);
+                params.put("nombre", nombreUsuario);
+                params.put("correo", correoUsuario);
+                params.put("clave", claveUsuario);
+                params.put("telefono", telefonoUsuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+
+
+    @Override
+    public void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario) {
+        EditarUsuario(ID_usuario, nombreUsuario, correoUsuario, claveUsuario, telefonoUsuario, rolUsuario);
+    }
+
+
+
+
+    @Override
+    public void onEliminarUsuarioActivity(String ID_usuario) {
+        EliminarUsuario(ID_usuario);
+    }
+
+
+    private void EliminarUsuario(String ID_usuario) {
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                MostrarUsuarios();
+                Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "16");
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+
+
+
+    private void EditarUsuario(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario) {
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // Aquí puedes realizar acciones adicionales si es necesario
+                Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+                MostrarUsuarios();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "15");
+                params.put("ID_usuario", ID_usuario);
+                params.put("permisos", rolUsuario);
                 params.put("nombre", nombreUsuario);
                 params.put("correo", correoUsuario);
                 params.put("clave", claveUsuario);

@@ -177,11 +177,10 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             tvNombreActividad.setText(nombre_actividad);
             tvDetallesActividad.setText(descripcionActividad);
             tvEstadoActividad.setText(estadoActividad);
+
+            mapView.onCreate(savedInstanceState);
+            mapView.getMapAsync(this);
         }
-
-
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
 
         return view;
     }

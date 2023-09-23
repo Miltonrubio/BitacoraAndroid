@@ -42,7 +42,7 @@
                 android:layout_gravity="right"
                 android:layout_weight="2"
                 android:gravity="right"
-                android:hint="Fecha de Actividad"
+                android:hint="Aun no se inicia la actividad"
                 android:textSize="14sp" />
         </LinearLayout>
 

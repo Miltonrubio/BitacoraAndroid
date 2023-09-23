@@ -42,7 +42,7 @@ import java.util.Map;
 
 public class ActividadesFragment extends Fragment implements AdaptadorNombreActividades.OnActivityActionListener {
 
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
     private RecyclerView recyclerViewNombreActividades;
     private AdaptadorNombreActividades adaptadorNombreActividades;
     private List<JSONObject> dataList = new ArrayList<>();

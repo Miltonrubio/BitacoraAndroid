@@ -76,7 +76,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
     String siguienteEstado = "";
-    String url = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -114,7 +114,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         Context context = holder.itemView.getContext();
 
-        // Accede a las SharedPreferences
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
 
 
@@ -161,7 +160,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                 setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
                 setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
-                // Crear un objeto SimpleDateFormat para el formato deseado
+
                 SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                 SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
 
@@ -225,13 +224,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-
-                                    // Crear un AlertDialog
                                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                                     builder.setTitle("Confirmacion para mandar ubicaciòn");
                                     builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
 
-                                    // Agregar el botón de Aceptar
                                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                         @Override
 
@@ -242,11 +238,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         }
                                     });
 
-                                    // Agregar el botón de Cancelar
                                     builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            // Cerrar el diálogo
                                             dialog.dismiss();
                                         }
                                     });
@@ -274,7 +268,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                             builder.setNegativeButton("Cancelar", null);
 
-                            dialog.show(); // Muestra el diálogo
+                            dialog.show();
                         }
                     });
                 } else {
@@ -346,7 +340,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         @Override
                                         public void onClick(View v) {
                                             String selectedEstado = "Pendiente";
-                                            ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                          //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                            dialog.dismiss();
                                         }
                                     });
 
@@ -354,7 +350,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         @Override
                                         public void onClick(View v) {
                                             String selectedEstado = "Iniciado";
-                                            ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                            //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                            dialog.dismiss();
+
                                         }
                                     });
 
@@ -362,7 +361,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         @Override
                                         public void onClick(View v) {
                                             String selectedEstado = "Finalizado";
-                                            ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                            //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                            dialog.dismiss();
                                         }
                                     });
                                 }
@@ -378,8 +379,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                     SpinnerNombreActividad.setVisibility(View.VISIBLE);
                                     editextDescripcionActividad.setVisibility(View.VISIBLE);
                                     BotonActualizarActividad.setVisibility(View.VISIBLE);
-
-
                                     BotonActualizarActividad.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
@@ -389,8 +388,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                                 String descripcionActividad = editextDescripcionActividad.getText().toString();
                                                 String selectedID = obtenerIDDesdeNombre(valorActividadSpinner);
 
-                                                EditarActividad(ID_actividad, selectedID, descripcionActividad, view.getContext());
+                                              //  EditarActividad(ID_actividad, selectedID, descripcionActividad, view.getContext());
 
+                                                actionListener.onEditActivity(ID_actividad, selectedID, descripcionActividad);
+                                                dialog.dismiss();
                                             } else {
                                                 // Mostrar un mensaje de error o realizar la acción deseada
                                                 Toast.makeText(view.getContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
@@ -413,7 +414,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         @Override
 
                                         public void onClick(DialogInterface dialog, int which) {
-                                            EliminarActividad(ID_actividad, view.getContext());
+                                      //      EliminarActividad(ID_actividad, view.getContext());
+
+                                            actionListener.onDeleteActivity(ID_actividad);
                                             dialog.dismiss();
                                         }
                                     });
@@ -446,6 +449,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             }
         }
     }
+
 
     private void actualizarEstadoYVista(ViewHolder holder, String estadoActividad) {
         int colorVerde = ContextCompat.getColor(context, R.color.verde);
@@ -586,39 +590,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         }
     }
 
-    private void ActualizarEstado(String ID_actividad, String nuevoEstado, Context context, ViewHolder holder, AlertDialog dialog) {
-
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                // Aquí puedes realizar acciones adicionales si es necesario
-                Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
-
-                // Llama al método para actualizar el estado y la vista
-                actualizarEstadoYVista(holder, nuevoEstado);
-                notifyDataSetChanged();
-                // Cierra el diálogo después de la respuesta exitosa
-                dialog.dismiss();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "5");
-                params.put("ID_actividad", ID_actividad);
-                params.put("nuevoEstado", nuevoEstado);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-
     private void obtenerUbicacion(Context context, String ID_usuario, String ID_actividad) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
@@ -635,7 +606,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
 
-                            MandarUbicacion(ID_usuario, ID_actividad, longitude, latitude, context);
+                            //MandarUbicacion(ID_usuario, ID_actividad, longitude, latitude, context);
+                            actionListener.onMandarUbicacionActicity(ID_usuario, ID_actividad, longitude, latitude);
 
                         } else {
                             Toast.makeText(context, "No se pudo obtener la ubicación.", Toast.LENGTH_SHORT).show();
@@ -644,38 +616,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 });
     }
 
-
-    private void MandarUbicacion(String ID_usuario, String ID_actividad, Double longitud, Double latitud, Context context) {
-
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(context, "Exito", Toast.LENGTH_SHORT).show();
-                notifyDataSetChanged();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "8");
-                params.put("ID_actividad", ID_actividad);
-                params.put("ID_usuario", ID_usuario);
-                params.put("longitud", longitud.toString());
-                params.put("latitud", latitud.toString());
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-
-
     private void VerNombresActividades(Context context) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -683,12 +623,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-                    nombresActividades.clear(); // Limpia la lista antes de agregar los nuevos nombres
+                    nombresActividades.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String ID_nombre_actividad = jsonObject.getString("ID_nombre_actividad");
                         String nombre_actividad = jsonObject.getString("nombre_actividad");
-                        nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad); // Agrega el ID y nombre de la actividad a la lista
+                        nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -712,89 +652,41 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         Volley.newRequestQueue(context).add(postrequest);
     }
 
-    private void EditarActividad(String ID_actividad, String ID_nombre_actividad, String descripcionActividad, Context context) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(context, "Actualizacion exitosa", Toast.LENGTH_SHORT).show();
-                notifyDataSetChanged();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Hubo un error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "17");
-                params.put("ID_nombre_actividad", ID_nombre_actividad);
-                params.put("descripcionActividad", descripcionActividad);
-                params.put("ID_actividad", ID_actividad);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-
-    private void EliminarActividad(String ID_actividad, Context context) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(context, "Eliminacion exitosa", Toast.LENGTH_SHORT).show();
-                notifyDataSetChanged();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Hubo un error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "18");
-                params.put("ID_actividad", ID_actividad);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-
     private String obtenerIDDesdeNombre(String nombreSeleccionado) {
         for (String actividad : nombresActividades) {
             if (actividad.equals(nombreSeleccionado)) {
-                // Dividir la cadena para obtener el ID (asumiendo que esté separado por ":")
                 String[] partes = actividad.split(":");
                 if (partes.length > 0) {
-                    return partes[0].trim(); // Devuelve el ID (eliminando espacios en blanco)
+                    return partes[0].trim();
                 }
             }
         }
-        return null; // Si no se encuentra el ID, puedes devolver null o un valor predeterminado
+        return null;
     }
 
 
 
     public interface OnActivityActionListener {
-        void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad);
 
-        void onDeleteActivity(String ID_nombre_actividad);
+        void onEditActivity(String ID_actividad, String ID_nombre_actividad, String descripcionActividad) ;
+
+        void onDeleteActivity(String ID_actividad);
+
+        void onMandarUbicacionActicity(String ID_usuario, String ID_actividad, Double longitud, Double latitud);
+
+        void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado);
     }
 
 
     private AdaptadorActividades.OnActivityActionListener actionListener;
 
+
     public AdaptadorActividades(List<JSONObject> data, Context context, AdaptadorActividades.OnActivityActionListener actionListener) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
-        this.actionListener = actionListener; // Asigna el listener
+        this.actionListener = actionListener;
     }
-
 
 
 }
