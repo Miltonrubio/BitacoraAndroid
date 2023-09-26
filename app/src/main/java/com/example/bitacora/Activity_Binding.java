@@ -28,16 +28,13 @@ public class Activity_Binding extends AppCompatActivity {
         binding = ActivityBindingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        replaceFragment(new HomeFragment());
         if ("SUPERADMIN".equals(permisosUsuario)) {
 
+            replaceFragment(new CrudUsuariosFragment());
             getMenuInflater().inflate(R.menu.menu_admin, binding.bottomNavigationView.getMenu());
 
             binding.bottomNavigationView.setOnItemSelectedListener(item -> {
                 switch (item.getItemId()) {
-                    case (R.id.menuadmin_home):
-                        replaceFragment(new HomeFragment());
-                        break;
                     case (R.id.menu_admin_usuarios):
                         replaceFragment(new UsuarioFragment());
                         break;
@@ -52,7 +49,7 @@ public class Activity_Binding extends AppCompatActivity {
             });
 
         } else {
-            // Usuario normal, inflar el menú normal
+            replaceFragment(new HomeFragment());
             getMenuInflater().inflate(R.menu.menu, binding.bottomNavigationView.getMenu());
 
             binding.bottomNavigationView.setOnItemSelectedListener(item -> {

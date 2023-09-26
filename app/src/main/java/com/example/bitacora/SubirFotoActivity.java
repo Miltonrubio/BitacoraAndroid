@@ -70,7 +70,7 @@ public class SubirFotoActivity extends AppCompatActivity {
 
     private Handler sliderHandler = new Handler();
 
-    private String urlApi = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    private String urlApi = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
     ViewPager2 viewPager2;
     private CameraManager cameraManager;
@@ -100,6 +100,7 @@ public class SubirFotoActivity extends AppCompatActivity {
 
         Button btnGuardarFoto = findViewById(R.id.guardarFoto);
         TextView txtId = findViewById(R.id.txtId);
+        TextView txtDesc= findViewById(R.id.txtDesc);
         Button fotoDesdeGaleria = findViewById(R.id.fotoDesdeGaleria);
         viewPager2 = findViewById(R.id.ViewPagerImagenes);
         imagenDesdeGaleriaIM = findViewById(R.id.imagenDesdeGaleriaIM);
@@ -112,11 +113,14 @@ public class SubirFotoActivity extends AppCompatActivity {
         if (receivedBundle != null) {
             idActividad = receivedBundle.getString("ID_actividad");
             ID_usuario = receivedBundle.getString("ID_usuario");
+            String  nombre_actividad = receivedBundle.getString("nombre_actividad");
+            String  descripcionActividad = receivedBundle.getString("descripcionActividad");
 
-            txtId.setText("ID_actividad" + idActividad);
+            txtId.setText("Estas actualizando la actividad: " + nombre_actividad);
+            txtDesc.setText(descripcionActividad);
+
             CargarImagenes();
         }
-
         fotoDesdeGaleria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -219,7 +223,7 @@ public class SubirFotoActivity extends AppCompatActivity {
             Bitmap imageBitmap = bitmaps[0];
 
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+            String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
             String nombreArchivo = "imagen" + System.currentTimeMillis() + ".jpg";
             File imageFile = bitmapToFile(imageBitmap, "image.jpg");
@@ -276,7 +280,7 @@ public class SubirFotoActivity extends AppCompatActivity {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
                                     String nombreFoto = fotoObj.getString("nombreFoto");
 
-                                    String fotoUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/";
+                                    String fotoUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/";
 
                                     slideItems.add(new SlideItem(fotoUrl + nombreFoto));
                                 }

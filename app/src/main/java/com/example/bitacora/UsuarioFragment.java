@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bitacora.MainActivity;
 import com.example.bitacora.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -54,6 +56,9 @@ public class UsuarioFragment extends Fragment {
         EditText tvNombreMecanico = view.findViewById(R.id.tvNombreMecanico);
         EditText tvCorreo = view.findViewById(R.id.tvCorreo);
         EditText tvRol = view.findViewById(R.id.tvRol);
+        EditText tvTel= view.findViewById(R.id.tvTel);
+        ImageView ImagenSesionIniciada=  view.findViewById(R.id.ImagenSesionIniciada);
+
 
         Button customButton = view.findViewById(R.id.customButton);
 
@@ -65,13 +70,26 @@ public class UsuarioFragment extends Fragment {
         String estado = sharedPreferences.getString("estado", "");
         String correo = sharedPreferences.getString("correo", "");
         String clave = sharedPreferences.getString("clave", "");
+        String telefono = sharedPreferences.getString("telefono", "");
         String permisos = sharedPreferences.getString("permisos", "");
 
 
-        tvRol.setText(permisos);
-        tvCorreo.setText(correo);
-        tvNombreMecanico.setText(nombre);
 
+        String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+
+        Glide.with(requireContext())
+                .load(image)
+                .skipMemoryCache(true) // Desactiva la caché en memoria
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva la caché en disco
+                .placeholder(R.drawable.imagendefault)
+                .error(R.drawable.imagendefault)
+                .into(ImagenSesionIniciada);
+
+
+        tvRol.setText("Tipo de empleado: "+permisos+ " " +ID_usuario);
+        tvCorreo.setText("Correo: " + correo);
+        tvTel.setText("Telefono: " + telefono);
+        tvNombreMecanico.setText(nombre);
 
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,16 +102,19 @@ public class UsuarioFragment extends Fragment {
     }
 
     private void cerrarSesion() {
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("correo");
-        editor.remove("clave");
-        editor.remove("rememberMe");
-        editor.apply();
 
-        Intent intent = new Intent(requireContext(), MainActivity.class);
-        startActivity(intent);
-        requireActivity().finish();
+        if (isAdded()) {
+            SharedPreferences sharedPreferences = requireContext().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("correo");
+            editor.remove("clave");
+            editor.remove("rememberMe");
+            editor.apply();
+
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+        }
     }
 
     public void IrAPrueba() {

@@ -1,10 +1,14 @@
 package com.example.bitacora;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,15 +31,17 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import android.Manifest;
 public class LoginActivity extends AppCompatActivity {
 
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
     private RequestQueue rq;
     Context context;
 
     TextView inputUsername, inputPassword;
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 1;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
 
     CheckBox checkBoxRememberMe;
 
@@ -44,6 +50,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST_CODE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Si no se ha otorgado, solicitar el permiso cuando sea necesario.
+        }
             context = this;
             rq = Volley.newRequestQueue(context);
             inputUsername = findViewById(R.id.correoET);
@@ -66,7 +84,47 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        private void guardarCredenciales(String ID_usuario, String nombre, String clave, String telefono, String correo, String permisos, boolean rememberMe) {
+    public void onRequestLocation(View view) {
+        // Verificar si el permiso de ubicación está otorgado nuevamente antes de usarlo
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Acceder a la ubicación aquí, por ejemplo, iniciar una actividad para obtener la ubicación.
+        } else {
+            // Si el permiso no está otorgado, solicitarlo.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            // Verifica si el permiso de la cámara se otorgó
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("Permiso de cámara: ", "Otorgado");
+            } else {
+                Log.d("Permiso de cámara: ", "Denegado");
+            }
+        } else if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            // Verifica si el permiso de ubicación se otorgó
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("Permiso de ubicación: ", "Otorgado");
+                // Puedes iniciar el seguimiento de ubicación o realizar acciones relacionadas con la ubicación aquí.
+            } else {
+                Log.d("Permiso de ubicación: ", "Denegado");
+                // Puedes mostrar un mensaje al usuario indicando que algunas funciones de la aplicación no estarán disponibles sin el permiso de ubicación.
+            }
+        }
+    }
+
+
+
+
+    private void guardarCredenciales(String ID_usuario, String nombre, String clave, String telefono, String correo, String permisos, boolean rememberMe) {
 
             SharedPreferences sharedPreferences = getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -96,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                 Login(correo, clave);
             }
         }
+
 
 
         private void Login(String correo, String clave) {

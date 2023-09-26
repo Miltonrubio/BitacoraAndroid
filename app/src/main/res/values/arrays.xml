@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="opciones_rol">
+        <item>VENDEDOR/A</item>
+        <item>CAJERO/A</item>
+        <item>BODEGUERO/A</item>
+        <item>BECARIO/A</item>
+        <item>OFICINISTA</item>
+        <item>CARGADOR/A</item>
         <item>SUPERADMIN</item>
-        <item>USUARIO</item>
     </string-array>
 </resources>

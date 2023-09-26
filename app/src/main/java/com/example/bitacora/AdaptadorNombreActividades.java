@@ -71,7 +71,7 @@ import android.Manifest;
 
 
 public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNombreActividades.ViewHolder> {
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
     private Context context;
@@ -107,34 +107,36 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                 String ID_nombre_actividad = jsonObject2.optString("ID_nombre_actividad", "");
                 String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
                 setTextViewText(holder.TextNombreDeActividad, nombre_actividad, "Nombre de actividad no disponible");
+
+
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                         builder.setTitle("Que desea hacer con:  " + nombre_actividad + " ?");
 
-                        // Inflar el diseño personalizado con tres botones
                         View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_nombre_acitividad, null);
 
-                        // Obtener referencias a los botones en el diseño personalizado
                         LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
 
                         builder.setView(customView);
 
-                        // Crear el diálogo
                         final AlertDialog dialogConBotones = builder.create();
 
-                        // Configurar los botones según tus necesidades
+
+
+
                         LayoutEditar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                // Hacer visible el EditText
+
                                 EditText editTextNombreActividad = customView.findViewById(R.id.editTextNombreActividad);
+                                editTextNombreActividad.setText(nombre_actividad);
                                 Button BotonActualizarNombre = customView.findViewById(R.id.BotonActualizarNombre);
                                 editTextNombreActividad.setVisibility(View.VISIBLE);
                                 BotonActualizarNombre.setVisibility(View.VISIBLE);
-
+                                LayoutEliminar.setVisibility(View.GONE);
 
                                 dialogConBotones.show(); // Muestra el diálogo
 
@@ -163,8 +165,6 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                                 builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        // Llamar al método para eliminar
-                                     //   EliminarNombreActividad(ID_nombre_actividad, view.getContext(), holder);
 
                                         actionListener.onDeleteActivity(ID_nombre_actividad);
                                         dialogConBotones.dismiss();
@@ -259,6 +259,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
 
     public interface OnActivityActionListener {
         void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad);
+
         void onDeleteActivity(String ID_nombre_actividad);
     }
 

@@ -42,7 +42,7 @@ import java.util.Map;
 
 public class ActividadesFragment extends Fragment implements AdaptadorNombreActividades.OnActivityActionListener {
 
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
     private RecyclerView recyclerViewNombreActividades;
     private AdaptadorNombreActividades adaptadorNombreActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -65,7 +65,9 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
         recyclerViewNombreActividades = view.findViewById(R.id.recyclerViewNombreActividades);
         recyclerViewNombreActividades.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adaptadorNombreActividades = new AdaptadorNombreActividades(dataList, requireContext(), this);
+        if (isAdded()) {
+            adaptadorNombreActividades = new AdaptadorNombreActividades(dataList, requireContext(), this);
+        }
         recyclerViewNombreActividades.setAdapter(adaptadorNombreActividades);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
@@ -164,14 +166,19 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             @Override
             public void onResponse(String response) {
 
-                Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                }
                 MostrarActividades();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -190,15 +197,19 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                // Aquí puedes realizar acciones adicionales si es necesario
-                Toast.makeText(requireContext(), "Editado con exito el " + ID_nombre_actividad, Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Editado con exito el " + ID_nombre_actividad, Toast.LENGTH_SHORT).show();
+                }
                 MostrarActividades();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -217,14 +228,20 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(requireContext(), "Se elimino correctamente", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Se elimino correctamente", Toast.LENGTH_SHORT).show();
+                }
                 MostrarActividades();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Error al eliminar", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error al eliminar", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {

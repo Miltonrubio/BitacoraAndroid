@@ -52,23 +52,8 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fotos_actividades, parent, false);
         SlideViewHolder viewHolder = new SlideViewHolder(view);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = viewHolder.getAdapterPosition();
-                SlideItem clickedItem = slideItems.get(position);
-
-
-                if (position != RecyclerView.NO_POSITION) {
-                 //   showAlertDialog(parent.getContext(), position, clickedItem);
-                  Toast.makeText(parent.getContext(), clickedItem.getImage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
         return viewHolder;
     }
-
 
 
     @Override
@@ -135,7 +120,7 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
             public void onClick(DialogInterface dialog, int which) {
                 Uri uri = Uri.parse(imageUri);
                 String fileName = uri.getLastPathSegment();
-        //        cambiarImagenPrincipal(context, fileName);
+                //        cambiarImagenPrincipal(context, fileName);
             }
         });
 

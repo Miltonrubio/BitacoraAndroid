@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:scrollbars="none"
     android:paddingTop="20dp"
-    android:paddingBottom="30dp"
+    android:paddingBottom="15dp"
     android:elevation="4dp"
     android:padding="1dp"
     tools:context=".LoginActivity"
@@ -40,8 +40,8 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@drawable/logo"
             android:layout_gravity="center"
             android:clickable="true"
@@ -131,7 +131,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:layout_marginTop="12dp"
             >
 
         </com.google.android.material.textfield.TextInputLayout>

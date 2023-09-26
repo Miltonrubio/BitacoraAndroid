@@ -44,7 +44,7 @@ import java.util.Map;
 
 public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
 
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
     private RecyclerView recyclerViewUsuarios;
     private AdaptadorUsuarios adaptadorUsuarios;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -67,7 +67,9 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         recyclerViewUsuarios = view.findViewById(R.id.recyclerViewUsuarios);
         recyclerViewUsuarios.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adaptadorUsuarios = new AdaptadorUsuarios(dataList, requireContext(), this);
+        if (isAdded()) {
+            adaptadorUsuarios = new AdaptadorUsuarios(dataList, requireContext(), this);
+        }
         recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
@@ -187,9 +189,15 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             public void onResponse(String response) {
 
                 if ( response.equals("Error: El correo, nombre o teléfono ya existen en la base de datos.")){
-                    Toast.makeText(requireContext(), "No puedes insertar Datos repetidos", Toast.LENGTH_SHORT).show();
+
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "No puedes insertar Datos repetidos", Toast.LENGTH_SHORT).show();
+                    }
                 }else {
-                    Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                    }
                     MostrarUsuarios();
                 }
 
@@ -198,7 +206,10 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "No se insertò el usuario", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "No se insertò el usuario", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -238,13 +249,19 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             @Override
             public void onResponse(String response) {
                 MostrarUsuarios();
-                Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -266,15 +283,20 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                // Aquí puedes realizar acciones adicionales si es necesario
-                Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+                }
                 MostrarUsuarios();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {

@@ -2,21 +2,15 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Inicio"
-        android:id="@+id/menuadmin_home"
-        android:icon="@drawable/baseline_home_24"
-        android:iconTint="@color/azul"
-        />
-
-    <item android:title="Actividades"
-        android:id="@+id/menuadmin_actividades"
-        android:icon="@drawable/baseline_checklist_24"
-        android:iconTint="@color/azul"
-        />
-
-    <item android:title="Agregar Usuarios"
+    <item android:title="Lista de Usuarios"
         android:id="@+id/menu_admin_agregar_usuarios"
         android:icon="@drawable/baseline_person_add_24"
+        android:iconTint="@color/azul"
+        />
+
+    <item android:title="Lista de Actividades"
+        android:id="@+id/menuadmin_actividades"
+        android:icon="@drawable/baseline_checklist_24"
         android:iconTint="@color/azul"
         />
 

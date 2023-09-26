@@ -45,20 +45,72 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="75dp"
+        android:id="@+id/LayoutBotones"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:id="@+id/frameLayoutHoy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btnPendientes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/naranjita"
+                android:src="@drawable/baseline_date_range_24"
+                android:text="Pendientes"
+                app:elevation="6dp" />
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:id="@+id/frameLayoutAnio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btnFinalizadas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/naranjita"
+                android:src="@drawable/baseline_date_range_24"
+                android:text="Finalizadas"
+                app:elevation="6dp" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFragmentArrastres"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/yourConstraintLayoutId" />
 
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/botonAgregarActividad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/naranjita"
-        android:layout_alignParentBottom="true"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+        android:backgroundTint="@color/naranjita"
         android:src="@drawable/baseline_library_add_24" />
 
 </RelativeLayout>

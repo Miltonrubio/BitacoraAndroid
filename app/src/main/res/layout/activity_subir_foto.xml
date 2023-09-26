@@ -16,12 +16,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:gravity="center"
             android:text="MODIFICANDO:"
             android:textColor="@color/naranjita"
             android:textSize="24dp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/txtDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:text="Descripcion:"
+            android:textColor="@color/naranjita"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
         <androidx.viewpager2.widget.ViewPager2

@@ -62,7 +62,7 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
 
     private Handler sliderHandler = new Handler();
 
-    private String urlApi = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    private String urlApi = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
     ImageView IMGFotoPerfil;
     private CameraManager cameraManager;
@@ -103,7 +103,7 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
 
             txtId.setText("Actualizando a " + ID_usuario+" "+ nombre);
 
-            String imageUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+            String imageUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
 
             RequestOptions options = new RequestOptions()
                     .placeholder(R.drawable.imagendefault)
@@ -112,6 +112,8 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
 
             Glide.with(this)
                     .load(imageUrl)
+                    .skipMemoryCache(true) // Desactiva la caché en memoria
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva la caché en disco
                     .apply(options)
                     .into(IMGFotoPerfil);
 
@@ -219,7 +221,6 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
             Bitmap imageBitmap = bitmaps[0];
 
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
 
             String nombreArchivo = "imagen" + System.currentTimeMillis() + ".jpg";
             File imageFile = bitmapToFile(imageBitmap, "image.jpg");
@@ -232,7 +233,7 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
                             RequestBody.create(MediaType.parse("image/jpeg"), imageFile))
                     .build();
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(urlApi)
                     .post(requestBody)
                     .build();
             try {
@@ -258,5 +259,6 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
 
 }

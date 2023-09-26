@@ -47,6 +47,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -81,10 +82,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     String ID_usuario, permisos, nombre, correo, telefono, foto_usuario;
 
-    String urlApi = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String urlApi = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
 
-    private AdaptadorActividades adaptadorActividades;
+    private AdaptadorActividadesPorUsuario adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
 
     List<JSONObject> datosDependiendoDeFecha = new ArrayList<>();
@@ -110,17 +111,18 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_actividades_por_usuario, container, false);
         RecyclerView rvActividadesUsuario;
         FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
         rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
         rvActividadesUsuario.setLayoutManager(new LinearLayoutManager(getContext()));
-        adaptadorActividades = new AdaptadorActividades(dataList, requireContext());
+        if (isAdded()) {
+            adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, requireContext());
+        }
         rvActividadesUsuario.setAdapter(adaptadorActividades);
 
 
-       ImageView IVFotoDeUsuario= view.findViewById(R.id.IVFotoDeUsuario);
+        ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
 
 
         Bundle bundle = getArguments();
@@ -137,11 +139,14 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             TextView tvNombreActividad = view.findViewById(R.id.tvNombreActividad);
             TextView tvRolDeUsuario = view.findViewById(R.id.tvRolDeUsuario);
 
-            String imagenUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+
+            String imagenUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
 
             Glide.with(this)
                     .load(imagenUrl)
+                    .skipMemoryCache(true) // Desactiva la caché en memoria
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva la caché en disco
                     .placeholder(R.drawable.imagendefault) // Imagen por defecto
                     .error(R.drawable.imagendefault) // Imagen por defecto en caso de error
                     .into(IVFotoDeUsuario);
@@ -156,8 +161,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (checkPermission()) {
-                    Toast.makeText(requireContext(), "Permiso aceptado", Toast.LENGTH_SHORT).show();
 
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Permiso aceptado", Toast.LENGTH_SHORT).show();
+                    }
                     if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
 
                         generarPDF(dataList);
@@ -183,7 +190,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         btnFiltrarPorMes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Lógica para mostrar los datos del mes actual
                 mostrarDatosDelMesActual();
             }
         });
@@ -192,7 +198,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         btnFiltrarDeHOY.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Lógica para mostrar los datos del mes actual
                 mostrarDatosDelDiaDeHoy();
             }
         });
@@ -200,7 +205,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         btnFiltrarDelAnio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Lógica para mostrar los datos del mes actual
                 mostrarDatosDelAnioActual();
             }
         });
@@ -218,12 +222,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
         for (JSONObject jsonObject : dataList) {
             try {
-                // Analiza la fecha de inicio de la actividad en el JSON
                 String fechaInicio = jsonObject.getString("fecha_inicio");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date fecha = sdf.parse(fechaInicio);
 
-                // Verifica si la actividad está en el día de hoy
                 Calendar actividadCalendar = Calendar.getInstance();
                 actividadCalendar.setTime(fecha);
                 int actividadYear = actividadCalendar.get(Calendar.YEAR);
@@ -238,7 +240,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
-        // Actualiza la lista de datos en el adaptador y notifica el cambio
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
 
@@ -247,20 +248,19 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
     private void mostrarDatosDelMesActual() {
-        reiniciarDatosDependiendoDeFecha(); // Reiniciar la lista
+        reiniciarDatosDependiendoDeFecha();
         // Obtiene la fecha actual
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1; // Los meses en Calendar van de 0 a 11
+        int month = calendar.get(Calendar.MONTH) + 1;
 
         for (JSONObject jsonObject : dataList) {
             try {
-                // Analiza la fecha de inicio de la actividad en el JSON
+
                 String fechaInicio = jsonObject.getString("fecha_inicio");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date fecha = sdf.parse(fechaInicio);
 
-                // Verifica si la actividad está en el mes actual
                 Calendar actividadCalendar = Calendar.getInstance();
                 actividadCalendar.setTime(fecha);
                 int actividadYear = actividadCalendar.get(Calendar.YEAR);
@@ -274,25 +274,21 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
-        // Actualiza la lista de datos en el adaptador y notifica el cambio
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
 
     private void mostrarDatosDelAnioActual() {
-        reiniciarDatosDependiendoDeFecha(); // Reiniciar la lista
-        // Obtiene la fecha actual
+        reiniciarDatosDependiendoDeFecha();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
 
         for (JSONObject jsonObject : dataList) {
             try {
-                // Analiza la fecha de inicio de la actividad en el JSON
                 String fechaInicio = jsonObject.getString("fecha_inicio");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date fecha = sdf.parse(fechaInicio);
 
-                // Verifica si la actividad está en el año actual
                 Calendar actividadCalendar = Calendar.getInstance();
                 actividadCalendar.setTime(fecha);
                 int actividadYear = actividadCalendar.get(Calendar.YEAR);
@@ -305,7 +301,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
-        // Actualiza la lista de datos en el adaptador y notifica el cambio
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
@@ -320,7 +315,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Document document = new Document();
 
         try {
-            File pdfFile = new File(requireContext().getExternalFilesDir(null), "ReporteDeActividades "+ nombre+".pdf");
+            File pdfFile = new File(requireContext().getExternalFilesDir(null), "ReporteDeActividades " + nombre + ".pdf");
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
             PageEventHandler eventHandler = new PageEventHandler();
             writer.setPageEvent(eventHandler);
@@ -348,14 +343,9 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             float cellPadding = 10f;
             float cellPaddingUser = 5f;
 
-
-
             document.add(image);
             document.add(spaceBelowImage);
 
-
-
-            // Crear una nueva tabla para la información del usuario
             PdfPTable userInfoTable = new PdfPTable(2);
             userInfoTable.setWidthPercentage(55);
 
@@ -393,23 +383,17 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             phoneCell.setPadding(cellPaddingUser);
             userInfoTable.addCell(phoneCell);
 
-// Agregar la tabla de información del usuario al documento
             document.add(userInfoTable);
 
-// Agregar una separación entre las dos tablas (opcional, ajusta según tus preferencias)
             document.add(new Paragraph(" "));
 
 
             document.add(title);
             document.add(spaceBelowTitle);
 
-
-// Crear una tabla con 4 columnas
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
 
-
-// Agregar encabezados de columna con fondo de color
             PdfPCell headerCell1 = new PdfPCell(new Paragraph("Nombre de la actividad"));
             headerCell1.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
             headerCell1.setPadding(cellPadding);
@@ -430,7 +414,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             headerCell4.setPadding(cellPadding);
             table.addCell(headerCell4);
 
-// Iterar sobre los datos y agregar filas a la tabla
             JSONArray jsonArray = new JSONArray(responseData);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -440,7 +423,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 String fechaInicio = jsonObject.getString("fecha_inicio");
                 String estadoActividad = jsonObject.getString("estadoActividad");
 
-                // Agregar una fila con los datos y configurar el espacio en las celdas
                 PdfPCell cell1 = new PdfPCell(new Paragraph(nombreActividad));
                 cell1.setPadding(cellPadding);
                 table.addCell(cell1);
@@ -458,15 +440,20 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 table.addCell(cell4);
             }
 
-// Agregar la tabla al documento
             document.add(table);
 
             document.close();
             compartirPDF(pdfFile);
-            Toast.makeText(requireContext(), "Se creó el PDF correctamente", Toast.LENGTH_SHORT).show();
+
+            if (isAdded()) {
+                Toast.makeText(requireContext(), "Se creó el PDF correctamente", Toast.LENGTH_SHORT).show();
+            }
 
         } catch (IOException | DocumentException | JSONException e) {
-            Toast.makeText(requireContext(), "No se pudo crear el PDF", Toast.LENGTH_SHORT).show();
+
+            if (isAdded()) {
+                Toast.makeText(requireContext(), "No se pudo crear el PDF", Toast.LENGTH_SHORT).show();
+            }
             e.printStackTrace();
         }
     }
@@ -481,6 +468,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     private void compartirPDF(File file) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/pdf");
+
         Uri uri = FileProvider.getUriForFile(requireContext(), "com.example.bitacora.fileprovider", file);
 
         intent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -499,8 +487,9 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     private void requestPermissions() {
 
-        ActivityCompat.requestPermissions(requireActivity(), new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
-
+        if (isAdded()) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
+        }
     }
 
 
@@ -514,9 +503,14 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
                 if (writeStore && readStorage) {
 
-                    Toast.makeText(requireContext(), "Permiso concedido", Toast.LENGTH_SHORT).show();
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Permiso concedido", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(requireContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
+
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }

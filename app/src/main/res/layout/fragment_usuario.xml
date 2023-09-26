@@ -23,6 +23,7 @@
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:layout_gravity="center"
+            android:id="@+id/ImagenSesionIniciada"
             android:src="@drawable/baseline_person_24" />
 
         <LinearLayout
@@ -81,6 +82,23 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:text="Rol"
+        android:textColor="@color/azulito"
+        style="@style/EditTextNoBorder"
+        android:textSize="26dp"
+        tools:ignore="NotSibling" />
+
+    <EditText
+        android:id="@+id/tvTel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCorreo"
+        android:layout_centerHorizontal="true"
+        android:enabled="false"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="Telefono"
         android:textColor="@color/azulito"
         style="@style/EditTextNoBorder"
         android:textSize="26dp"

@@ -1,18 +1,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:layout_marginTop="15dp">
+    android:padding="20dp">
+
     <LinearLayout
         android:id="@+id/LayoutVerDetalles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-
         android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="50dp"
@@ -71,4 +72,27 @@
             android:text="Mandar Evidencia"
             android:textSize="30dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LayoutFinalizarActividad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_done_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Finalizar actividad"
+            android:textSize="30dp" />
+    </LinearLayout>
+
 </LinearLayout>

@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -49,6 +50,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.bitacora.databinding.ActivitySubirFotoBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -76,12 +79,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
     String siguienteEstado = "";
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
     private Context context;
-
+    String IDSesionIniciada;
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
@@ -96,14 +99,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-
         if (viewType == VIEW_TYPE_ITEM) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_actividades, parent, false);
             return new ViewHolder(view);
         } else {
 
-            View errorView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_error, parent, false);
+            View errorView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_noactiviadadesusuario, parent, false);
             return new ViewHolder(errorView);
         }
 
@@ -115,10 +116,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         Context context = holder.itemView.getContext();
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-
-
         String permisosUsuario = sharedPreferences.getString("permisos", "");
-
+        String nombresesioniniciada = sharedPreferences.getString("nombre", "");
+        IDSesionIniciada = sharedPreferences.getString("ID_usuario", "");
 
         if (getItemViewType(position) == VIEW_TYPE_ITEM) {
             try {
@@ -161,8 +161,19 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
                 setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
 
+
                 SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
+                SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy HH:mm", Locale.getDefault());
+                SimpleDateFormat formatoFin = new SimpleDateFormat("'Finalizada el ' dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
+
+                try {
+                    Date fecha = formatoOriginal.parse(fecha_fin);
+                    String fechaFormateada = formatoFin.format(fecha);
+
+                    setTextViewText(holder.textFechaFin, fechaFormateada, "Fecha no disponible");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 try {
                     Date fecha = formatoOriginal.parse(fecha_inicio);
@@ -178,7 +189,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 actualizarEstadoYVista(holder, estadoActividad);
 
                 setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
-                setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad no disponible");
+                setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad sin descripcion");
 
                 if (ID_actividad.isEmpty() || ID_actividad.equals("null")) {
 
@@ -188,7 +199,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 }
 
 
-                if (estadoActividad.equals("Finalizado")) {
+                if (estadoActividad.equals("Iniciado")) {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -200,9 +211,48 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
                             LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
                             LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                            LinearLayout LayoutFinalizarActividad = customView.findViewById(R.id.LayoutFinalizarActividad);
 
                             builder.setView(customView);
                             final AlertDialog dialog = builder.create();
+
+                            if (!IDSesionIniciada.equals(ID_usuario)) {
+                                LayoutMandarUbicacion.setVisibility(View.GONE);
+                                LayoutMandarFoto.setVisibility(View.GONE);
+                                LayoutFinalizarActividad.setVisibility(View.GONE);
+                                LayoutVerDetalles.setVisibility(View.VISIBLE);
+                            }
+
+                            LayoutFinalizarActividad.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                    builder.setTitle("¿ESTAS SEGURO DE QUE DESEAS FINALIZAR ESTA ACTIVIDAD?");
+                                    builder.setMessage("\n\n\nRecuerda que no podras enviar evidencia una vez finalizada la actividad\n\n\n");
+
+                                    builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String selectedEstado = "Finalizado";
+                                            //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                                    // Mostrar el diálogo
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
+
+                            });
 
 
                             LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +271,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                     dialog.dismiss();
                                 }
                             });
+
                             LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -235,6 +286,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                                             obtenerUbicacion(context, ID_usuario, ID_actividad);
                                             dialog.dismiss();
+
                                         }
                                     });
 
@@ -271,7 +323,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             dialog.show();
                         }
                     });
-                } else {
+                } else if (estadoActividad.equals("Pendiente")) {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -285,6 +337,15 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
                             LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
                             LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+
+                            LayoutVerDetalles.setVisibility(View.GONE);
+                            if (!IDSesionIniciada.equals(ID_usuario)) {
+                                LayoutEditar.setVisibility(View.GONE);
+                                LayoutEliminar.setVisibility(View.GONE);
+                                LayoutActualizarEstado.setVisibility(View.GONE);
+                                LayoutVerDetalles.setVisibility(View.VISIBLE);
+                            }
+
 
                             Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
                             EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
@@ -301,6 +362,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                             SpinnerNombreActividad.setAdapter(spinnerAdapter);
+                            SpinnerNombreActividad.setSelection(0);
 
                             LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -319,141 +381,146 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 }
                             });
 
-                            LayoutActualizarEstado.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    LayoutActualizarEstado.setVisibility(View.GONE);
-                                    LayoutEditar.setVisibility(View.GONE);
-                                    LayoutEliminar.setVisibility(View.GONE);
-
-                                    if (estadoActividad.equals("Pendiente")) {
-                                        LayoutFinalizado.setVisibility(View.VISIBLE);
-                                        LayoutIniciado.setVisibility(View.VISIBLE);
-                                    } else if (estadoActividad.equals("Iniciado")) {
-                                        LayoutPendiente.setVisibility(View.VISIBLE);
-                                        LayoutFinalizado.setVisibility(View.VISIBLE);
-                                    }
+                            if (IDSesionIniciada.equals(ID_usuario) && estadoActividad.equals("Pendiente")) {
 
 
-                                    LayoutPendiente.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            String selectedEstado = "Pendiente";
-                                          //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
-                                            dialog.dismiss();
+                                LayoutActualizarEstado.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        LayoutActualizarEstado.setVisibility(View.GONE);
+                                        LayoutEditar.setVisibility(View.GONE);
+                                        LayoutEliminar.setVisibility(View.GONE);
+
+                                        if (estadoActividad.equals("Pendiente")) {
+                                            LayoutFinalizado.setVisibility(View.GONE);
+                                            LayoutIniciado.setVisibility(View.VISIBLE);
+                                        } else if (estadoActividad.equals("Iniciado")) {
+                                            LayoutPendiente.setVisibility(View.GONE);
+                                            LayoutFinalizado.setVisibility(View.VISIBLE);
                                         }
-                                    });
 
-                                    LayoutIniciado.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            String selectedEstado = "Iniciado";
-                                            //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
-                                            dialog.dismiss();
 
-                                        }
-                                    });
-
-                                    LayoutFinalizado.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            String selectedEstado = "Finalizado";
-                                            //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
-                                            dialog.dismiss();
-                                        }
-                                    });
-                                }
-                            });
-
-                            LayoutEditar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    editextDescripcionActividad.setText(descripcionActividad);
-                                    LayoutEditar.setVisibility(View.GONE);
-                                    LayoutEliminar.setVisibility(View.GONE);
-                                    LayoutActualizarEstado.setVisibility(View.GONE);
-                                    SpinnerNombreActividad.setVisibility(View.VISIBLE);
-                                    editextDescripcionActividad.setVisibility(View.VISIBLE);
-                                    BotonActualizarActividad.setVisibility(View.VISIBLE);
-                                    BotonActualizarActividad.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            // Verificar si se seleccionó el hint
-                                            String valorActividadSpinner = SpinnerNombreActividad.getSelectedItem().toString();
-                                            if (!valorActividadSpinner.equals("Selecciona una opción")) {
-                                                String descripcionActividad = editextDescripcionActividad.getText().toString();
-                                                String selectedID = obtenerIDDesdeNombre(valorActividadSpinner);
-
-                                              //  EditarActividad(ID_actividad, selectedID, descripcionActividad, view.getContext());
-
-                                                actionListener.onEditActivity(ID_actividad, selectedID, descripcionActividad);
+                                        LayoutPendiente.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                String selectedEstado = "Pendiente";
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
                                                 dialog.dismiss();
-                                            } else {
-                                                // Mostrar un mensaje de error o realizar la acción deseada
-                                                Toast.makeText(view.getContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
                                             }
-                                        }
-                                    });
+                                        });
 
-                                }
-                            });
+                                        LayoutIniciado.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                String selectedEstado = "Iniciado";
+                                                //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                                dialog.dismiss();
 
-                            LayoutEliminar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Crear un AlertDialog
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                    builder.setTitle("Confirmar Eliminación");
-                                    builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
+                                            }
+                                        });
 
-                                    builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                        @Override
+                                        LayoutFinalizado.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                String selectedEstado = "Finalizado";
+                                                //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                    }
+                                });
 
-                                        public void onClick(DialogInterface dialog, int which) {
-                                      //      EliminarActividad(ID_actividad, view.getContext());
+                                LayoutEditar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        editextDescripcionActividad.setText(descripcionActividad);
+                                        LayoutEditar.setVisibility(View.GONE);
+                                        LayoutEliminar.setVisibility(View.GONE);
+                                        LayoutActualizarEstado.setVisibility(View.GONE);
+                                        SpinnerNombreActividad.setVisibility(View.VISIBLE);
+                                        editextDescripcionActividad.setVisibility(View.VISIBLE);
+                                        BotonActualizarActividad.setVisibility(View.VISIBLE);
+                                        BotonActualizarActividad.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                String valorActividadSpinner = SpinnerNombreActividad.getSelectedItem().toString();
+                                                if (!valorActividadSpinner.equals("Selecciona una opción")) {
+                                                    String descripcionActividad = editextDescripcionActividad.getText().toString();
+                                                    String selectedID = obtenerIDDesdeNombre(valorActividadSpinner);
 
-                                            actionListener.onDeleteActivity(ID_actividad);
-                                            dialog.dismiss();
-                                        }
-                                    });
+                                                    actionListener.onEditActivity(ID_actividad, selectedID, descripcionActividad);
+                                                    dialog.dismiss();
+                                                } else {
+                                                    Toast.makeText(view.getContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
 
-                                    // Agregar el botón de Cancelar
-                                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            // Cerrar el diálogo
-                                            dialog.dismiss();
-                                        }
-                                    });
+                                    }
+                                });
 
-                                    // Mostrar el diálogo
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-                                }
-                            });
+                                LayoutEliminar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                        builder.setTitle("Confirmar Eliminación");
+                                        builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
 
+                                        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                            @Override
+
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //      EliminarActividad(ID_actividad, view.getContext());
+
+                                                actionListener.onDeleteActivity(ID_actividad);
+                                                dialog.dismiss();
+                                            }
+                                        });
+
+                                        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
+                                    }
+                                });
+                            }
                             builder.setNegativeButton("Cancelar", null);
 
-                            dialog.show(); // Muestra el diálogo
+                            dialog.show();
                         }
                     });
+
+                } else if (estadoActividad.equals("Finalizado")) {
 
                 }
 
             } finally {
 
             }
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    holder.errorMessageTextView.setText("¡Bienvenido " + nombresesioniniciada + "!");
+                    holder.errorMessageTextView.setVisibility(View.VISIBLE);
+                    holder.myButton.setVisibility(View.VISIBLE);
+
+                }
+            }, 2500);
         }
     }
 
 
     private void actualizarEstadoYVista(ViewHolder holder, String estadoActividad) {
         int colorVerde = ContextCompat.getColor(context, R.color.verde);
-        // int fondoPersonalizado = R.drawable.roundedbackgroundgris;
 
         holder.textStatus.setText(estadoActividad);
         if (estadoActividad.equals("Pendiente")) {
@@ -472,23 +539,19 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             holder.EstadoIniciado.setVisibility(View.VISIBLE);
             holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
             holder.textStatus.setTextColor(colorNegro);
-            siguienteEstado = "Finalizado";
 
         } else if (estadoActividad.equals("Finalizado")) {
             holder.EstadoPendiente.setVisibility(View.INVISIBLE);
             holder.EstadoIniciado.setVisibility(View.INVISIBLE);
             holder.EstadoFinalizado.setVisibility(View.VISIBLE);
             holder.textStatus.setTextColor(colorVerde);
-            siguienteEstado = "Pendiente";
 
         } else if (estadoActividad.equals("Cancelado")) {
             int colorRojo = ContextCompat.getColor(context, R.color.rojo);
             holder.textStatus.setTextColor(colorRojo);
-            //  holder.FrameActividades.setBackgroundResource(fondoPersonalizado);
         } else {
             int colorRojo = ContextCompat.getColor(context, R.color.rojo);
             holder.textStatus.setTextColor(colorRojo);
-            //     holder.FrameActividades.setBackgroundResource(fondoPersonalizado);
         }
     }
 
@@ -508,10 +571,13 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad;
+        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
         FrameLayout FrameActividades;
 
         ImageView IMNoInternet, EstadoFinalizado, EstadoIniciado, EstadoPendiente;
+
+        TextView errorMessageTextView;
+        Button myButton;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -529,8 +595,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             EstadoFinalizado = itemView.findViewById(R.id.EstadoFinalizado);
             EstadoIniciado = itemView.findViewById(R.id.EstadoIniciado);
             EstadoPendiente = itemView.findViewById(R.id.EstadoPendiente);
+            textFechaFin = itemView.findViewById(R.id.textFechaFin);
 
-
+            myButton = itemView.findViewById(R.id.myButton);
+            errorMessageTextView = itemView.findViewById(R.id.errorMessageTextView);
         }
     }
 
@@ -561,7 +629,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                 for (String keyword : keywords) {
                     if (!(estadoActividad.contains(keyword) || descripcionActividad.contains(keyword) || nombre_actividad.contains(keyword) || ID_actividad.contains(keyword) ||
-                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword)||ID_usuario.contains(keyword)  || ID_nombre_actividad.contains(keyword) || permisos.contains(keyword) || telefono.contains(keyword) || correo.contains(keyword))) {
+                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword) || ID_usuario.contains(keyword) || ID_nombre_actividad.contains(keyword) || permisos.contains(keyword) || telefono.contains(keyword) || correo.contains(keyword))) {
                         matchesAllKeywords = false;
                         break;
                     }
@@ -665,10 +733,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     }
 
 
-
     public interface OnActivityActionListener {
 
-        void onEditActivity(String ID_actividad, String ID_nombre_actividad, String descripcionActividad) ;
+        void onEditActivity(String ID_actividad, String ID_nombre_actividad, String descripcionActividad);
 
         void onDeleteActivity(String ID_actividad);
 

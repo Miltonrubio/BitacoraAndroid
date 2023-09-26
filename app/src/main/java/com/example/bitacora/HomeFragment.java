@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -44,7 +45,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,14 +62,14 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
     String permisos;
     String ID_usuario;
-
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
+
+    List<JSONObject> datosDependiendoDeFecha = new ArrayList<>();
     private EditText editTextBusqueda;
     private FloatingActionButton botonAgregarActividad;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,13 +82,24 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        VerNombresActividades();
+        if (isAdded()) {
+            VerNombresActividades();
+        }
+
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerView = view.findViewById(R.id.recyclerViewFragmentArrastres);
+
+        Button btnFinalizadas= view.findViewById(R.id.btnFinalizadas);
+        Button btnPendientes= view.findViewById(R.id.btnPendientes);
+
+        LinearLayout LayoutBotones=view.findViewById(R.id.LayoutBotones);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adaptadorActividades = new AdaptadorActividades(dataList, requireContext(), this);
-        // adaptadorActividades = new AdaptadorActividades(dataList, requireContext());
+        if (isAdded()) {
+
+            adaptadorActividades = new AdaptadorActividades(dataList, requireContext(), this);
+        }
         recyclerView.setAdapter(adaptadorActividades);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
@@ -109,19 +125,27 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         });
 
 
-        if (permisos.equals("SUPERADMIN")) {
-            MostrarActividades();
-        } else {
-            ActividadesPorUsuario(ID_usuario);
-        }
+        ActividadesPorUsuario(ID_usuario);
 
 
-        botonAgregarActividad.setVisibility(View.VISIBLE);
+        btnPendientes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActividadesPorUsuario(ID_usuario);
+            }
+        });
+
+        btnFinalizadas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActividadesFinalizadas(ID_usuario);
+            }
+        });
+
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // Crear el AlertDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.insertar_actividad, null);
@@ -139,7 +163,10 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     int posicionCliente = spinnerAdapter.getPosition(primerCliente);
                     spinnerNmbreActividades.setSelection(posicionCliente);
                 } else {
-                    Toast.makeText(requireContext(), "Hubo un error al obtener los datos", Toast.LENGTH_SHORT).show();
+
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Hubo un error al obtener los datos", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
 
@@ -155,8 +182,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                             String descripcionActividad = editText2.getText().toString();
                             AgregarActividad(selectedID, descripcionActividad, ID_usuario);
                         } else {
-                            // Mostrar un mensaje de error o realizar la acción deseada
-                            Toast.makeText(requireContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
+                            if (isAdded()) {
+                                Toast.makeText(requireContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
@@ -170,6 +198,67 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     }
 
+    private void reiniciarDatosDependiendoDeFecha() {
+        datosDependiendoDeFecha.clear();
+    }
+
+    private void mostrarDatosDelDiaDeHoy() {
+        reiniciarDatosDependiendoDeFecha();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        for (JSONObject jsonObject : dataList) {
+            try {
+                String fechaInicio = jsonObject.getString("fecha_fin");
+                String estadoActividad = jsonObject.getString("estadoActividad"); // Obtener el estado de la actividad
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date fecha = sdf.parse(fechaInicio);
+
+                Calendar actividadCalendar = Calendar.getInstance();
+                actividadCalendar.setTime(fecha);
+                int actividadYear = actividadCalendar.get(Calendar.YEAR);
+                int actividadMonth = actividadCalendar.get(Calendar.MONTH) + 1;
+                int actividadDay = actividadCalendar.get(Calendar.DAY_OF_MONTH);
+
+                if (estadoActividad.equals("Finalizado") && actividadYear == year && actividadMonth == month && actividadDay == day) {
+                    datosDependiendoDeFecha.add(jsonObject);
+                }
+
+            } catch (JSONException | ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
+        adaptadorActividades.notifyDataSetChanged();
+    }
+
+
+
+    private void mostrarActividadesPendientes() {
+        reiniciarDatosDependiendoDeFecha();
+
+        for (JSONObject jsonObject : dataList) {
+            try {
+                String estadoActividad = jsonObject.getString("estadoActividad"); // Obtener el estado de la actividad
+
+
+                if (estadoActividad.equals("Iniciado")|| estadoActividad.equals("Pendiente")) {
+                    datosDependiendoDeFecha.add(jsonObject);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
+        adaptadorActividades.notifyDataSetChanged();
+    }
+
 
     private void ActividadesPorUsuario(String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -178,18 +267,20 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     dataList.clear();
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dataList.add(jsonObject); // Agrega cada objeto JSON a la lista
+
+                        dataList.add(jsonObject);
                     }
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
-
+                mostrarActividadesPendientes();
+                  //  mostrarDatosDelDiaDeHoy();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                editTextBusqueda.setText("");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -209,25 +300,27 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    private void MostrarActividades() {
+    private void ActividadesFinalizadas(String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     dataList.clear();
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dataList.add(jsonObject); // Agrega cada objeto JSON a la lista
+
+                        dataList.add(jsonObject);
                     }
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
-
+                    mostrarDatosDelDiaDeHoy();
+                    //  mostrarDatosDelDiaDeHoy();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                editTextBusqueda.setText("");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -237,7 +330,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "3");
+                params.put("opcion", "2");
+                params.put("ID_usuario", ID_usuario);
                 return params;
             }
         };
@@ -250,20 +344,20 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
-                Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
-                if (permisos.equals("SUPERADMIN")) {
-                    MostrarActividades();
-                } else {
-                    ActividadesPorUsuario(ID_usuario);
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
                 }
+
+                    ActividadesPorUsuario(ID_usuario);
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -285,12 +379,12 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             public void onResponse(String response) {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-                    nombresActividades.clear(); // Limpia la lista antes de agregar los nuevos nombres
+                    nombresActividades.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String ID_nombre_actividad = jsonObject.getString("ID_nombre_actividad");
                         String nombre_actividad = jsonObject.getString("nombre_actividad");
-                        nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad); // Agrega el ID y nombre de la actividad a la lista
+                        nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -301,7 +395,10 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -343,28 +440,29 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    public void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado){
+    public void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado) {
         ActualizarEstado(ID_actividad, nuevoEstado);
     }
-
 
 
     private void EliminarActividad(String ID_actividad) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if (permisos.equals("SUPERADMIN")) {
-                    MostrarActividades();
-                } else {
+
                     ActividadesPorUsuario(ID_usuario);
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Eliminacion exitosa", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(requireContext(), "Eliminacion exitosa", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -383,19 +481,20 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if (permisos.equals("SUPERADMIN")) {
-                    MostrarActividades();
-                } else {
                     ActividadesPorUsuario(ID_usuario);
-                }
 
-                Toast.makeText(requireContext(), "Actualizacion exitosa", Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Actualizacion exitosa", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -407,29 +506,29 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 return params;
             }
         };
-
         Volley.newRequestQueue(requireContext()).add(postrequest);
     }
-
 
     private void MandarUbicacion(String ID_usuario, String ID_actividad, Double longitud, Double latitud) {
 
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if (permisos.equals("SUPERADMIN")) {
-                    MostrarActividades();
-                } else {
                     ActividadesPorUsuario(ID_usuario);
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {
@@ -452,19 +551,21 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if (permisos.equals("SUPERADMIN")) {
-                    MostrarActividades();
-                } else {
                     ActividadesPorUsuario(ID_usuario);
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {

@@ -75,9 +75,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
     String apiKey = "AIzaSyCkF9dXkDa3GjKlrLUdLc7BEx5031MELDQ";
 
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
-
-    String urlApi = "http://192.168.1.125/android/mostrar.php";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
     private Handler sliderHandler = new Handler();
 
@@ -120,14 +118,15 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
         ViewPagerImagenesEvidencia = view.findViewById(R.id.ViewPagerImagenesEvidencia);
 
-        int colorBlanco = ContextCompat.getColor(requireContext(), R.color.white);
-        int colorAmarillo = ContextCompat.getColor(requireContext(), R.color.amarillo);
-        int colorVerde = ContextCompat.getColor(requireContext(), R.color.verde);
-        int colorRojo = ContextCompat.getColor(requireContext(), R.color.rojo);
-        int colorAzulito = ContextCompat.getColor(requireContext(), R.color.azulitoSuave);
-        int colorNegro = ContextCompat.getColor(requireContext(), R.color.black);
-        int colorGris = ContextCompat.getColor(requireContext(), R.color.gris);
-
+        if (isAdded()) {
+            int colorBlanco = ContextCompat.getColor(requireContext(), R.color.white);
+            int colorAmarillo = ContextCompat.getColor(requireContext(), R.color.amarillo);
+            int colorVerde = ContextCompat.getColor(requireContext(), R.color.verde);
+            int colorRojo = ContextCompat.getColor(requireContext(), R.color.rojo);
+            int colorAzulito = ContextCompat.getColor(requireContext(), R.color.azulitoSuave);
+            int colorNegro = ContextCompat.getColor(requireContext(), R.color.black);
+            int colorGris = ContextCompat.getColor(requireContext(), R.color.gris);
+        }
         Bundle bundle = getArguments();
         if (bundle != null) {
             String ID_actividad = bundle.getString("ID_actividad", "");
@@ -200,7 +199,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
                                     String nombreFoto = fotoObj.getString("nombreFoto");
-                                    String fotoUrl = "http://192.168.1.113/milton/bitacoraPHP/fotos/";
+                                    String fotoUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/";
                                     slideItems.add(new SlideItem(fotoUrl + nombreFoto));
                                 }
 
@@ -265,7 +264,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
 
     private void CargarUbicaciones(String ID_actividad) {
-        StringRequest stringRequest3 = new StringRequest(Request.Method.POST, urlApi,
+        StringRequest stringRequest3 = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -379,7 +378,6 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             // Manejar el caso en el que markerList esté vacío
             // Puedes centrar el mapa en una ubicación predeterminada o mostrar un mensaje de error, por ejemplo.
             Log.d("MARKERLIST: ", "El markerlist está vacío");
-            mapView.setVisibility(View.GONE);
         }
     }
 

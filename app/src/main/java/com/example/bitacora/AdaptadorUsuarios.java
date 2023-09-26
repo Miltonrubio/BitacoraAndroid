@@ -53,6 +53,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.bitacora.databinding.ActivitySubirFotoBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -79,8 +80,8 @@ import android.Manifest;
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
 
-    String url = "http://192.168.1.113/milton/bitacoraPHP/mostrar.php";
-    String urlImagen="http://192.168.1.113/milton/bitacoraPHP/fotos/fotos_usuarios/fotoperfilusuario";
+    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String urlImagen="http://hidalgo.no-ip.info:5610/bitacora/";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -139,16 +140,16 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                 setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
                 setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
 
-                String image = urlImagen+ID_usuario+".jpg";
+                    String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
 
-                RequestOptions options = new RequestOptions()
-                        .placeholder(R.drawable.imagendefault)
-                        .error(R.drawable.imagendefault)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE);
-
+                String uniqueKey = new ObjectKey(image).toString();
                 Glide.with(holder.itemView.getContext())
                         .load(image)
-                        .apply(options)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .signature(new ObjectKey(uniqueKey))
+                        .placeholder(R.drawable.imagendefault)
+                        .error(R.drawable.imagendefault)
                         .into(holder.fotoDeUsuario);
 
 
