@@ -232,10 +232,11 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void onClick(DialogInterface dialog, int which) {
+                                        public void onClick(DialogInterface dialogConf, int which) {
                                             String selectedEstado = "Finalizado";
                                             //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
                                             actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                            dialogConf.dismiss();
                                             dialog.dismiss();
                                         }
                                     });
@@ -282,9 +283,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                         @Override
 
-                                        public void onClick(DialogInterface dialog, int which) {
+                                        public void onClick(DialogInterface dialogConfir, int which) {
 
                                             obtenerUbicacion(context, ID_usuario, ID_actividad);
+                                            dialogConfir.dismiss();
                                             dialog.dismiss();
 
                                         }
@@ -472,10 +474,11 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                             @Override
 
-                                            public void onClick(DialogInterface dialog, int which) {
+                                            public void onClick(DialogInterface dialogConfirmacion, int which) {
                                                 //      EliminarActividad(ID_actividad, view.getContext());
 
                                                 actionListener.onDeleteActivity(ID_actividad);
+                                                dialogConfirmacion.dismiss();
                                                 dialog.dismiss();
                                             }
                                         });
@@ -511,7 +514,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 public void run() {
                     holder.errorMessageTextView.setText("¡Bienvenido " + nombresesioniniciada + "!");
                     holder.errorMessageTextView.setVisibility(View.VISIBLE);
-                    holder.myButton.setVisibility(View.VISIBLE);
 
                 }
             }, 2500);
@@ -676,6 +678,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                             //MandarUbicacion(ID_usuario, ID_actividad, longitude, latitude, context);
                             actionListener.onMandarUbicacionActicity(ID_usuario, ID_actividad, longitude, latitude);
+
 
                         } else {
                             Toast.makeText(context, "No se pudo obtener la ubicación.", Toast.LENGTH_SHORT).show();

@@ -86,7 +86,7 @@ public class UsuarioFragment extends Fragment {
                 .into(ImagenSesionIniciada);
 
 
-        tvRol.setText("Tipo de empleado: "+permisos+ " " +ID_usuario);
+        tvRol.setText("Tipo de empleado: "+permisos);
         tvCorreo.setText("Correo: " + correo);
         tvTel.setText("Telefono: " + telefono);
         tvNombreMecanico.setText(nombre);

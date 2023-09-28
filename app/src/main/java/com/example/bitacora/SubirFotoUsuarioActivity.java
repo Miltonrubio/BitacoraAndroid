@@ -108,12 +108,11 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
             RequestOptions options = new RequestOptions()
                     .placeholder(R.drawable.imagendefault)
                     .error(R.drawable.imagendefault)
+                    .skipMemoryCache(true) // Desactiva la caché en memoria
                     .diskCacheStrategy(DiskCacheStrategy.NONE);
 
             Glide.with(this)
                     .load(imageUrl)
-                    .skipMemoryCache(true) // Desactiva la caché en memoria
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva la caché en disco
                     .apply(options)
                     .into(IMGFotoPerfil);
 

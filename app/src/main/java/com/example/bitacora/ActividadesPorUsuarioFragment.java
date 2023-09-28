@@ -1,9 +1,13 @@
 
 package com.example.bitacora;
 
+import android.Manifest;
+
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -20,6 +24,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -90,8 +95,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     List<JSONObject> datosDependiendoDeFecha = new ArrayList<>();
 
+
+    int versionSDK = Build.VERSION.SDK_INT;
+
     public ActividadesPorUsuarioFragment() {
-        // Required empty public constructor
     }
 
     public static ActividadesPorUsuarioFragment newInstance(String param1, String param2) {
@@ -108,10 +115,25 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         }
     }
 
+
+    private ActivityResultLauncher<String[]> requestPermissionLauncher;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades_por_usuario, container, false);
+
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
+            if (permissions.get(WRITE_EXTERNAL_STORAGE) && permissions.get(READ_EXTERNAL_STORAGE)) {
+                Log.d("Permiso de almacenamiento: ", "Permiso concedido");
+            } else {
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         RecyclerView rvActividadesUsuario;
         FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
         rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
@@ -145,10 +167,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
             Glide.with(this)
                     .load(imagenUrl)
-                    .skipMemoryCache(true) // Desactiva la caché en memoria
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva la caché en disco
-                    .placeholder(R.drawable.imagendefault) // Imagen por defecto
-                    .error(R.drawable.imagendefault) // Imagen por defecto en caso de error
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .placeholder(R.drawable.imagendefault)
+                    .error(R.drawable.imagendefault)
                     .into(IVFotoDeUsuario);
 
             tvNombreActividad.setText(nombre);
@@ -160,24 +182,32 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         fabBotonFlotante.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkPermission()) {
 
-                    if (isAdded()) {
-                        Toast.makeText(requireContext(), "Permiso aceptado", Toast.LENGTH_SHORT).show();
-                    }
+                if (versionSDK > Build.VERSION_CODES.S) {
                     if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
-
-                        generarPDF(dataList);
+                        if (isAdded()) {
+                            Toast.makeText(requireContext(), "No hay actividades para generar el reporte", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-
                         generarPDF(datosDependiendoDeFecha);
                     }
 
                 } else {
-                    requestPermissions();
-
+                    if (checkPermission()) {
+                        if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
+                            if (isAdded()) {
+                                Toast.makeText(requireContext(), "No hay actividades para generar el reporte", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            generarPDF(datosDependiendoDeFecha);
+                        }
+                    } else {
+                        requestPermissions();
+                        if (isAdded()) {
+                            Toast.makeText(requireContext(), "No se pudo dar permisos", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
-
             }
         });
 
@@ -210,6 +240,20 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         });
 
         return view;
+    }
+
+
+    private boolean checkPermission() {
+        int writePermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        return writePermission == PackageManager.PERMISSION_GRANTED && readPermission == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermissions() {
+        if (!checkPermission()) {
+            requestPermissionLauncher.launch(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE});
+        }
     }
 
     private void mostrarDatosDelDiaDeHoy() {
@@ -315,7 +359,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Document document = new Document();
 
         try {
-            File pdfFile = new File(requireContext().getExternalFilesDir(null), "ReporteDeActividades " + nombre + ".pdf");
+            File pdfFile = new File(requireContext().getExternalFilesDir(null), "Reporte De Actividades " + nombre + ".pdf");
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
             PageEventHandler eventHandler = new PageEventHandler();
             writer.setPageEvent(eventHandler);
@@ -391,7 +435,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             document.add(title);
             document.add(spaceBelowTitle);
 
-            PdfPTable table = new PdfPTable(4);
+            PdfPTable table = new PdfPTable(5);
             table.setWidthPercentage(100);
 
             PdfPCell headerCell1 = new PdfPCell(new Paragraph("Nombre de la actividad"));
@@ -409,10 +453,15 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             headerCell3.setPadding(cellPadding);
             table.addCell(headerCell3);
 
-            PdfPCell headerCell4 = new PdfPCell(new Paragraph("Estado de la actividad"));
+            PdfPCell headerCell4 = new PdfPCell(new Paragraph("Fecha de finalizacion"));
             headerCell4.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
             headerCell4.setPadding(cellPadding);
             table.addCell(headerCell4);
+
+            PdfPCell headerCell5 = new PdfPCell(new Paragraph("Estado de la actividad"));
+            headerCell5.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
+            headerCell5.setPadding(cellPadding);
+            table.addCell(headerCell5);
 
             JSONArray jsonArray = new JSONArray(responseData);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -421,7 +470,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 String nombreActividad = jsonObject.getString("nombre_actividad");
                 String descripcionActividad = jsonObject.getString("descripcionActividad");
                 String fechaInicio = jsonObject.getString("fecha_inicio");
+                String fechaFin = jsonObject.getString("fecha_fin");
                 String estadoActividad = jsonObject.getString("estadoActividad");
+
+
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy 'a las' h a");
+
 
                 PdfPCell cell1 = new PdfPCell(new Paragraph(nombreActividad));
                 cell1.setPadding(cellPadding);
@@ -431,26 +486,52 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 cell2.setPadding(cellPadding);
                 table.addCell(cell2);
 
-                PdfPCell cell3 = new PdfPCell(new Paragraph(fechaInicio));
+
+                PdfPCell cell3 = new PdfPCell();
                 cell3.setPadding(cellPadding);
+                if (fechaInicio != null && !fechaInicio.isEmpty()) {
+                    try {
+                        Date date = inputFormat.parse(fechaInicio);
+                        String formattedDate = outputFormat.format(date);
+                        cell3.addElement(new Paragraph("Iniciado el " + formattedDate));
+                    } catch (ParseException e) {
+                        cell3.addElement(new Paragraph("Aun no se ha iniciado la actividad"));
+                    }
+                } else {
+                    cell3.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                }
                 table.addCell(cell3);
 
-                PdfPCell cell4 = new PdfPCell(new Paragraph(estadoActividad));
+
+                PdfPCell cell4 = new PdfPCell();
                 cell4.setPadding(cellPadding);
+                if (fechaFin != null && !fechaFin.isEmpty()) {
+                    try {
+                        Date date = inputFormat.parse(fechaFin);
+                        String formattedDate = outputFormat.format(date);
+                        cell4.addElement(new Paragraph("Finalizado el " + formattedDate));
+                    } catch (ParseException e) {
+                        cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                    }
+                } else {
+                    cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                }
                 table.addCell(cell4);
+
+
+                PdfPCell cell5 = new PdfPCell(new Paragraph(estadoActividad));
+                cell5.setPadding(cellPadding);
+                table.addCell(cell5);
             }
 
             document.add(table);
-
             document.close();
             compartirPDF(pdfFile);
 
             if (isAdded()) {
                 Toast.makeText(requireContext(), "Se creó el PDF correctamente", Toast.LENGTH_SHORT).show();
             }
-
         } catch (IOException | DocumentException | JSONException e) {
-
             if (isAdded()) {
                 Toast.makeText(requireContext(), "No se pudo crear el PDF", Toast.LENGTH_SHORT).show();
             }
@@ -476,48 +557,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(Intent.createChooser(intent, "Compartir PDF"));
     }
-
-
-    private boolean checkPermission() {
-        int permiso1 = ContextCompat.checkSelfPermission(requireActivity(), WRITE_EXTERNAL_STORAGE);
-        int permiso2 = ContextCompat.checkSelfPermission(requireActivity(), READ_EXTERNAL_STORAGE);
-        return permiso1 == PackageManager.PERMISSION_GRANTED && permiso2 == PackageManager.PERMISSION_GRANTED;
-    }
-
-
-    private void requestPermissions() {
-
-        if (isAdded()) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
-        }
-    }
-
-
-    @SuppressLint("MissingSuperCall")
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantresults) {
-        if (requestCode == 200) {
-            if (grantresults.length > 0) {
-                boolean writeStore = grantresults[0] == PackageManager.PERMISSION_GRANTED;
-                boolean readStorage = grantresults[1] == PackageManager.PERMISSION_GRANTED;
-
-                if (writeStore && readStorage) {
-
-                    if (isAdded()) {
-                        Toast.makeText(requireContext(), "Permiso concedido", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-
-                    if (isAdded()) {
-                        Toast.makeText(requireContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-            }
-        }
-
-    }
-
 
     private void ActividadesPorUsuario(String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, urlApi, new Response.Listener<String>() {

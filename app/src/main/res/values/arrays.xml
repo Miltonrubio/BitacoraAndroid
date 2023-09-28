@@ -7,6 +7,13 @@
         <item>BECARIO/A</item>
         <item>OFICINISTA</item>
         <item>CARGADOR/A</item>
+        <item>POLICIA</item>
+        <item>CHOFER</item>
+        <item>VIGILANTE</item>
+        <item>REPARTIDOR</item>
+        <item>VELADOR</item>
+        <item>JEFE DE UNIDADES</item>
+        <item>JEFE DE SEGURIDAD</item>
         <item>SUPERADMIN</item>
     </string-array>
 </resources>

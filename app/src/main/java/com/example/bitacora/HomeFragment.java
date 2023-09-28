@@ -449,11 +449,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
                     ActividadesPorUsuario(ID_usuario);
-
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Eliminacion exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Se eliminó la actividad", Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -482,9 +480,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                     ActividadesPorUsuario(ID_usuario);
-
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Actualizacion exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Se actualizó la actividad", Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -515,11 +512,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                     ActividadesPorUsuario(ID_usuario);
-
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Se mando la ubicación correctamente", Toast.LENGTH_SHORT).show();
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -554,7 +549,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     ActividadesPorUsuario(ID_usuario);
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Exito", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Se actualizó el estado de la actividad", Toast.LENGTH_SHORT).show();
                 }
 
             }

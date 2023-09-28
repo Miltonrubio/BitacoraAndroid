@@ -44,8 +44,6 @@
             android:layout_height="150dp"
             android:src="@drawable/logo"
             android:layout_gravity="center"
-            android:clickable="true"
-            android:onClick="enviarACamara"
             />
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,7 +117,7 @@
             android:paddingBottom="15dp"
             android:clickable="true"
             android:onClick="IniciarSession"
-            android:text="Iniciar Sesiòn"
+            android:text="Iniciar Sesión"
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="@android:color/white" />

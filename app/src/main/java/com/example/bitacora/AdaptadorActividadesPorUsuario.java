@@ -163,8 +163,17 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
                 try {
                     Date fecha = formatoOriginal.parse(fecha_inicio);
-                    String fechaFormateada = formatoDeseado.format(fecha);
-                    setTextViewText(holder.textFechaActividad, fechaFormateada, "Fecha no disponible");
+                    String fechaFormateada = "Iniciada el: "+formatoDeseado.format(fecha);
+                    setTextViewText(holder.textFechaActividad, fechaFormateada, "Aun no se ha iniciado la actividad");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+
+                try {
+                    Date fecha = formatoOriginal.parse(fecha_fin);
+                    String fechaFormateadafin = "Finalizada el: "+formatoDeseado.format(fecha);
+                    setTextViewText(holder.textFechaFin, fechaFormateadafin, "Aun no se ha finalizado la actividad");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -182,49 +191,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
                 }
 
-
-                if (estadoActividad.equals("Finalizado")) {
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            builder.setTitle("Selecciona el nuevo estado de la actividad");
-
-                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.spinner_dropdown_item, null);
-                            LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
-                            LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
-                            LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
-
-                            builder.setView(customView);
-                            final AlertDialog dialog = builder.create();
-
-                            LayoutMandarFoto.setVisibility(View.GONE);
-                            LayoutMandarUbicacion.setVisibility(View.GONE);
-
-                            LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
-                                    detallesActividadesFragment.setArguments(bundle);
-
-                                    FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                                    fragmentManager.beginTransaction()
-                                            .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
-                                            .addToBackStack(null)
-                                            .commit();
-
-                                    dialog.dismiss();
-                                }
-                            });
-
-
-                            builder.setNegativeButton("Cancelar", null);
-
-                            dialog.show();
-                        }
-                    });
-                } else {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -290,8 +256,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                         }
                     });
 
-                }
-
             } finally {
 
             }
@@ -315,7 +279,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad;
+        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
         FrameLayout FrameActividades;
 
         ImageView IMNoInternet, EstadoFinalizado, EstadoIniciado, EstadoPendiente;
@@ -332,6 +296,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             textActividad = itemView.findViewById(R.id.textActividad);
             FrameActividades = itemView.findViewById(R.id.FrameActividades);
             textDetallesActividad = itemView.findViewById(R.id.textDetallesActividad);
+            textFechaFin= itemView.findViewById(R.id.textFechaFin);
             textIdActividad = itemView.findViewById(R.id.textIdActividad);
             EstadoFinalizado = itemView.findViewById(R.id.EstadoFinalizado);
             EstadoIniciado = itemView.findViewById(R.id.EstadoIniciado);
