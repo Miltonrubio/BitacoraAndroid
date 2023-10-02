@@ -213,6 +213,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
         Button btnFiltrarDeHOY = view.findViewById(R.id.btnFiltrarDeHOY);
+        Button btnFiltrarDeLaSemana = view.findViewById(R.id.btnFiltrarDeLaSemana);
         Button btnFiltrarPorMes = view.findViewById(R.id.btnFiltrarPorMes);
         Button btnFiltrarDelAnio = view.findViewById(R.id.btnFiltrarDelAnio);
 
@@ -236,6 +237,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mostrarDatosDelAnioActual();
+            }
+        });
+
+        btnFiltrarDeLaSemana.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MostrarDatosPorSemana();
             }
         });
 
@@ -291,26 +299,55 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
 
-    private void mostrarDatosDelMesActual() {
+        private void mostrarDatosDelMesActual() {
+            reiniciarDatosDependiendoDeFecha();
+            // Obtiene la fecha actual
+            Calendar calendar = Calendar.getInstance();
+
+            // Resta 30 días a la fecha actual
+            calendar.add(Calendar.DAY_OF_YEAR, -30);
+
+            Date fechaHace30Dias = calendar.getTime();
+
+            for (JSONObject jsonObject : dataList) {
+                try {
+                    String fechaInicio = jsonObject.getString("fecha_inicio");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date fecha = sdf.parse(fechaInicio);
+
+                    if (fecha.after(fechaHace30Dias) || fecha.equals(fechaHace30Dias)) {
+                        datosDependiendoDeFecha.add(jsonObject);
+                    }
+                } catch (JSONException | ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
+            adaptadorActividades.notifyDataSetChanged();
+        }
+
+
+
+    private void MostrarDatosPorSemana() {
         reiniciarDatosDependiendoDeFecha();
+
         // Obtiene la fecha actual
         Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
+        calendar.setTime(new Date()); // Establece la fecha actual
+
+        // Resta 7 días a la fecha actual
+        calendar.add(Calendar.DAY_OF_YEAR, -8);
+
+        Date fechaHace7Dias = calendar.getTime();
 
         for (JSONObject jsonObject : dataList) {
             try {
-
                 String fechaInicio = jsonObject.getString("fecha_inicio");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date fecha = sdf.parse(fechaInicio);
 
-                Calendar actividadCalendar = Calendar.getInstance();
-                actividadCalendar.setTime(fecha);
-                int actividadYear = actividadCalendar.get(Calendar.YEAR);
-                int actividadMonth = actividadCalendar.get(Calendar.MONTH) + 1;
-
-                if (year == actividadYear && month == actividadMonth) {
+                if (fecha.after(fechaHace7Dias) || fecha.equals(fechaHace7Dias)) {
                     datosDependiendoDeFecha.add(jsonObject);
                 }
             } catch (JSONException | ParseException e) {
@@ -321,6 +358,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
+
 
     private void mostrarDatosDelAnioActual() {
         reiniciarDatosDependiendoDeFecha();
@@ -567,7 +605,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     dataList.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dataList.add(jsonObject); // Agrega cada objeto JSON a la lista
+                        dataList.add(jsonObject);
                     }
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
