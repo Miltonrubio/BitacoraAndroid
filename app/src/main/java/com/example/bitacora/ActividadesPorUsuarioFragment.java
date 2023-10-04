@@ -496,10 +496,12 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             headerCell4.setPadding(cellPadding);
             table.addCell(headerCell4);
 
-            PdfPCell headerCell5 = new PdfPCell(new Paragraph("Estado de la actividad"));
-            headerCell5.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
-            headerCell5.setPadding(cellPadding);
-            table.addCell(headerCell5);
+
+            PdfPCell headerCell6 = new PdfPCell(new Paragraph("Tiempo de actividad"));
+            headerCell6.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            headerCell6.setPadding(cellPadding);
+            table.addCell(headerCell6);
+
 
             JSONArray jsonArray = new JSONArray(responseData);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -513,7 +515,8 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy 'a las' h a");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy 'a las' h:mm a");
+
 
 
                 PdfPCell cell1 = new PdfPCell(new Paragraph(nombreActividad));
@@ -557,9 +560,53 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 table.addCell(cell4);
 
 
-                PdfPCell cell5 = new PdfPCell(new Paragraph(estadoActividad));
-                cell5.setPadding(cellPadding);
-                table.addCell(cell5);
+                PdfPCell cell6 = new PdfPCell();
+                cell6.setPadding(cellPadding);
+
+                if (fechaInicio != null && !fechaInicio.isEmpty() && fechaFin != null && !fechaFin.isEmpty()) {
+                    try {
+                        Date dateInicio = inputFormat.parse(fechaInicio);
+                        Date dateFin = inputFormat.parse(fechaFin);
+                        long diffMillis = dateFin.getTime() - dateInicio.getTime();
+
+                        long diffDays = diffMillis / (24 * 60 * 60 * 1000);
+                        long diffHours = (diffMillis % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000);
+                        long diffMinutes = (diffMillis % (60 * 60 * 1000)) / (60 * 1000);
+
+                        String diferenciaTexto = "";
+
+                        if (diffDays == 1) {
+                            diferenciaTexto += "1 día ";
+                        } else if (diffDays > 1) {
+                            diferenciaTexto += diffDays + " días ";
+                        }
+
+                        if (diffHours == 1) {
+                            diferenciaTexto += "1 hora ";
+                        } else if (diffHours > 1) {
+                            diferenciaTexto += diffHours + " horas ";
+                        }
+
+                        if (diffMinutes == 1) {
+                            diferenciaTexto += "1 minuto";
+                        } else if (diffMinutes > 1) {
+                            diferenciaTexto += diffMinutes + " minutos";
+                        }
+
+                        if (diferenciaTexto.isEmpty()) {
+                            diferenciaTexto = "Menos de 1 minuto";
+                        }
+
+                        cell6.addElement(new Paragraph(diferenciaTexto));
+                    } catch (ParseException e) {
+                        cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                    }
+                } else {
+                    cell6.addElement(new Paragraph("Faltan datos para calcular la diferencia"));
+                }
+
+                table.addCell(cell6);
+
             }
 
             document.add(table);
