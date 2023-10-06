@@ -82,17 +82,15 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (isAdded()) {
-            VerNombresActividades();
-        }
+        VerNombresActividades();
 
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerView = view.findViewById(R.id.recyclerViewFragmentArrastres);
 
-        Button btnFinalizadas= view.findViewById(R.id.btnFinalizadas);
-        Button btnPendientes= view.findViewById(R.id.btnPendientes);
+        Button btnFinalizadas = view.findViewById(R.id.btnFinalizadas);
+        Button btnPendientes = view.findViewById(R.id.btnPendientes);
 
-        LinearLayout LayoutBotones=view.findViewById(R.id.LayoutBotones);
+        LinearLayout LayoutBotones = view.findViewById(R.id.LayoutBotones);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -165,7 +163,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 } else {
 
                     if (isAdded()) {
-                        Toast.makeText(requireContext(), "Hubo un error al obtener los datos", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -237,7 +235,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-
     private void mostrarActividadesPendientes() {
         reiniciarDatosDependiendoDeFecha();
 
@@ -246,7 +243,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 String estadoActividad = jsonObject.getString("estadoActividad"); // Obtener el estado de la actividad
 
 
-                if (estadoActividad.equals("Iniciado")|| estadoActividad.equals("Pendiente")) {
+                if (estadoActividad.equals("Iniciado") || estadoActividad.equals("Pendiente")) {
                     datosDependiendoDeFecha.add(jsonObject);
                 }
 
@@ -276,8 +273,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
-                mostrarActividadesPendientes();
-                  //  mostrarDatosDelDiaDeHoy();
+                    mostrarActividadesPendientes();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -317,7 +313,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
                     mostrarDatosDelDiaDeHoy();
-                    //  mostrarDatosDelDiaDeHoy();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -348,7 +344,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
                 }
 
-                    ActividadesPorUsuario(ID_usuario);
+                ActividadesPorUsuario(ID_usuario);
 
             }
         }, new Response.ErrorListener() {
@@ -356,7 +352,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -397,7 +393,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -440,8 +436,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    public void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado) {
-        ActualizarEstado(ID_actividad, nuevoEstado);
+    public void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado, String motivocancelacion) {
+        ActualizarEstado(ID_actividad, nuevoEstado, motivocancelacion);
     }
 
 
@@ -449,7 +445,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                    ActividadesPorUsuario(ID_usuario);
+                ActividadesPorUsuario(ID_usuario);
                 if (isAdded()) {
                     Toast.makeText(requireContext(), "Se eliminó la actividad", Toast.LENGTH_SHORT).show();
                 }
@@ -459,7 +455,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -479,7 +475,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                    ActividadesPorUsuario(ID_usuario);
+                ActividadesPorUsuario(ID_usuario);
                 if (isAdded()) {
                     Toast.makeText(requireContext(), "Se actualizó la actividad", Toast.LENGTH_SHORT).show();
                 }
@@ -490,7 +486,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Hubo un error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -511,7 +507,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                    ActividadesPorUsuario(ID_usuario);
+                ActividadesPorUsuario(ID_usuario);
                 if (isAdded()) {
                     Toast.makeText(requireContext(), "Se mando la ubicación correctamente", Toast.LENGTH_SHORT).show();
                 }
@@ -522,7 +518,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -541,15 +537,15 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    private void ActualizarEstado(String ID_actividad, String nuevoEstado) {
+    private void ActualizarEstado(String ID_actividad, String nuevoEstado, String motivocancelacion) {
 
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                    ActividadesPorUsuario(ID_usuario);
+                ActividadesPorUsuario(ID_usuario);
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Se actualizó el estado de la actividad", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext()," Se actualizó el estado de la actividad", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -559,7 +555,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -568,6 +564,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 params.put("opcion", "5");
                 params.put("ID_actividad", ID_actividad);
                 params.put("nuevoEstado", nuevoEstado);
+                params.put("motivocancelacion", motivocancelacion);
                 return params;
             }
         };

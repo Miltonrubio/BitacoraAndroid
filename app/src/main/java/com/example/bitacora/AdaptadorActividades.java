@@ -212,6 +212,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
                             LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
                             LinearLayout LayoutFinalizarActividad = customView.findViewById(R.id.LayoutFinalizarActividad);
+                            LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
+
 
                             builder.setView(customView);
                             final AlertDialog dialog = builder.create();
@@ -220,8 +222,49 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 LayoutMandarUbicacion.setVisibility(View.GONE);
                                 LayoutMandarFoto.setVisibility(View.GONE);
                                 LayoutFinalizarActividad.setVisibility(View.GONE);
+                                LayoutCancelarActividad.setVisibility(View.GONE);
                                 LayoutVerDetalles.setVisibility(View.VISIBLE);
                             }
+
+
+                            LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Inflar el diseño personalizado del diálogo
+                                    View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.opcion_cancelar, null);
+
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                    builder.setView(dialogView);
+
+                                    builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogConf, int which) {
+                                            EditText editText = dialogView.findViewById(R.id.editText);
+
+                                            String userInput = editText.getText().toString();
+                                            if(userInput.isEmpty()|| userInput.equals("")){
+                                                Toast.makeText(context, "Por favor ingresa el motivo de la cancelacion", Toast.LENGTH_SHORT).show();
+                                            }else {
+                                                String selectedEstado = "Cancelado";
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, userInput);
+                                                dialogConf.dismiss();
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    });
+
+                                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                                    // Mostrar el diálogo
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
+                            });
 
                             LayoutFinalizarActividad.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -235,7 +278,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         public void onClick(DialogInterface dialogConf, int which) {
                                             String selectedEstado = "Finalizado";
                                             //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, "Todo correcto");
                                             dialogConf.dismiss();
                                             dialog.dismiss();
                                         }
@@ -254,6 +297,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 }
 
                             });
+
+
+
 
 
                             LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
@@ -407,7 +453,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             @Override
                                             public void onClick(View v) {
                                                 String selectedEstado = "Pendiente";
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, "Todo correcto");
                                                 dialog.dismiss();
                                             }
                                         });
@@ -417,7 +463,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             public void onClick(View v) {
                                                 String selectedEstado = "Iniciado";
                                                 //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, "Todo correcto");
                                                 dialog.dismiss();
 
                                             }
@@ -428,7 +474,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             public void onClick(View v) {
                                                 String selectedEstado = "Finalizado";
                                                 //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado,"Todo correcto");
                                                 dialog.dismiss();
                                             }
                                         });
@@ -710,7 +756,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(context, "Hubo un error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "No hay internet", Toast.LENGTH_SHORT).show();
             }
         }) {
             protected Map<String, String> getParams() {
@@ -744,7 +790,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         void onMandarUbicacionActicity(String ID_usuario, String ID_actividad, Double longitud, Double latitud);
 
-        void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado);
+        void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado, String motivocancelacion);
     }
 
 
