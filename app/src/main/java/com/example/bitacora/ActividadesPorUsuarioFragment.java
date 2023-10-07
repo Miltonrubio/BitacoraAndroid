@@ -58,6 +58,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -299,34 +300,33 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
 
-        private void mostrarDatosDelMesActual() {
-            reiniciarDatosDependiendoDeFecha();
-            // Obtiene la fecha actual
-            Calendar calendar = Calendar.getInstance();
+    private void mostrarDatosDelMesActual() {
+        reiniciarDatosDependiendoDeFecha();
+        // Obtiene la fecha actual
+        Calendar calendar = Calendar.getInstance();
 
-            // Resta 30 días a la fecha actual
-            calendar.add(Calendar.DAY_OF_YEAR, -30);
+        // Resta 30 días a la fecha actual
+        calendar.add(Calendar.DAY_OF_YEAR, -30);
 
-            Date fechaHace30Dias = calendar.getTime();
+        Date fechaHace30Dias = calendar.getTime();
 
-            for (JSONObject jsonObject : dataList) {
-                try {
-                    String fechaInicio = jsonObject.getString("fecha_inicio");
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date fecha = sdf.parse(fechaInicio);
+        for (JSONObject jsonObject : dataList) {
+            try {
+                String fechaInicio = jsonObject.getString("fecha_inicio");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date fecha = sdf.parse(fechaInicio);
 
-                    if (fecha.after(fechaHace30Dias) || fecha.equals(fechaHace30Dias)) {
-                        datosDependiendoDeFecha.add(jsonObject);
-                    }
-                } catch (JSONException | ParseException e) {
-                    e.printStackTrace();
+                if (fecha.after(fechaHace30Dias) || fecha.equals(fechaHace30Dias)) {
+                    datosDependiendoDeFecha.add(jsonObject);
                 }
+            } catch (JSONException | ParseException e) {
+                e.printStackTrace();
             }
-
-            adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
-            adaptadorActividades.notifyDataSetChanged();
         }
 
+        adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
+        adaptadorActividades.notifyDataSetChanged();
+    }
 
 
     private void MostrarDatosPorSemana() {
@@ -425,6 +425,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             float cellPadding = 10f;
             float cellPaddingUser = 5f;
 
+            Font font = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.RED);
             document.add(image);
             document.add(spaceBelowImage);
 
@@ -512,11 +513,11 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 String fechaInicio = jsonObject.getString("fecha_inicio");
                 String fechaFin = jsonObject.getString("fecha_fin");
                 String estadoActividad = jsonObject.getString("estadoActividad");
+                String motivocancelacion = jsonObject.getString("motivocancelacion");
 
 
                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy 'a las' h:mm a");
-
 
 
                 PdfPCell cell1 = new PdfPCell(new Paragraph(nombreActividad));
@@ -536,10 +537,11 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                         String formattedDate = outputFormat.format(date);
                         cell3.addElement(new Paragraph("Iniciado el " + formattedDate));
                     } catch (ParseException e) {
+
                         cell3.addElement(new Paragraph("Aun no se ha iniciado la actividad"));
                     }
                 } else {
-                    cell3.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                    cell3.addElement(new Paragraph("Aun no se ha iniciado la actividad"));
                 }
                 table.addCell(cell3);
 
@@ -550,12 +552,26 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     try {
                         Date date = inputFormat.parse(fechaFin);
                         String formattedDate = outputFormat.format(date);
+
                         cell4.addElement(new Paragraph("Finalizado el " + formattedDate));
+
+
                     } catch (ParseException e) {
-                        cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+
+                        if (estadoActividad.equals("Cancelado")) {
+                            cell4.addElement(new Paragraph("Se canceló la actividad", font));
+                        } else {
+                            cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                        }
+
                     }
                 } else {
-                    cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                    if (estadoActividad.equals("Cancelado")) {
+                        cell4.addElement(new Paragraph("Se canceló la actividad", font));
+                    } else {
+                        cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                    }
+
                 }
                 table.addCell(cell4);
 
@@ -599,7 +615,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
                         cell6.addElement(new Paragraph(diferenciaTexto));
                     } catch (ParseException e) {
-                        cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+
+                        if (estadoActividad.equals("Cancelado")) {  // Crear una fuente con color rojo
+
+                            cell6.addElement(new Paragraph("Motivo de cancelación: "+ motivocancelacion));
+                        } else {
+                            cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                        }
                     }
                 } else {
                     cell6.addElement(new Paragraph("Faltan datos para calcular la diferencia"));

@@ -246,7 +246,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                                 Toast.makeText(context, "Por favor ingresa el motivo de la cancelacion", Toast.LENGTH_SHORT).show();
                                             }else {
                                                 String selectedEstado = "Cancelado";
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, userInput);
+                                                actionListener.onCancelarActividadesActivity(ID_actividad, selectedEstado, userInput);
                                                 dialogConf.dismiss();
                                                 dialog.dismiss();
                                             }
@@ -278,7 +278,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         public void onClick(DialogInterface dialogConf, int which) {
                                             String selectedEstado = "Finalizado";
                                             //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, "Todo correcto");
+                                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
                                             dialogConf.dismiss();
                                             dialog.dismiss();
                                         }
@@ -453,7 +453,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             @Override
                                             public void onClick(View v) {
                                                 String selectedEstado = "Pendiente";
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, "Todo correcto");
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
                                                 dialog.dismiss();
                                             }
                                         });
@@ -463,7 +463,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             public void onClick(View v) {
                                                 String selectedEstado = "Iniciado";
                                                 //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado, "Todo correcto");
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
                                                 dialog.dismiss();
 
                                             }
@@ -474,7 +474,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             public void onClick(View v) {
                                                 String selectedEstado = "Finalizado";
                                                 //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
-                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado,"Todo correcto");
+                                                actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
                                                 dialog.dismiss();
                                             }
                                         });
@@ -790,7 +790,14 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         void onMandarUbicacionActicity(String ID_usuario, String ID_actividad, Double longitud, Double latitud);
 
-        void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado, String motivocancelacion);
+        void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado);
+
+
+
+        void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
+
+
+
     }
 
 

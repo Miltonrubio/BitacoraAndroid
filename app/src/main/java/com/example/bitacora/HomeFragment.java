@@ -82,7 +82,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        VerNombresActividades();
 
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerView = view.findViewById(R.id.recyclerViewFragmentArrastres);
@@ -125,6 +124,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
         ActividadesPorUsuario(ID_usuario);
 
+        VerNombresActividades();
 
         btnPendientes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +143,10 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                ActividadesPorUsuario(ID_usuario);
+
+                VerNombresActividades();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 LayoutInflater inflater = getLayoutInflater();
@@ -246,12 +250,10 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 if (estadoActividad.equals("Iniciado") || estadoActividad.equals("Pendiente")) {
                     datosDependiendoDeFecha.add(jsonObject);
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
@@ -436,9 +438,14 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    public void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado, String motivocancelacion) {
-        ActualizarEstado(ID_actividad, nuevoEstado, motivocancelacion);
+    public void onActualizarEstadoActivity(String ID_actividad, String nuevoEstado) {
+        ActualizarEstado(ID_actividad, nuevoEstado);
     }
+    public void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado,String motivoCancelacion) {
+        CancelarActividades(ID_actividad, nuevoEstado, motivoCancelacion);
+    }
+
+
 
 
     private void EliminarActividad(String ID_actividad) {
@@ -537,7 +544,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    private void ActualizarEstado(String ID_actividad, String nuevoEstado, String motivocancelacion) {
+    private void ActualizarEstado(String ID_actividad, String nuevoEstado) {
 
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -564,7 +571,42 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 params.put("opcion", "5");
                 params.put("ID_actividad", ID_actividad);
                 params.put("nuevoEstado", nuevoEstado);
-                params.put("motivocancelacion", motivocancelacion);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(requireContext()).add(postrequest);
+    }
+
+
+    private void CancelarActividades(String ID_actividad, String nuevoEstado,String motivoCancelacion) {
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                ActividadesPorUsuario(ID_usuario);
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(),"Se canceló la actividad", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "29");
+                params.put("ID_actividad", ID_actividad);
+                params.put("nuevoEstado", nuevoEstado);
+                params.put("motivocancelacion", motivoCancelacion);
                 return params;
             }
         };

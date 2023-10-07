@@ -53,14 +53,13 @@ public class UsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_usuario, container, false);
 
-        EditText tvNombreMecanico = view.findViewById(R.id.tvNombreMecanico);
-        EditText tvCorreo = view.findViewById(R.id.tvCorreo);
-        EditText tvRol = view.findViewById(R.id.tvRol);
-        EditText tvTel= view.findViewById(R.id.tvTel);
-        ImageView ImagenSesionIniciada=  view.findViewById(R.id.ImagenSesionIniciada);
+        EditText textNombreUsuario = view.findViewById(R.id.textNombreUsuario);
+        EditText textRol = view.findViewById(R.id.textRol);
+        EditText textTelefonoUsuario= view.findViewById(R.id.textTelefonoUsuario);
+        ImageView ImagenSesionIniciada=  view.findViewById(R.id.iconImageView);
 
 
-        Button customButton = view.findViewById(R.id.customButton);
+        Button customButton = view.findViewById(R.id.cerrarSesion);
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
@@ -86,10 +85,9 @@ public class UsuarioFragment extends Fragment {
                 .into(ImagenSesionIniciada);
 
 
-        tvRol.setText("Tipo de empleado: "+permisos);
-        tvCorreo.setText("Correo: " + correo);
-        tvTel.setText("Telefono: " + telefono);
-        tvNombreMecanico.setText(nombre);
+        textRol.setText("Tipo de empleado: "+permisos);
+        textTelefonoUsuario.setText("Telefono: " + telefono);
+        textNombreUsuario.setText(nombre);
 
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override

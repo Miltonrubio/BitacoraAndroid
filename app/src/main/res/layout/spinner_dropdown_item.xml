@@ -41,7 +41,9 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/baseline_location_on_24" />
+            android:src="@drawable/baseline_location_on_24"
+            app:tint="@color/rojo"
+            />
 
         <TextView
             android:layout_width="match_parent"
@@ -63,7 +65,9 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/baseline_photo_camera_24" />
+            android:src="@drawable/baseline_photo_camera_24"
+            app:tint="@color/azulito"
+            />
 
         <TextView
             android:layout_width="match_parent"
@@ -85,7 +89,9 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/baseline_done_24" />
+            android:src="@drawable/baseline_done_24"
+            app:tint="@color/verde"
+            />
 
         <TextView
             android:layout_width="match_parent"
