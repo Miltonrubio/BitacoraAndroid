@@ -132,10 +132,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:weightSum="3">
-
-
-
+            android:weightSum="4"
+            >
 
             <ImageView
                 android:layout_width="match_parent"
@@ -143,8 +141,9 @@
                 android:src="@drawable/baseline_access_time_24"
                 android:id="@+id/EstadoPendiente"
                 android:clickable="true"
-                android:visibility="invisible"
+                app:tint="@color/amarillo"
                 android:layout_weight="1"
+                android:visibility="invisible"
                 />
 
             <ImageView
@@ -163,9 +162,19 @@
             android:src="@drawable/baseline_done_24"
             android:id="@+id/EstadoFinalizado"
             android:layout_weight="1"
-                android:visibility="invisible"
+                app:tint="@color/verde"
             android:clickable="true"
+                android:visibility="invisible"
             />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_cancel_24"
+                android:id="@+id/EstadoCancelado"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:visibility="invisible"
+                app:tint="@color/rojo" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -185,7 +194,26 @@
                 android:textSize="14sp" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
+            <TextView
+                android:id="@+id/textMotivoCancelacion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:visibility="gone"
+                android:hint="Motivo de cancelacion"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
 

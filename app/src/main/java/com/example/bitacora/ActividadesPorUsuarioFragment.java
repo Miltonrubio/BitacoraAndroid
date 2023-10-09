@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.os.Handler;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Log;
@@ -99,6 +100,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     int versionSDK = Build.VERSION.SDK_INT;
 
+
+    private Handler handlerRecargarDatos = new Handler();
+    private Runnable runnableRecargarDatos;
+
     public ActividadesPorUsuarioFragment() {
     }
 
@@ -123,6 +128,8 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades_por_usuario, container, false);
+
+
 
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
             if (permissions.get(WRITE_EXTERNAL_STORAGE) && permissions.get(READ_EXTERNAL_STORAGE)) {
@@ -176,6 +183,19 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
             tvNombreActividad.setText(nombre);
             tvRolDeUsuario.setText(permisos);
+
+            runnableRecargarDatos = new Runnable() {
+                @Override
+                public void run() {
+                    ActividadesPorUsuario(ID_usuario);
+                    handlerRecargarDatos.postDelayed(this, 5 * 60 * 1000); // Ejecuta la tarea cada 5 minutos
+                }
+            };
+
+            handlerRecargarDatos.postDelayed(runnableRecargarDatos, 5 * 60 * 1000); // Inicialmente, ejecuta la tarea después de 5 minutos
+
+
+
             ActividadesPorUsuario(ID_usuario);
         }
 
@@ -408,7 +428,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             Bitmap bitmap = bitmapDrawable.getBitmap();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, stream);
             Image image = Image.getInstance(stream.toByteArray());
             image.scaleToFit(74, 74);
             image.setAlignment(Image.ALIGN_CENTER);
@@ -432,7 +452,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             PdfPTable userInfoTable = new PdfPTable(2);
             userInfoTable.setWidthPercentage(55);
 
-            BaseColor backgroundColor = BaseColor.LIGHT_GRAY;
+            BaseColor backgroundColor = BaseColor.YELLOW;
 
             PdfPCell headerCell = new PdfPCell(new Paragraph("Información del usuario"));
             headerCell.setBackgroundColor(backgroundColor);
@@ -478,28 +498,28 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             table.setWidthPercentage(100);
 
             PdfPCell headerCell1 = new PdfPCell(new Paragraph("Nombre de la actividad"));
-            headerCell1.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
+            headerCell1.setBackgroundColor(BaseColor.YELLOW); // Color de fondo
             headerCell1.setPadding(cellPadding);
             table.addCell(headerCell1);
 
             PdfPCell headerCell2 = new PdfPCell(new Paragraph("Descripción"));
-            headerCell2.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
+            headerCell2.setBackgroundColor(BaseColor.YELLOW); // Color de fondo
             headerCell2.setPadding(cellPadding);
             table.addCell(headerCell2);
 
             PdfPCell headerCell3 = new PdfPCell(new Paragraph("Fecha de inicio"));
-            headerCell3.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
+            headerCell3.setBackgroundColor(BaseColor.YELLOW); // Color de fondo
             headerCell3.setPadding(cellPadding);
             table.addCell(headerCell3);
 
             PdfPCell headerCell4 = new PdfPCell(new Paragraph("Fecha de finalizacion"));
-            headerCell4.setBackgroundColor(BaseColor.LIGHT_GRAY); // Color de fondo
+            headerCell4.setBackgroundColor(BaseColor.YELLOW); // Color de fondo
             headerCell4.setPadding(cellPadding);
             table.addCell(headerCell4);
 
 
             PdfPCell headerCell6 = new PdfPCell(new Paragraph("Tiempo de actividad"));
-            headerCell6.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            headerCell6.setBackgroundColor(BaseColor.YELLOW);
             headerCell6.setPadding(cellPadding);
             table.addCell(headerCell6);
 
@@ -553,24 +573,18 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                         Date date = inputFormat.parse(fechaFin);
                         String formattedDate = outputFormat.format(date);
 
-                        cell4.addElement(new Paragraph("Finalizado el " + formattedDate));
-
+                        if (estadoActividad.equals("Cancelado")) {
+                            cell4.addElement(new Paragraph("Se canceló la actividad el " +formattedDate, font));
+                        } else {
+                            cell4.addElement(new Paragraph("Finalizado el " + formattedDate));
+                        }
 
                     } catch (ParseException e) {
 
-                        if (estadoActividad.equals("Cancelado")) {
-                            cell4.addElement(new Paragraph("Se canceló la actividad", font));
-                        } else {
                             cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
-                        }
-
                     }
                 } else {
-                    if (estadoActividad.equals("Cancelado")) {
-                        cell4.addElement(new Paragraph("Se canceló la actividad", font));
-                    } else {
                         cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
-                    }
 
                 }
                 table.addCell(cell4);
@@ -613,15 +627,17 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                             diferenciaTexto = "Menos de 1 minuto";
                         }
 
-                        cell6.addElement(new Paragraph(diferenciaTexto));
-                    } catch (ParseException e) {
-
                         if (estadoActividad.equals("Cancelado")) {  // Crear una fuente con color rojo
-
                             cell6.addElement(new Paragraph("Motivo de cancelación: "+ motivocancelacion));
                         } else {
-                            cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                            cell6.addElement(new Paragraph(diferenciaTexto));
                         }
+
+                    } catch (ParseException e) {
+
+
+                            cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+
                     }
                 } else {
                     cell6.addElement(new Paragraph("Faltan datos para calcular la diferencia"));
@@ -681,6 +697,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     adaptadorActividades.filter("");
                 } catch (JSONException e) {
                     e.printStackTrace();
+
                 }
                 mostrarDatosDelDiaDeHoy();
             }
@@ -688,6 +705,9 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                if (isAdded()){
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             protected Map<String, String> getParams() {

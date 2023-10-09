@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -76,6 +77,22 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuario = sharedPreferences.getString("ID_usuario", "");
 
+
+        Handler handlerRecargarDatos = new Handler();
+        Runnable runnableRecargarDatos;
+
+
+        runnableRecargarDatos = new Runnable() {
+            @Override
+            public void run() {
+                MostrarUsuarios();
+                handlerRecargarDatos.postDelayed(this, 5 * 60 * 1000); // Ejecuta la tarea cada 5 minutos
+            }
+        };
+
+        handlerRecargarDatos.postDelayed(runnableRecargarDatos, 5 * 60 * 1000); // Inicialmente, ejecuta la tarea después de 5 minutos
+
+
         MostrarUsuarios();
 
         editTextBusqueda.addTextChangedListener(new TextWatcher() {
@@ -127,11 +144,17 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                         String nombreUsuario = textViewNombreUsuario.getText().toString();
                         String correoUsuario = textViewCorreoUsuario.getText().toString();
                         String ClaveUsuario = TextViewClaveUsuario.getText().toString();
-                        String TelefonoUsuario = TextViewTelefonoUsuario.getText().toString();
-
+                        String TelefonoUsuario = TextViewTelefonoUsuario.getText().toString().replaceAll(" ", "");
                         String RolUsuario = spinnerRolUsuario.getSelectedItem().toString();
 
-                      AgregarNuevoUsuario(nombreUsuario,correoUsuario, ClaveUsuario, TelefonoUsuario, RolUsuario);
+                        if (nombreUsuario.isEmpty() || correoUsuario.isEmpty() || ClaveUsuario.isEmpty() || TelefonoUsuario.isEmpty()) {
+                            if (isAdded()) {
+                                Toast.makeText(requireContext(), "No puedes ingresar campos vacios", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+
+                            AgregarNuevoUsuario(nombreUsuario, correoUsuario, ClaveUsuario, TelefonoUsuario, RolUsuario);
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancelar", null);
@@ -141,7 +164,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 dialog.show();
             }
         });
-
 
 
     }
@@ -170,6 +192,10 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }) {
             protected Map<String, String> getParams() {
@@ -188,12 +214,12 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             @Override
             public void onResponse(String response) {
 
-                if ( response.equals("Error: El correo, nombre o teléfono ya existen en la base de datos.")){
+                if (response.equals("Error: El correo, nombre o teléfono ya existen en la base de datos.")) {
 
                     if (isAdded()) {
                         Toast.makeText(requireContext(), "No puedes insertar Datos repetidos", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
 
                     if (isAdded()) {
                         Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
@@ -208,8 +234,9 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "No se insertò el usuario", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
                 }
+
             }
         }) {
             protected Map<String, String> getParams() {
@@ -228,13 +255,10 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-
     @Override
-    public void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario) {
+    public void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario) {
         EditarUsuario(ID_usuario, nombreUsuario, correoUsuario, claveUsuario, telefonoUsuario, rolUsuario);
     }
-
-
 
 
     @Override
@@ -260,8 +284,9 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
                 }
+
             }
         }) {
             protected Map<String, String> getParams() {
@@ -276,9 +301,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-
-
-    private void EditarUsuario(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario) {
+    private void EditarUsuario(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario) {
 
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -295,8 +318,9 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
                 }
+
             }
         }) {
             protected Map<String, String> getParams() {

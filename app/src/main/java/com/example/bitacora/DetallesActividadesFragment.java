@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +80,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
     private Handler sliderHandler = new Handler();
 
+    int colorBlanco,colorAmarillo,colorVerde,colorRojo,colorAzulito,colorNegro,colorGris;
     ViewPager2 ViewPagerImagenesEvidencia;
 
     public static DetallesActividadesFragment newInstance(String param1, String param2) {
@@ -106,11 +108,13 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
         TextView tvNombreActividad = view.findViewById(R.id.tvNombreActividad);
         TextView tvDetallesActividad = view.findViewById(R.id.tvDetallesActividad);
-        TextView tvNombreDeUsuario = view.findViewById(R.id.tvNombreDeUsuario);
-        TextView tvTelefonoUsuario = view.findViewById(R.id.tvTelefonoUsuario);
         TextView tvEstadoActividad = view.findViewById(R.id.tvEstadoActividad);
         TextView tvFechaInicio = view.findViewById(R.id.tvFechaInicio);
         TextView tvFechaFinalizado = view.findViewById(R.id.tvFechaFinalizado);
+
+
+        TextView tvMotivoCancelacion = view.findViewById(R.id.tvMotivoCancelacion);
+        LinearLayout  tvCancelacion= view.findViewById(R.id.Cancelacion);
 
 
         mapView = view.findViewById(R.id.mapView);
@@ -119,13 +123,13 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         ViewPagerImagenesEvidencia = view.findViewById(R.id.ViewPagerImagenesEvidencia);
 
         if (isAdded()) {
-            int colorBlanco = ContextCompat.getColor(requireContext(), R.color.white);
-            int colorAmarillo = ContextCompat.getColor(requireContext(), R.color.amarillo);
-            int colorVerde = ContextCompat.getColor(requireContext(), R.color.verde);
-            int colorRojo = ContextCompat.getColor(requireContext(), R.color.rojo);
-            int colorAzulito = ContextCompat.getColor(requireContext(), R.color.azulitoSuave);
-            int colorNegro = ContextCompat.getColor(requireContext(), R.color.black);
-            int colorGris = ContextCompat.getColor(requireContext(), R.color.gris);
+             colorBlanco = ContextCompat.getColor(requireContext(), R.color.white);
+             colorAmarillo = ContextCompat.getColor(requireContext(), R.color.amarillo);
+             colorVerde = ContextCompat.getColor(requireContext(), R.color.verde);
+             colorRojo = ContextCompat.getColor(requireContext(), R.color.rojo);
+             colorAzulito = ContextCompat.getColor(requireContext(), R.color.azulitoSuave);
+             colorNegro = ContextCompat.getColor(requireContext(), R.color.black);
+             colorGris = ContextCompat.getColor(requireContext(), R.color.gris);
         }
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -136,8 +140,9 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             String fecha_inicio = bundle.getString("fecha_inicio", "");
             String nombre_actividad = bundle.getString("nombre_actividad", "");
             String descripcionActividad = bundle.getString("descripcionActividad", "");
+            String motivocancelacion= bundle.getString("motivocancelacion","");
 
-            CargarUbicaciones(ID_actividad);
+
 
             String nombre = bundle.getString("nombre", "");
             String correo = bundle.getString("correo", "");
@@ -145,11 +150,8 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             String foto_usuario = bundle.getString("foto_usuario", "");
 
 
-            tvNombreDeUsuario.setText(nombre);
-            tvTelefonoUsuario.setText(telefono);
-
             CargarImagenes(ID_actividad);
-
+            CargarUbicaciones(ID_actividad);
 
             // Crear un objeto SimpleDateFormat para el formato deseado
             SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -159,7 +161,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 Date fecha = formatoOriginal.parse(fecha_inicio);
                 String fechaFormateada = formatoDeseado.format(fecha);
 
-                tvFechaInicio.setText("Fecha de inicio: \n" + fechaFormateada);
+                tvFechaInicio.setText("Inicio: \n" + fechaFormateada);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -167,14 +169,31 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             try {
                 Date fechafin = formatoOriginal.parse(fecha_fin);
                 String fechaFormateadafin = formatoDeseado.format(fechafin);
-                tvFechaFinalizado.setText("Fecha de finalizacion: \n" + fechaFormateadafin);
+
+                if(estadoActividad.equalsIgnoreCase("Cancelado")){
+                    tvFechaFinalizado.setText("Cancelada el :" + fechaFormateadafin);
+                    tvFechaFinalizado.setTextColor(colorRojo);
+                }else{
+                    tvFechaFinalizado.setText("Finalizada el: " + fechaFormateadafin);
+                }
+
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             tvNombreActividad.setText(nombre_actividad);
-            tvDetallesActividad.setText(descripcionActividad);
+
+
+
+            tvDetallesActividad.setText("Descripcion de la actividad: "+ descripcionActividad);
+
+            if(estadoActividad.equalsIgnoreCase("Cancelado")){
+                tvEstadoActividad.setTextColor(colorRojo);
+                tvCancelacion.setVisibility(View.VISIBLE);
+                tvMotivoCancelacion.setVisibility(View.VISIBLE);
+                tvMotivoCancelacion.setText(motivocancelacion);
+            }
             tvEstadoActividad.setText(estadoActividad);
 
             mapView.onCreate(savedInstanceState);
@@ -235,7 +254,10 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                                 ViewPagerImagenesEvidencia.setVisibility(View.GONE);
                             }
                         } else {
-                            Log.d("API Response", "Respuesta vacía");
+                            if (isAdded()){
+                                Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+                            }
+
                             ViewPagerImagenesEvidencia.setVisibility(View.GONE);
 
                         }
@@ -244,7 +266,10 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("API Error", "Error en la solicitud: " + error.getMessage());
+                        if (isAdded()){
+                            Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 }
         ) {

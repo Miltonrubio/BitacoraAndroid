@@ -53,10 +53,10 @@ public class UsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_usuario, container, false);
 
-        EditText textNombreUsuario = view.findViewById(R.id.textNombreUsuario);
-        EditText textRol = view.findViewById(R.id.textRol);
-        EditText textTelefonoUsuario= view.findViewById(R.id.textTelefonoUsuario);
-        ImageView ImagenSesionIniciada=  view.findViewById(R.id.iconImageView);
+        TextView textNombreUsuario = view.findViewById(R.id.textNombreUsuario);
+        TextView textRol = view.findViewById(R.id.textRol);
+        TextView textTelefonoUsuario = view.findViewById(R.id.textTelefonoUsuario);
+        ImageView ImagenSesionIniciada = view.findViewById(R.id.iconImageView);
 
 
         Button customButton = view.findViewById(R.id.cerrarSesion);
@@ -73,8 +73,7 @@ public class UsuarioFragment extends Fragment {
         String permisos = sharedPreferences.getString("permisos", "");
 
 
-
-        String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+        String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
         Glide.with(requireContext())
                 .load(image)
@@ -85,7 +84,7 @@ public class UsuarioFragment extends Fragment {
                 .into(ImagenSesionIniciada);
 
 
-        textRol.setText("Tipo de empleado: "+permisos);
+        textRol.setText(permisos);
         textTelefonoUsuario.setText("Telefono: " + telefono);
         textNombreUsuario.setText(nombre);
 
@@ -113,11 +112,6 @@ public class UsuarioFragment extends Fragment {
             startActivity(intent);
             requireActivity().finish();
         }
-    }
-
-    public void IrAPrueba() {
-        Intent intent = new Intent(requireContext(), SubirFotoActivity.class);
-        startActivity(intent);
     }
 
 }

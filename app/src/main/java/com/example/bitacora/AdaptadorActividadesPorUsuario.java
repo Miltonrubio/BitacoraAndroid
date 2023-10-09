@@ -134,6 +134,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                 String correo = jsonObject2.optString("correo", "");
                 String telefono = jsonObject2.optString("telefono", "");
                 String foto_usuario = jsonObject2.optString("foto_usuario", "");
+                String motivocancelacion = jsonObject2.optString("motivocancelacion", "");
 
                 Bundle bundle = new Bundle();
                 bundle.putString("ID_actividad", ID_actividad);
@@ -148,6 +149,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                 bundle.putString("correo", correo);
                 bundle.putString("telefono", telefono);
                 bundle.putString("foto_usuario", foto_usuario);
+                bundle.putString("motivocancelacion", motivocancelacion);
 
                 if (!permisosUsuario.equals("SUPERADMIN")) {
                     holder.textNombreUsuario.setVisibility(View.GONE);
@@ -159,27 +161,74 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                 setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
 
                 SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
+                SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", Locale.getDefault());
 
                 try {
                     Date fecha = formatoOriginal.parse(fecha_inicio);
-                    String fechaFormateada = "Iniciada el: "+formatoDeseado.format(fecha);
+                    String fechaFormateada = "Iniciada el: " + formatoDeseado.format(fecha);
                     setTextViewText(holder.textFechaActividad, fechaFormateada, "Aun no se ha iniciado la actividad");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
+
 
                 try {
                     Date fecha = formatoOriginal.parse(fecha_fin);
-                    String fechaFormateadafin = "Finalizada el: "+formatoDeseado.format(fecha);
-                    setTextViewText(holder.textFechaFin, fechaFormateadafin, "Aun no se ha finalizado la actividad");
+
+                    if (estadoActividad.equalsIgnoreCase("Cancelado")){
+
+                        String fechaFormateadafin = "Cancelada el: " + formatoDeseado.format(fecha);
+                        setTextViewText(holder.textFechaFin, fechaFormateadafin, "No se encontro la fecha la actividad");
+                    }else{
+
+                        String fechaFormateadafin = "Finalizada el: " + formatoDeseado.format(fecha);
+                        setTextViewText(holder.textFechaFin, fechaFormateadafin, "Aun no se ha finalizado la actividad");
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
 
                 setTextViewText(holder.textStatus, estadoActividad.toUpperCase(), "Estado no disponible");
+
+                if (estadoActividad.equalsIgnoreCase("Cancelado")) {
+                    holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.rojo));
+                    holder.textMotivoCancelacion.setVisibility(View.VISIBLE);
+                    setTextViewText(holder.textMotivoCancelacion, motivocancelacion, "No se agrego motivo");
+                    holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackgroundgris);
+                    holder.EstadoCancelado.setVisibility(View.VISIBLE);
+                    holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+                    holder.EstadoIniciado.setVisibility(View.INVISIBLE);
+                    holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+
+                } else {
+                    holder.EstadoCancelado.setVisibility(View.INVISIBLE);
+                    holder.textMotivoCancelacion.setVisibility(View.GONE);
+                    holder.textStatus.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+                    holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackground);
+
+                    if (estadoActividad.equalsIgnoreCase("Pendiente")) {
+
+                        holder.EstadoPendiente.setVisibility(View.VISIBLE);
+                        holder.EstadoIniciado.setVisibility(View.INVISIBLE);
+                        holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+                    }
+                    if (estadoActividad.equalsIgnoreCase("Iniciado")) {
+
+                        holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+                        holder.EstadoIniciado.setVisibility(View.VISIBLE);
+                        holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+                    }
+                    if (estadoActividad.equalsIgnoreCase("Finalizado")) {
+
+                        holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+                        holder.EstadoIniciado.setVisibility(View.INVISIBLE);
+                        holder.EstadoFinalizado.setVisibility(View.VISIBLE);
+                    }
+
+                }
+
 
                 setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
                 setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad no disponible");
@@ -191,77 +240,76 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
                 }
 
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            VerNombresActividades(view.getContext());
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        VerNombresActividades(view.getContext());
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            builder.setTitle("Que deseas hacer con " + descripcionActividad + " ?");
-                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_actividades, null);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle("Que deseas hacer con " + descripcionActividad + " ?");
+                        View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_actividades, null);
 
-                            LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
-                            LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
-                            LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
-                            LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                        LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                        LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                        LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
+                        LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
 
-                            Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
-                            EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
-                            Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
+                        Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
+                        EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
+                        Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
 
-                            LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
-                            LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
-                            LinearLayout LayoutFinalizado = customView.findViewById(R.id.LayoutFinalizado);
+                        LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
+                        LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
+                        LinearLayout LayoutFinalizado = customView.findViewById(R.id.LayoutFinalizado);
 
-                            LayoutPendiente.setVisibility(View.GONE);
-                            LayoutIniciado.setVisibility(View.GONE);
-                            LayoutFinalizado.setVisibility(View.GONE);
-                            BotonActualizarActividad.setVisibility(View.GONE);
-                            LayoutEditar.setVisibility(View.GONE);
-                            LayoutEliminar.setVisibility(View.GONE);
-                            LayoutActualizarEstado.setVisibility(View.GONE);
-                            editextDescripcionActividad.setVisibility(View.GONE);
-
-
-                            builder.setView(customView);
-                            final AlertDialog dialog = builder.create();
-
-                            nombresActividades.add(0, "Selecciona una opción");
-                            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, nombresActividades);
-                            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                            SpinnerNombreActividad.setAdapter(spinnerAdapter);
-
-                            LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
-                                    detallesActividadesFragment.setArguments(bundle);
-
-                                    FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                                    fragmentManager.beginTransaction()
-                                            .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
-                                            .addToBackStack(null)
-                                            .commit();
-
-                                    dialog.dismiss();
-                                }
-                            });
+                        LayoutPendiente.setVisibility(View.GONE);
+                        LayoutIniciado.setVisibility(View.GONE);
+                        LayoutFinalizado.setVisibility(View.GONE);
+                        BotonActualizarActividad.setVisibility(View.GONE);
+                        LayoutEditar.setVisibility(View.GONE);
+                        LayoutEliminar.setVisibility(View.GONE);
+                        LayoutActualizarEstado.setVisibility(View.GONE);
+                        editextDescripcionActividad.setVisibility(View.GONE);
 
 
-                            builder.setNegativeButton("Cancelar", null);
+                        builder.setView(customView);
+                        final AlertDialog dialog = builder.create();
 
-                            dialog.show(); // Muestra el diálogo
-                        }
-                    });
+                        nombresActividades.add(0, "Selecciona una opción");
+                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, nombresActividades);
+                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                        SpinnerNombreActividad.setAdapter(spinnerAdapter);
+
+                        LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                                detallesActividadesFragment.setArguments(bundle);
+
+                                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                                fragmentManager.beginTransaction()
+                                        .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                                        .addToBackStack(null)
+                                        .commit();
+
+                                dialog.dismiss();
+                            }
+                        });
+
+
+                        builder.setNegativeButton("Cancelar", null);
+
+                        dialog.show(); // Muestra el diálogo
+                    }
+                });
 
             } finally {
 
             }
         }
     }
-
 
 
     @Override
@@ -279,10 +327,10 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
+        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad, textFechaFin, textMotivoCancelacion;
         FrameLayout FrameActividades;
 
-        ImageView IMNoInternet, EstadoFinalizado, EstadoIniciado, EstadoPendiente;
+        ImageView IMNoInternet, EstadoFinalizado, EstadoIniciado, EstadoPendiente, EstadoCancelado;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -296,12 +344,13 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             textActividad = itemView.findViewById(R.id.textActividad);
             FrameActividades = itemView.findViewById(R.id.FrameActividades);
             textDetallesActividad = itemView.findViewById(R.id.textDetallesActividad);
-            textFechaFin= itemView.findViewById(R.id.textFechaFin);
+            textFechaFin = itemView.findViewById(R.id.textFechaFin);
             textIdActividad = itemView.findViewById(R.id.textIdActividad);
             EstadoFinalizado = itemView.findViewById(R.id.EstadoFinalizado);
             EstadoIniciado = itemView.findViewById(R.id.EstadoIniciado);
             EstadoPendiente = itemView.findViewById(R.id.EstadoPendiente);
-
+            EstadoCancelado= itemView.findViewById(R.id.EstadoCancelado);
+            textMotivoCancelacion = itemView.findViewById(R.id.textMotivoCancelacion);
 
         }
     }
@@ -333,7 +382,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
                 for (String keyword : keywords) {
                     if (!(estadoActividad.contains(keyword) || descripcionActividad.contains(keyword) || nombre_actividad.contains(keyword) || ID_actividad.contains(keyword) ||
-                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword)||ID_usuario.contains(keyword)  || ID_nombre_actividad.contains(keyword) || permisos.contains(keyword) || telefono.contains(keyword) || correo.contains(keyword))) {
+                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword) || ID_usuario.contains(keyword) || ID_nombre_actividad.contains(keyword) || permisos.contains(keyword) || telefono.contains(keyword) || correo.contains(keyword))) {
                         matchesAllKeywords = false;
                         break;
                     }
@@ -410,7 +459,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         }
         return null;
     }
-
 
 
 }

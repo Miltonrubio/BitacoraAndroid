@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -50,6 +51,10 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     private FloatingActionButton botonAgregarActividad;
 
 
+    private Handler handlerRecargarDatos = new Handler();
+    private Runnable runnableRecargarDatos;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,6 +78,17 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
+
+        runnableRecargarDatos = new Runnable() {
+            @Override
+            public void run() {
+                MostrarActividades();
+                handlerRecargarDatos.postDelayed(this, 5 * 60 * 1000); // Ejecuta la tarea cada 5 minutos
+            }
+        };
+
+        handlerRecargarDatos.postDelayed(runnableRecargarDatos, 5 * 60 * 1000); // Inicialmente, ejecuta la tarea después de 5 minutos
+
 
         MostrarActividades();
 
@@ -141,6 +157,10 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+
+                    if (isAdded()){
+                        Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 editTextBusqueda.setText("");
             }
@@ -176,8 +196,8 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
 
-                if (isAdded()) {
-                    Toast.makeText(requireContext(), "No se insertò", Toast.LENGTH_SHORT).show();
+                if (isAdded()){
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -207,8 +227,8 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
 
-                if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+                if (isAdded()){
+                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {

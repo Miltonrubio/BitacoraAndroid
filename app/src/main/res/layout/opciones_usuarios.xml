@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="15dp"
     android:orientation="vertical"
     android:padding="20dp">
@@ -12,15 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/baseline_edit_24"
-            app:tint="@color/amarillo"
-            />
+            app:tint="@color/amarillo" />
 
         <TextView
             android:layout_width="match_parent"
@@ -28,11 +26,9 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Editar"
-            android:textSize="30dp"
-            />
+            android:textSize="30dp" />
 
     </LinearLayout>
-
 
 
     <LinearLayout
@@ -48,10 +44,9 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:hint="Ingrese Nombre de Usuario"
-            android:visibility="gone"
-            android:textSize="22sp"
             android:padding="6dp"
-            />
+            android:textSize="22sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -68,11 +63,10 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:visibility="gone"
             android:hint="Ingrese Correo de Usuario"
-            android:textSize="22sp"
             android:padding="6dp"
-            />
+            android:textSize="22sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Tercer conjunto de ImageView y EditText -->
@@ -86,10 +80,10 @@
         <!-- Icono -->
         <ImageView
             android:id="@+id/VerClave"
-            android:visibility="gone"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/baseline_remove_red_eye_24" />
+            android:src="@drawable/baseline_remove_red_eye_24"
+            android:visibility="gone" />
 
         <!-- EditText -->
         <EditText
@@ -97,11 +91,10 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:visibility="gone"
             android:hint="Ingrese Clave de Usuario"
-            android:textSize="22sp"
             android:padding="6dp"
-            />
+            android:textSize="22sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Cuarto conjunto de ImageView y EditText -->
@@ -119,41 +112,39 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:hint="Ingrese Telefono de Usuario"
-
-            android:visibility="gone"
-            android:textSize="22sp"
             android:padding="6dp"
-            />
+            android:phoneNumber="true"
+            android:textSize="22sp"
+            android:visibility="gone" />
     </LinearLayout>
+
     <Spinner
         android:id="@+id/opcionesActualizarRol"
-        android:layout_marginTop="12dp"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginTop="12dp"
         android:textSize="18dp"
-        />
+        android:visibility="gone" />
 
     <Button
 
-        android:layout_marginTop="12dp"
         android:id="@+id/BotonActualizarUsuario"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:visibility="gone"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="25dp"
+        android:backgroundTint="@color/naranjita"
         android:text="Actualizar Usuario"
         android:textSize="22sp"
-        android:backgroundTint="@color/naranjita"
-        android:layout_marginBottom="25dp"
-        />
+        android:visibility="gone" />
 
     <!-- Segundo LinearLayout -->
     <LinearLayout
         android:id="@+id/LayoutEliminar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
         android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
         android:clickable="true"
         android:orientation="horizontal">
 
@@ -183,9 +174,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
 
-            app:tint="@color/azulito"
             android:src="@drawable/baseline_photo_camera_24"
-            />
+            app:tint="@color/azulito" />
 
         <TextView
             android:layout_width="match_parent"
@@ -198,16 +188,15 @@
     </LinearLayout>
 
     <Button
-        android:layout_marginTop="12dp"
         android:id="@+id/BotonActualizarFotoUsuario"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Actualizar foto"
-        android:visibility="gone"
-        android:textSize="22sp"
-        android:backgroundTint="@color/naranjita"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="25dp"
-        />
+        android:backgroundTint="@color/naranjita"
+        android:text="Actualizar foto"
+        android:textSize="22sp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/LayoutVerActividades"
@@ -221,7 +210,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/baseline_checklist_24"
-            app:tint="@color/verde"/>
+            app:tint="@color/verde" />
 
         <TextView
             android:layout_width="match_parent"
@@ -231,7 +220,6 @@
             android:text="Ver Actividades"
             android:textSize="30dp" />
     </LinearLayout>
-
 
 
 </LinearLayout>

@@ -81,7 +81,7 @@ import android.Manifest;
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
 
     String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
-    String urlImagen="http://hidalgo.no-ip.info:5610/bitacora/";
+    String urlImagen = "http://hidalgo.no-ip.info:5610/bitacora/";
     private static final int VIEW_TYPE_ERROR = 0;
     private static final int VIEW_TYPE_ITEM = 1;
 
@@ -122,9 +122,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                 String correo = jsonObject2.optString("correo", "");
                 String nombre = jsonObject2.optString("nombre", "");
                 String permisos = jsonObject2.optString("permisos", "");
-                String telefono= jsonObject2.optString("telefono", "");
-                String clave= jsonObject2.optString("clave", "");
-                String foto_usuario= jsonObject2.optString("foto_usuario", "");
+                String telefono = jsonObject2.optString("telefono", "");
+                String clave = jsonObject2.optString("clave", "");
+                String foto_usuario = jsonObject2.optString("foto_usuario", "");
 
                 Bundle bundle = new Bundle();
                 bundle.putString("ID_usuario", ID_usuario);
@@ -140,9 +140,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                 setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
                 setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
 
-                    String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+                String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
                 String uniqueKey = new ObjectKey(image).toString();
+
+
                 Glide.with(holder.itemView.getContext())
                         .load(image)
                         .skipMemoryCache(true)
@@ -151,7 +153,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         .placeholder(R.drawable.imagendefault)
                         .error(R.drawable.imagendefault)
                         .into(holder.fotoDeUsuario);
-
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -165,7 +166,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
                         LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
                         LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
-                        Button BotonActualizarFotoUsuario=  customView.findViewById(R.id.BotonActualizarFotoUsuario);
+                        Button BotonActualizarFotoUsuario = customView.findViewById(R.id.BotonActualizarFotoUsuario);
                         builder.setView(customView);
 
                         final AlertDialog dialogConBotones = builder.create();
@@ -180,9 +181,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                 EditText editTextCorreoUsuario = customView.findViewById(R.id.editTextCorreoUsuario);
                                 EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
                                 EditText editTextTelefonoUsuario = customView.findViewById(R.id.editTextTelefonoUsuario);
-                                Spinner opcionesActualizarRol= customView.findViewById(R.id.opcionesActualizarRol);
+                                Spinner opcionesActualizarRol = customView.findViewById(R.id.opcionesActualizarRol);
                                 Button BotonActualizarUsuario = customView.findViewById(R.id.BotonActualizarUsuario);
-                                ImageView btnMostrarClave= customView.findViewById(R.id.VerClave);
+                                ImageView btnMostrarClave = customView.findViewById(R.id.VerClave);
 
                                 editTextNombreUsuario.setText(nombre);
                                 editTextCorreoUsuario.setText(correo);
@@ -225,15 +226,16 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                         String nuevoNombreUsuario = editTextNombreUsuario.getText().toString();
                                         String nuevoCorreoUsuario = editTextCorreoUsuario.getText().toString();
                                         String nuevaClaveUsuario = editTextClaveUsuario.getText().toString();
-                                        String nuevOTelefonoUsuario = editTextTelefonoUsuario.getText().toString();
-
-
+                                        String nuevOTelefonoUsuario = editTextTelefonoUsuario.getText().toString().replaceAll(" ", "");
                                         String nuevoRolUsuario = opcionesActualizarRol.getSelectedItem().toString();
 
+                                        if (nuevoNombreUsuario.isEmpty() || nuevoCorreoUsuario.isEmpty() || nuevaClaveUsuario.isEmpty() || nuevOTelefonoUsuario.isEmpty() || nuevoRolUsuario.isEmpty()) {
+                                            Toast.makeText(view.getContext(), "No puedes ingresar campos vacios", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            actionListener.onEditarUsuarioActivity(ID_usuario, nuevoNombreUsuario, nuevoCorreoUsuario, nuevaClaveUsuario, nuevOTelefonoUsuario, nuevoRolUsuario);
+                                            dialogConBotones.dismiss();
+                                        }
 
-                              //   EditarUsuario(ID_usuario, nuevoNombreUsuario,nuevoCorreoUsuario , nuevaClaveUsuario ,nuevOTelefonoUsuario ,nuevoRolUsuario, view.getContext(), holder, dialogConBotones);
-                                actionListener.onEditarUsuarioActivity(ID_usuario, nuevoNombreUsuario,nuevoCorreoUsuario , nuevaClaveUsuario ,nuevOTelefonoUsuario ,nuevoRolUsuario);
-                                dialogConBotones.dismiss();
                                     }
                                 });
 
@@ -277,7 +279,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                   //     EliminarUsuario(ID_usuario, view.getContext(), holder);
+                                        //     EliminarUsuario(ID_usuario, view.getContext(), holder);
                                         actionListener.onEliminarUsuarioActivity(ID_usuario);
                                         dialogConBotones.dismiss();
                                     }
@@ -344,14 +346,13 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         ImageView fotoDeUsuario;
 
 
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
             textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
             textRol = itemView.findViewById(R.id.textRol);
-            fotoDeUsuario= itemView.findViewById(R.id.fotoDeUsuario);
+            fotoDeUsuario = itemView.findViewById(R.id.fotoDeUsuario);
 
             textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
 
@@ -379,7 +380,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                 for (String keyword : keywords) {
                     if (!(ID_usuario.contains(keyword) || correo.contains(keyword) || nombre.contains(keyword) || permisos.contains(keyword) ||
-                            telefono.contains(keyword) )) {
+                            telefono.contains(keyword))) {
                         matchesAllKeywords = false;
                         break;
                     }
@@ -409,9 +410,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     }
 
     public interface OnActivityActionListener {
-     void   onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario,String claveUsuario,String telefonoUsuario,String rolUsuario);
+        void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario);
 
-     void  onEliminarUsuarioActivity(String ID_usuario);
+        void onEliminarUsuarioActivity(String ID_usuario);
     }
 
     private AdaptadorUsuarios.OnActivityActionListener actionListener;
@@ -422,8 +423,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         this.filteredData = new ArrayList<>(data);
         this.actionListener = actionListener;
     }
-
-
 
 
 }

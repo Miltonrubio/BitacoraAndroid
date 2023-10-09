@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -83,6 +84,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         super.onViewCreated(view, savedInstanceState);
 
 
+
+
+
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerView = view.findViewById(R.id.recyclerViewFragmentArrastres);
 
@@ -120,6 +124,21 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             public void afterTextChanged(Editable s) {
             }
         });
+
+        Handler handlerRecargarDatos = new Handler();
+        Runnable runnableRecargarDatos;
+
+        runnableRecargarDatos = new Runnable() {
+            @Override
+            public void run() {
+                ActividadesPorUsuario(ID_usuario);
+
+                VerNombresActividades();
+                handlerRecargarDatos.postDelayed(this, 5 * 60 * 1000); // Ejecuta la tarea cada 5 minutos
+            }
+        };
+
+        handlerRecargarDatos.postDelayed(runnableRecargarDatos, 5 * 60 * 1000); // Inicialmente, ejecuta la tarea después de 5 minutos
 
 
         ActividadesPorUsuario(ID_usuario);
@@ -284,6 +303,11 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+
+                if (isAdded()){
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }) {
             protected Map<String, String> getParams() {
@@ -324,6 +348,11 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+
+                if (isAdded()){
+                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }) {
             protected Map<String, String> getParams() {
