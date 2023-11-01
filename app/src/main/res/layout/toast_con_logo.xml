@@ -1,0 +1,38 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom_toast_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="9dp"
+    android:background="@drawable/diseniomodal"
+    >
+
+    <FrameLayout
+        android:id="@+id/rounded_image_container"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        >
+
+        <ImageView
+            android:id="@+id/logo_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Toast"
+            android:src="@drawable/logo" />
+
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/toast_text"
+        android:paddingHorizontal="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Mensaje con logo "
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+</LinearLayout>

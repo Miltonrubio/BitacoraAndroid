@@ -2,9 +2,7 @@ package com.example.bitacora;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,9 +18,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -30,6 +26,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.bitacora.Adaptadores.AdaptadorNombreActividades;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -44,6 +41,8 @@ import java.util.Map;
 public class ActividadesFragment extends Fragment implements AdaptadorNombreActividades.OnActivityActionListener {
 
     String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+
+    Context context;
     private RecyclerView recyclerViewNombreActividades;
     private AdaptadorNombreActividades adaptadorNombreActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -51,14 +50,19 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     private FloatingActionButton botonAgregarActividad;
 
 
-    private Handler handlerRecargarDatos = new Handler();
-    private Runnable runnableRecargarDatos;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades, container, false);
+
+        botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
+        recyclerViewNombreActividades = view.findViewById(R.id.recyclerViewNombreActividades);
+        editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
+
+        context=requireContext();
+
+
         return view;
     }
 
@@ -66,28 +70,15 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
-        recyclerViewNombreActividades = view.findViewById(R.id.recyclerViewNombreActividades);
         recyclerViewNombreActividades.setLayoutManager(new LinearLayoutManager(getContext()));
 
         if (isAdded()) {
-            adaptadorNombreActividades = new AdaptadorNombreActividades(dataList, requireContext(), this);
+            adaptadorNombreActividades = new AdaptadorNombreActividades(dataList, context, this);
         }
         recyclerViewNombreActividades.setAdapter(adaptadorNombreActividades);
-        editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
-
-        runnableRecargarDatos = new Runnable() {
-            @Override
-            public void run() {
-                MostrarActividades();
-                handlerRecargarDatos.postDelayed(this, 5 * 60 * 1000); // Ejecuta la tarea cada 5 minutos
-            }
-        };
-
-        handlerRecargarDatos.postDelayed(runnableRecargarDatos, 5 * 60 * 1000); // Inicialmente, ejecuta la tarea después de 5 minutos
 
 
         MostrarActividades();
@@ -177,7 +168,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             }
         };
 
-        Volley.newRequestQueue(requireContext()).add(postrequest);
+        Volley.newRequestQueue(context).add(postrequest);
     }
 
 
@@ -187,7 +178,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             public void onResponse(String response) {
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Insertado Correctamente", Toast.LENGTH_SHORT).show();
                 }
                 MostrarActividades();
             }
@@ -209,7 +200,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             }
         };
 
-        Volley.newRequestQueue(requireContext()).add(postrequest);
+        Volley.newRequestQueue(context).add(postrequest);
     }
 
 
@@ -218,7 +209,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             @Override
             public void onResponse(String response) {
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Editado con exito el " + ID_nombre_actividad, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Editado con exito el " + ID_nombre_actividad, Toast.LENGTH_SHORT).show();
                 }
                 MostrarActividades();
             }
@@ -228,7 +219,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 error.printStackTrace();
 
                 if (isAdded()){
-                    Toast.makeText(requireContext(), "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -240,7 +231,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 return params;
             }
         };
-        Volley.newRequestQueue(requireContext()).add(postrequest);
+        Volley.newRequestQueue(context).add(postrequest);
     }
 
 
@@ -250,7 +241,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             public void onResponse(String response) {
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Se elimino correctamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Se elimino correctamente", Toast.LENGTH_SHORT).show();
                 }
                 MostrarActividades();
             }
@@ -260,7 +251,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 error.printStackTrace();
 
                 if (isAdded()) {
-                    Toast.makeText(requireContext(), "Error al eliminar", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Error al eliminar", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -271,7 +262,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 return params;
             }
         };
-        Volley.newRequestQueue(requireContext()).add(postrequest);
+        Volley.newRequestQueue(context).add(postrequest);
     }
 
 
