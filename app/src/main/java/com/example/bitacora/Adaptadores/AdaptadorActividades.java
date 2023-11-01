@@ -3,6 +3,8 @@ package com.example.bitacora.Adaptadores;
 
 import static android.app.PendingIntent.getActivity;
 
+import static com.example.bitacora.Utils.ModalRedondeado;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +47,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.bitacora.DetallesActividadesFragment;
 import com.example.bitacora.R;
 import com.example.bitacora.SubirFotoActivity;
+import com.example.bitacora.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -168,16 +173,147 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
             }
 
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (estadoActividad.equalsIgnoreCase("Iniciado")) {
 
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        View customView = LayoutInflater.from(context).inflate(R.layout.spinner_dropdown_item, null);
+                        builder.setView(ModalRedondeado(context, customView));
+
+                        LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
+                        LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
+                        LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                        LinearLayout LayoutFinalizarActividad = customView.findViewById(R.id.LayoutFinalizarActividad);
+                        LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
+
+                        AlertDialog dialogOpcionesDeActividad = builder.create();
+                        dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialogOpcionesDeActividad.show();
+
+
+                    } else if (estadoActividad.equalsIgnoreCase("Pendiente")) {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        View customView = LayoutInflater.from(context).inflate(R.layout.opciones_actividades, null);
+                        builder.setView(ModalRedondeado(context, customView));
+                        LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                        LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                        LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                        LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
+
+
+                        //Editar Usuario
+                        Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
+                        EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
+                        Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
+
+
+                        AlertDialog dialogOpcionesDeActividad = builder.create();
+                        dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialogOpcionesDeActividad.show();
+
+                        LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                                detallesActividadesFragment.setArguments(bundle);
+
+                                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                                fragmentManager.beginTransaction()
+                                        .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                                        .addToBackStack(null)
+                                        .commit();
+
+                                dialogOpcionesDeActividad.dismiss();
+                            }
+                        });
+
+
+                        LayoutEditar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                editextDescripcionActividad.setText(descripcionActividad);
+                                LayoutEditar.setVisibility(View.GONE);
+                                LayoutEliminar.setVisibility(View.GONE);
+                                LayoutActualizarEstado.setVisibility(View.GONE);
+                                SpinnerNombreActividad.setVisibility(View.VISIBLE);
+                                editextDescripcionActividad.setVisibility(View.VISIBLE);
+                                BotonActualizarActividad.setVisibility(View.VISIBLE);
+                                BotonActualizarActividad.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String valorActividadSpinner = SpinnerNombreActividad.getSelectedItem().toString();
+                                        if (!valorActividadSpinner.equals("Selecciona una opción")) {
+                                            String descripcionActividad = editextDescripcionActividad.getText().toString();
+                                            String selectedID = obtenerIDDesdeNombre(valorActividadSpinner);
+
+                                            actionListener.onEditActivity(ID_actividad, selectedID, descripcionActividad);
+                                            dialogOpcionesDeActividad.dismiss();
+                                        } else {
+                                            Utils.crearToastPersonalizado(context, "Debes seleccionar una actividad válida.");
+                                        }
+                                    }
+                                });
+
+                            }
+                        });
+
+
+                        LayoutEliminar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                                builder.setView(ModalRedondeado(context, customView));
+                                AlertDialog dialogConfirmacion = builder.create();
+                                dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialogConfirmacion.show();
+
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        actionListener.onDeleteActivity(ID_actividad);
+                                        dialogConfirmacion.dismiss();
+                                        dialogOpcionesDeActividad.dismiss();
+
+                                    }
+                                });
+
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        dialogConfirmacion.dismiss();
+                                    }
+                                });
+
+                            }
+                        });
+
+                    }
+
+
+                }
+            });
+
+/*
             if (estadoActividad.equals("Iniciado")) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                         builder.setTitle("Selecciona el nuevo estado de la actividad");
 
                         View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.spinner_dropdown_item, null);
-
                         LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
                         LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
                         LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
@@ -186,7 +322,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
                         builder.setView(customView);
-                        final AlertDialog dialog = builder.create();
+                        AlertDialog dialog;
+
+                        dialog = builder.create();
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.show();
+
 
                         if (!IDSesionIniciada.equals(ID_usuario)) {
                             LayoutMandarUbicacion.setVisibility(View.GONE);
@@ -336,6 +477,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         builder.setNegativeButton("Cancelar", null);
 
                         dialog.show();
+
+
                     }
                 });
             } else if (estadoActividad.equals("Pendiente")) {
@@ -514,9 +657,363 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                     }
                 });
 
-            } else if (estadoActividad.equals("Finalizado")) {
-
             }
+
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle("Selecciona el nuevo estado de la actividad");
+
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.spinner_dropdown_item, null);
+                    LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
+                    LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
+                    LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                    LinearLayout LayoutFinalizarActividad = customView.findViewById(R.id.LayoutFinalizarActividad);
+                    LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
+
+
+                    builder.setView(customView);
+                    AlertDialog dialog;
+
+                    dialog = builder.create();
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.show();
+
+
+                    if (!IDSesionIniciada.equals(ID_usuario)) {
+                        LayoutMandarUbicacion.setVisibility(View.GONE);
+                        LayoutMandarFoto.setVisibility(View.GONE);
+                        LayoutFinalizarActividad.setVisibility(View.GONE);
+                        LayoutCancelarActividad.setVisibility(View.GONE);
+                        LayoutVerDetalles.setVisibility(View.VISIBLE);
+                    }
+
+
+                    LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // Inflar el diseño personalizado del diálogo
+                            View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.opcion_cancelar, null);
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            builder.setView(dialogView);
+
+                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogConf, int which) {
+                                    EditText editText = dialogView.findViewById(R.id.editText);
+
+                                    String userInput = editText.getText().toString();
+                                    if (userInput.isEmpty() || userInput.equals("")) {
+                                        Toast.makeText(context, "Por favor ingresa el motivo de la cancelacion", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        String selectedEstado = "Cancelado";
+                                        actionListener.onCancelarActividadesActivity(ID_actividad, selectedEstado, userInput);
+                                        dialogConf.dismiss();
+                                        dialog.dismiss();
+                                    }
+                                }
+                            });
+
+                            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            // Mostrar el diálogo
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+
+                    LayoutFinalizarActividad.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            builder.setTitle("¿ESTAS SEGURO DE QUE DESEAS FINALIZAR ESTA ACTIVIDAD?");
+                            builder.setMessage("\n\n\nRecuerda que no podras enviar evidencia una vez finalizada la actividad\n\n\n");
+
+                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogConf, int which) {
+                                    String selectedEstado = "Finalizado";
+                                    //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                    actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                    dialogConf.dismiss();
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            // Mostrar el diálogo
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+
+                    });
+
+
+                    LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                            detallesActividadesFragment.setArguments(bundle);
+
+                            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+
+                            dialog.dismiss();
+                        }
+                    });
+
+                    LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            builder.setTitle("Confirmacion para mandar ubicaciòn");
+                            builder.setMessage("¿Estás seguro de que deseas mandar tu ubicacion para esta actividad?");
+
+                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                @Override
+
+                                public void onClick(DialogInterface dialogConfir, int which) {
+
+                                    obtenerUbicacion(context, ID_usuario, ID_actividad);
+                                    dialogConfir.dismiss();
+                                    dialog.dismiss();
+
+                                }
+                            });
+
+                            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            // Mostrar el diálogo
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+
+                    });
+
+                    LayoutMandarFoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            // Crear un Intent y adjuntar el Bundle
+                            Intent intent = new Intent(v.getContext(), SubirFotoActivity.class);
+                            intent.putExtras(bundle);
+
+                            // Iniciar el nuevo Activity
+                            v.getContext().startActivity(intent);
+                        }
+                    });
+
+
+                    builder.setNegativeButton("Cancelar", null);
+
+                    dialog.show();
+
+
+                }
+            });
+        } else if (estadoActividad.equals("Pendiente")) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    VerNombresActividades(view.getContext());
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle("Que deseas hacer con " + descripcionActividad + " ?");
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_actividades, null);
+
+                    LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                    LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                    LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
+                    LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+
+                    LayoutVerDetalles.setVisibility(View.GONE);
+                    if (!IDSesionIniciada.equals(ID_usuario)) {
+                        LayoutEditar.setVisibility(View.GONE);
+                        LayoutEliminar.setVisibility(View.GONE);
+                        LayoutActualizarEstado.setVisibility(View.GONE);
+                        LayoutVerDetalles.setVisibility(View.VISIBLE);
+                    }
+
+
+                    Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
+                    EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
+                    Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
+
+                    LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
+                    LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
+                    LinearLayout LayoutFinalizado = customView.findViewById(R.id.LayoutFinalizado);
+                    builder.setView(customView);
+                    final AlertDialog dialog = builder.create();
+
+                    nombresActividades.add(0, "Selecciona una opción");
+                    ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, nombresActividades);
+                    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    SpinnerNombreActividad.setAdapter(spinnerAdapter);
+                    SpinnerNombreActividad.setSelection(0);
+
+                    LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                            detallesActividadesFragment.setArguments(bundle);
+
+                            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+
+                            dialog.dismiss();
+                        }
+                    });
+
+                    if (IDSesionIniciada.equals(ID_usuario) && estadoActividad.equals("Pendiente")) {
+
+
+                        LayoutActualizarEstado.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                LayoutActualizarEstado.setVisibility(View.GONE);
+                                LayoutEditar.setVisibility(View.GONE);
+                                LayoutEliminar.setVisibility(View.GONE);
+
+                                if (estadoActividad.equals("Pendiente")) {
+                                    LayoutFinalizado.setVisibility(View.GONE);
+                                    LayoutIniciado.setVisibility(View.VISIBLE);
+                                } else if (estadoActividad.equals("Iniciado")) {
+                                    LayoutPendiente.setVisibility(View.GONE);
+                                    LayoutFinalizado.setVisibility(View.VISIBLE);
+                                }
+
+
+                                LayoutPendiente.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String selectedEstado = "Pendiente";
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                LayoutIniciado.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String selectedEstado = "Iniciado";
+                                        //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialog.dismiss();
+
+                                    }
+                                });
+
+                                LayoutFinalizado.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String selectedEstado = "Finalizado";
+                                        //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+
+                        LayoutEditar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                editextDescripcionActividad.setText(descripcionActividad);
+                                LayoutEditar.setVisibility(View.GONE);
+                                LayoutEliminar.setVisibility(View.GONE);
+                                LayoutActualizarEstado.setVisibility(View.GONE);
+                                SpinnerNombreActividad.setVisibility(View.VISIBLE);
+                                editextDescripcionActividad.setVisibility(View.VISIBLE);
+                                BotonActualizarActividad.setVisibility(View.VISIBLE);
+                                BotonActualizarActividad.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String valorActividadSpinner = SpinnerNombreActividad.getSelectedItem().toString();
+                                        if (!valorActividadSpinner.equals("Selecciona una opción")) {
+                                            String descripcionActividad = editextDescripcionActividad.getText().toString();
+                                            String selectedID = obtenerIDDesdeNombre(valorActividadSpinner);
+
+                                            actionListener.onEditActivity(ID_actividad, selectedID, descripcionActividad);
+                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(view.getContext(), "Debes seleccionar una actividad válida.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                            }
+                        });
+
+                        LayoutEliminar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                builder.setTitle("Confirmar Eliminación");
+                                builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
+
+                                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                    @Override
+
+                                    public void onClick(DialogInterface dialogConfirmacion, int which) {
+                                        //      EliminarActividad(ID_actividad, view.getContext());
+
+                                        actionListener.onDeleteActivity(ID_actividad);
+                                        dialogConfirmacion.dismiss();
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        });
+                    }
+                    builder.setNegativeButton("Cancelar", null);
+
+                    dialog.show();
+                }
+            });
+
+        }
+
+        */
 
         } finally {
 
@@ -563,7 +1060,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     @Override
     public int getItemCount() {
-        return  filteredData.size();
+        return filteredData.size();
     }
 
 
@@ -760,4 +1257,5 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
 }
+
 

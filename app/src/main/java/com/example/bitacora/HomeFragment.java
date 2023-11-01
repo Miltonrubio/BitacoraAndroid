@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.text.Editable;
@@ -59,7 +60,6 @@ import java.util.Map;
 import okhttp3.internal.Util;
 
 public class HomeFragment extends Fragment implements AdaptadorActividades.OnActivityActionListener, AdaptadorListaActividades.OnActivityActionListener {
-
     List<JSONObject> nombresActividades = new ArrayList<>();
     String permisos;
     String ID_usuario;
@@ -83,8 +83,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     ConstraintLayout LayoutSinInternet;
     ConstraintLayout LayoutConInternet;
     RecyclerView RecyclerViewTituloActividades;
-
     AlertDialog dialogActividades;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,6 +102,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         btnPendientes = view.findViewById(R.id.btnPendientes);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
         context = requireContext();
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         return view;
     }
 
@@ -162,6 +164,17 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 RecyclerViewTituloActividades.setAdapter(adaptadorListaActividades);
             }
         });
+
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                ActividadesPorUsuario(ID_usuario);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
     }
 
 
