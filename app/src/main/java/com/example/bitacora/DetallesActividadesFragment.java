@@ -1,5 +1,6 @@
 package com.example.bitacora;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -74,14 +75,14 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     private double LATITUD;
     private double LONGITUD;
 
-    String apiKey = "AIzaSyCkF9dXkDa3GjKlrLUdLc7BEx5031MELDQ";
-
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String url;
 
     private Handler sliderHandler = new Handler();
 
     int colorBlanco,colorAmarillo,colorVerde,colorRojo,colorAzulito,colorNegro,colorGris;
     ViewPager2 ViewPagerImagenesEvidencia;
+
+    Context context;
 
     public static DetallesActividadesFragment newInstance(String param1, String param2) {
         DetallesActividadesFragment fragment = new DetallesActividadesFragment();
@@ -106,6 +107,8 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detalles_actividades, container, false);
 
+        context = requireContext();
+        url = context.getResources().getString(R.string.urlApi);
         TextView tvNombreActividad = view.findViewById(R.id.tvNombreActividad);
         TextView tvDetallesActividad = view.findViewById(R.id.tvDetallesActividad);
         TextView tvEstadoActividad = view.findViewById(R.id.tvEstadoActividad);

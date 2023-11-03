@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     List<JSONObject> nombresActividades = new ArrayList<>();
     String permisos;
     String ID_usuario;
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String url;
     private RecyclerView recyclerView;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
@@ -71,7 +71,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     private EditText editTextBusqueda;
     private FloatingActionButton botonAgregarActividad;
     Button btnFinalizadas, btnPendientes;
-    AlertDialog.Builder builder;
     ConstraintLayout SinInternet;
     RelativeLayout LayoutContenido;
     ConstraintLayout SinActividades;
@@ -87,10 +86,28 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     SwipeRefreshLayout swipeRefreshLayout;
 
+
+    AlertDialog.Builder builder;
+
+    AlertDialog.Builder builderCargando;
+    AlertDialog.Builder builderCargandoTituloActividades;
+
+    AlertDialog modalCargando;
+
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        context = requireContext();
+        url = context.getResources().getString(R.string.urlApi);
+
+        builderCargando = new AlertDialog.Builder(view.getContext());
+        builderCargando.setCancelable(false);
+
 
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         textViewBienvenida = view.findViewById(R.id.textViewBienvenida);
@@ -101,7 +118,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         btnFinalizadas = view.findViewById(R.id.btnFinalizadas);
         btnPendientes = view.findViewById(R.id.btnPendientes);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
-        context = requireContext();
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         return view;
     }
@@ -147,21 +163,33 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                VerNombresActividades();
-
-                builder = new AlertDialog.Builder(context);
+                builder = new AlertDialog.Builder(view.getContext());
                 View customView = LayoutInflater.from(context).inflate(R.layout.opciones_titulo_actividad, null);
+                builder.setView(ModalRedondeado(view.getContext(), customView));
+
+
                 RecyclerViewTituloActividades = customView.findViewById(R.id.RecyclerViewTituloActividades);
                 LayoutSinInternet = customView.findViewById(R.id.LayoutSinInternet);
                 LayoutConInternet = customView.findViewById(R.id.LayoutConInternet);
 
-                builder.setView(ModalRedondeado(context, customView));
                 dialogActividades = builder.create();
                 dialogActividades.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogActividades.show();
 
+                VerNombresActividades(customView.getContext());
+
                 RecyclerViewTituloActividades.setLayoutManager(new LinearLayoutManager(getContext()));
                 RecyclerViewTituloActividades.setAdapter(adaptadorListaActividades);
+
+
+                dialogActividades.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+
+                        ActividadesPorUsuario(ID_usuario);
+                    }
+                });
+
             }
         });
 
@@ -178,8 +206,10 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    private void VerNombresActividades() {
+    private void VerNombresActividades(Context contextModal) {
         nombresActividades.clear();
+        mostrarItemsNombreActividades("sinVista");
+        modalCargando = Utils.ModalCargando(contextModal, builder);
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -190,27 +220,27 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                         nombresActividades.add(jsonObject);
                     }
                     if (nombresActividades.size() > 0) {
-                        LayoutSinInternet.setVisibility(View.GONE);
-                        LayoutConInternet.setVisibility(View.VISIBLE);
+                        mostrarItemsNombreActividades("conDatos");
+
                     } else {
-                        LayoutSinInternet.setVisibility(View.VISIBLE);
-                        LayoutConInternet.setVisibility(View.GONE);
+
+                     mostrarItemsNombreActividades("sinDatos");
                     }
                     adaptadorListaActividades.notifyDataSetChanged();
                     adaptadorListaActividades.setFilteredData(dataList);
                     adaptadorListaActividades.filter("");
 
                 } catch (JSONException e) {
-                    LayoutSinInternet.setVisibility(View.VISIBLE);
-                    LayoutConInternet.setVisibility(View.GONE);
+
+                    mostrarItemsNombreActividades("sinDatos");
                 }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                LayoutSinInternet.setVisibility(View.VISIBLE);
-                LayoutConInternet.setVisibility(View.GONE);
+
+                mostrarItemsNombreActividades("sinDatos");
             }
         }) {
             protected Map<String, String> getParams() {
@@ -224,8 +254,35 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
+    private void mostrarItemsNombreActividades(String estado) {
+
+        if (estado.equalsIgnoreCase("sinDatos")) {
+
+            LayoutSinInternet.setVisibility(View.VISIBLE);
+            LayoutConInternet.setVisibility(View.GONE);
+
+        } else if (estado.equalsIgnoreCase("sinVista")) {
+
+            LayoutSinInternet.setVisibility(View.GONE);
+            LayoutConInternet.setVisibility(View.INVISIBLE);
+        } else {
+
+            LayoutSinInternet.setVisibility(View.GONE);
+            LayoutConInternet.setVisibility(View.VISIBLE);
+
+        }
+
+        onLoadComplete();
+
+    }
+
+
     private void ActividadesPorUsuario(String ID_usuario) {
+
         dataList.clear();
+        modalCargando = Utils.ModalCargando(context, builderCargando);
+        SinInternet.setVisibility(View.GONE);
+
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -246,31 +303,24 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     //  mostrarActividadesPendientes();
 
                     if (dataList.size() > 0) {
-                        SinInternet.setVisibility(View.GONE);
-                        LayoutContenido.setVisibility(View.VISIBLE);
-                        SinActividades.setVisibility(View.GONE);
+
+                        mostrarItemsActividades("ConResultados");
                     } else {
 
-                        SinInternet.setVisibility(View.GONE);
-                        SinActividades.setVisibility(View.VISIBLE);
-                        LayoutContenido.setVisibility(View.GONE);
-                        textViewBienvenida.setText("¡ BIENVENIDO " + nombreSesionIniciada.toUpperCase() + " !");
+                        mostrarItemsActividades("sinDatos");
                     }
 
                 } catch (JSONException e) {
-                    SinInternet.setVisibility(View.GONE);
-                    SinActividades.setVisibility(View.VISIBLE);
-                    LayoutContenido.setVisibility(View.GONE);
-                    textViewBienvenida.setText("¡ BIENVENIDO " + nombreSesionIniciada.toUpperCase() + " !");
+
+                    mostrarItemsActividades("sinDatos");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                SinInternet.setVisibility(View.VISIBLE);
-                LayoutContenido.setVisibility(View.GONE);
-                SinActividades.setVisibility(View.GONE);
 
+
+                mostrarItemsActividades("sinInternet");
             }
         }) {
             protected Map<String, String> getParams() {
@@ -281,6 +331,31 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             }
         };
         Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+    private void mostrarItemsActividades(String estado) {
+
+        if (estado.equalsIgnoreCase("sinDatos")) {
+            SinInternet.setVisibility(View.GONE);
+            SinActividades.setVisibility(View.VISIBLE);
+            LayoutContenido.setVisibility(View.GONE);
+            textViewBienvenida.setText("¡ BIENVENIDO " + nombreSesionIniciada.toUpperCase() + " !");
+
+        } else if (estado.equalsIgnoreCase("sinInternet")) {
+
+            SinInternet.setVisibility(View.VISIBLE);
+            LayoutContenido.setVisibility(View.GONE);
+            SinActividades.setVisibility(View.GONE);
+        } else {
+            SinInternet.setVisibility(View.GONE);
+            LayoutContenido.setVisibility(View.VISIBLE);
+            SinActividades.setVisibility(View.GONE);
+
+        }
+
+        onLoadComplete();
+
     }
 
 
@@ -321,16 +396,14 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Utils.crearToastPersonalizado(context, "Insertado Correctamente");
                 dialogActividades.dismiss();
-                ActividadesPorUsuario(ID_usuario);
-
+                Utils.crearToastPersonalizado(context, "Insertado Correctamente");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Utils.crearToastPersonalizado(context, "No se pudo insertar la actividad");
+                Utils.crearToastPersonalizado(context, "No se pudo insertar la actividad, revisa tu conexión");
             }
         }) {
             protected Map<String, String> getParams() {
@@ -352,14 +425,13 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                 ActividadesPorUsuario(ID_usuario);
-                Toast.makeText(context, "Se eliminó la actividad", Toast.LENGTH_SHORT).show();
 
+                Utils.crearToastPersonalizado(context, "Se eliminó la actividad");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                Utils.crearToastPersonalizado(context, "No se pudo eliminar, revisa tu conexión");
 
             }
         }) {
@@ -380,15 +452,12 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                 ActividadesPorUsuario(ID_usuario);
-                Toast.makeText(context, "Se actualizó la actividad", Toast.LENGTH_SHORT).show();
-
+                Utils.crearToastPersonalizado(context, "Se actualizó la actividad");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-
-                Toast.makeText(context, "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                Utils.crearToastPersonalizado(context, "No se pudo actualizar, revisa tu conexión");
 
             }
         }) {
@@ -410,16 +479,12 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                 ActividadesPorUsuario(ID_usuario);
-                Toast.makeText(context, "Se mando la ubicación correctamente", Toast.LENGTH_SHORT).show();
-
+                Utils.crearToastPersonalizado(context, "Se mando la ubicación correctamente");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-
-                Toast.makeText(context, "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
-
+                Utils.crearToastPersonalizado(context, "No se mando la ubicación, revisa tus permisos o la conexión");
             }
         }) {
             protected Map<String, String> getParams() {
@@ -443,17 +508,13 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                 ActividadesPorUsuario(ID_usuario);
-
-                Toast.makeText(context, " Se actualizó el estado de la actividad", Toast.LENGTH_SHORT).show();
-
+                Utils.crearToastPersonalizado(context, " Se actualizó el estado de la actividad");
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-
-                Toast.makeText(context, "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                Utils.crearToastPersonalizado(context, " No se pudo actualizar el estado de la actividad, revisa tu conexión");
 
             }
         }) {
@@ -476,15 +537,13 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             @Override
             public void onResponse(String response) {
                 ActividadesPorUsuario(ID_usuario);
-                Toast.makeText(context, "Se canceló la actividad", Toast.LENGTH_SHORT).show();
+                Utils.crearToastPersonalizado(context, "Cancelaste la actividad");
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-
-                Toast.makeText(context, "No tienes conexion a internet", Toast.LENGTH_SHORT).show();
+                Utils.crearToastPersonalizado(context, "No se pudo cancelar la actividad, revisa tu conexión");
 
             }
         }) {
@@ -500,6 +559,14 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
         Volley.newRequestQueue(context).add(postrequest);
     }
+
+
+    public void onLoadComplete() {
+        if (modalCargando.isShowing() && modalCargando != null) {
+            modalCargando.dismiss();
+        }
+    }
+
 
 /*
     private void ActividadesFinalizadas(String ID_usuario) {

@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class ActividadesFragment extends Fragment implements AdaptadorNombreActividades.OnActivityActionListener {
 
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String url;
 
     Context context;
     private RecyclerView recyclerViewNombreActividades;
@@ -55,12 +55,12 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades, container, false);
-
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerViewNombreActividades = view.findViewById(R.id.recyclerViewNombreActividades);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
 
-        context=requireContext();
+        context = requireContext();
+        url = context.getResources().getString(R.string.urlApi);
 
 
         return view;

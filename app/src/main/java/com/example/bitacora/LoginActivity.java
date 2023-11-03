@@ -36,7 +36,7 @@ import android.Manifest;
 
 public class LoginActivity extends AppCompatActivity {
 
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String url;
 
     private RequestQueue rq;
     Context context;
@@ -65,6 +65,8 @@ public class LoginActivity extends AppCompatActivity {
             // Si no se ha otorgado, solicitar el permiso cuando sea necesario.
         }
         context = this;
+        url = context.getResources().getString(R.string.urlApi);
+
         rq = Volley.newRequestQueue(context);
         inputUsername = findViewById(R.id.correoET);
         inputPassword = findViewById(R.id.passwordET);

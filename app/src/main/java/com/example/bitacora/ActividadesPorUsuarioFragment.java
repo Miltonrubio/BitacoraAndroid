@@ -10,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.FileProvider;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -72,11 +73,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.internal.Util;
+
 public class ActividadesPorUsuarioFragment extends Fragment {
 
     String ID_usuario, permisos, nombre, correo, telefono, foto_usuario;
 
-    String urlApi = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String url;
 
 
     private AdaptadorActividadesPorUsuario adaptadorActividades;
@@ -88,17 +91,9 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     int versionSDK = Build.VERSION.SDK_INT;
 
 
-    private Handler handlerRecargarDatos = new Handler();
     private Runnable runnableRecargarDatos;
 
     public ActividadesPorUsuarioFragment() {
-    }
-
-    public static ActividadesPorUsuarioFragment newInstance(String param1, String param2) {
-        ActividadesPorUsuarioFragment fragment = new ActividadesPorUsuarioFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -108,6 +103,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         }
     }
 
+    Context context;
 
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
 
@@ -116,30 +112,33 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades_por_usuario, container, false);
 
+        Button btnFiltrarDeHOY = view.findViewById(R.id.btnFiltrarDeHOY);
+        Button btnFiltrarDeLaSemana = view.findViewById(R.id.btnFiltrarDeLaSemana);
+        Button btnFiltrarPorMes = view.findViewById(R.id.btnFiltrarPorMes);
+        Button btnFiltrarDelAnio = view.findViewById(R.id.btnFiltrarDelAnio);
+        FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
+        RecyclerView rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
+        ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
 
+
+        context = requireContext();
+        url = context.getResources().getString(R.string.urlApi);
 
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
             if (permissions.get(WRITE_EXTERNAL_STORAGE) && permissions.get(READ_EXTERNAL_STORAGE)) {
                 Log.d("Permiso de almacenamiento: ", "Permiso concedido");
             } else {
 
-                if (isAdded()) {
-                    Toast.makeText(requireContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
-                }
+                Utils.crearToastPersonalizado(context, "Permiso denegado");
+
             }
         });
 
-        RecyclerView rvActividadesUsuario;
-        FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
-        rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
+
         rvActividadesUsuario.setLayoutManager(new LinearLayoutManager(getContext()));
-        if (isAdded()) {
-            adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, requireContext());
-        }
+            adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context);
+
         rvActividadesUsuario.setAdapter(adaptadorActividades);
-
-
-        ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
 
 
         Bundle bundle = getArguments();
@@ -171,18 +170,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             tvNombreActividad.setText(nombre);
             tvRolDeUsuario.setText(permisos);
 
-            runnableRecargarDatos = new Runnable() {
-                @Override
-                public void run() {
-                    ActividadesPorUsuario(ID_usuario);
-                    handlerRecargarDatos.postDelayed(this, 5 * 60 * 1000); // Ejecuta la tarea cada 5 minutos
-                }
-            };
-
-            handlerRecargarDatos.postDelayed(runnableRecargarDatos, 5 * 60 * 1000); // Inicialmente, ejecuta la tarea después de 5 minutos
-
-
-
             ActividadesPorUsuario(ID_usuario);
         }
 
@@ -193,9 +180,9 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
                 if (versionSDK > Build.VERSION_CODES.S) {
                     if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
-                        if (isAdded()) {
-                            Toast.makeText(requireContext(), "No hay actividades para generar el reporte", Toast.LENGTH_SHORT).show();
-                        }
+
+                        Utils.crearToastPersonalizado(context,"No hay actividades para generar el reporte" );
+
                     } else {
                         generarPDF(datosDependiendoDeFecha);
                     }
@@ -203,27 +190,18 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 } else {
                     if (checkPermission()) {
                         if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
-                            if (isAdded()) {
-                                Toast.makeText(requireContext(), "No hay actividades para generar el reporte", Toast.LENGTH_SHORT).show();
-                            }
+
+                            Utils.crearToastPersonalizado(context,"No hay actividades para generar el reporte" );
                         } else {
                             generarPDF(datosDependiendoDeFecha);
                         }
                     } else {
                         requestPermissions();
-                        if (isAdded()) {
-                            Toast.makeText(requireContext(), "No se pudo dar permisos", Toast.LENGTH_SHORT).show();
-                        }
+                        Utils.crearToastPersonalizado(context,"No se pudo dar permisos");
                     }
                 }
             }
         });
-
-
-        Button btnFiltrarDeHOY = view.findViewById(R.id.btnFiltrarDeHOY);
-        Button btnFiltrarDeLaSemana = view.findViewById(R.id.btnFiltrarDeLaSemana);
-        Button btnFiltrarPorMes = view.findViewById(R.id.btnFiltrarPorMes);
-        Button btnFiltrarDelAnio = view.findViewById(R.id.btnFiltrarDelAnio);
 
 
         btnFiltrarPorMes.setOnClickListener(new View.OnClickListener() {
@@ -260,8 +238,8 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
     private boolean checkPermission() {
-        int writePermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int readPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        int writePermission = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
 
         return writePermission == PackageManager.PERMISSION_GRANTED && readPermission == PackageManager.PERMISSION_GRANTED;
     }
@@ -404,7 +382,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Document document = new Document();
 
         try {
-            File pdfFile = new File(requireContext().getExternalFilesDir(null), "Reporte De Actividades " + nombre + ".pdf");
+            File pdfFile = new File(context.getExternalFilesDir(null), "Reporte De Actividades " + nombre + ".pdf");
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
             PageEventHandler eventHandler = new PageEventHandler();
             writer.setPageEvent(eventHandler);
@@ -561,17 +539,17 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                         String formattedDate = outputFormat.format(date);
 
                         if (estadoActividad.equals("Cancelado")) {
-                            cell4.addElement(new Paragraph("Se canceló la actividad el " +formattedDate, font));
+                            cell4.addElement(new Paragraph("Se canceló la actividad el " + formattedDate, font));
                         } else {
                             cell4.addElement(new Paragraph("Finalizado el " + formattedDate));
                         }
 
                     } catch (ParseException e) {
 
-                            cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                        cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
                     }
                 } else {
-                        cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                    cell4.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
 
                 }
                 table.addCell(cell4);
@@ -615,7 +593,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                         }
 
                         if (estadoActividad.equals("Cancelado")) {  // Crear una fuente con color rojo
-                            cell6.addElement(new Paragraph("Motivo de cancelación: "+ motivocancelacion));
+                            cell6.addElement(new Paragraph("Motivo de cancelación: " + motivocancelacion));
                         } else {
                             cell6.addElement(new Paragraph(diferenciaTexto));
                         }
@@ -623,7 +601,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     } catch (ParseException e) {
 
 
-                            cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
+                        cell6.addElement(new Paragraph("Aun no se ha finalizado la actividad"));
 
                     }
                 } else {
@@ -638,13 +616,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             document.close();
             compartirPDF(pdfFile);
 
-            if (isAdded()) {
-                Toast.makeText(requireContext(), "Se creó el PDF correctamente", Toast.LENGTH_SHORT).show();
-            }
+            Utils.crearToastPersonalizado(context, "Se creó el PDF correctamente");
         } catch (IOException | DocumentException | JSONException e) {
-            if (isAdded()) {
-                Toast.makeText(requireContext(), "No se pudo crear el PDF", Toast.LENGTH_SHORT).show();
-            }
+            Utils.crearToastPersonalizado(context, "No se pudo crear el PDF");
+
             e.printStackTrace();
         }
     }
@@ -660,7 +635,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/pdf");
 
-        Uri uri = FileProvider.getUriForFile(requireContext(), "com.example.bitacora.fileprovider", file);
+        Uri uri = FileProvider.getUriForFile(context, "com.example.bitacora.fileprovider", file);
 
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.putExtra(Intent.EXTRA_TEXT, "Compartir archivo PDF");
@@ -669,7 +644,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
     private void ActividadesPorUsuario(String ID_usuario) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, urlApi, new Response.Listener<String>() {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -692,9 +667,8 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                if (isAdded()){
-                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
-                }
+                Utils.crearToastPersonalizado(context, "No tienes conexion a internet");
+
             }
         }) {
             protected Map<String, String> getParams() {
@@ -705,7 +679,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         };
 
-        Volley.newRequestQueue(requireContext()).add(postrequest);
+        Volley.newRequestQueue(context).add(postrequest);
     }
 
 

@@ -199,15 +199,24 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         View customView = LayoutInflater.from(context).inflate(R.layout.opciones_actividades, null);
                         builder.setView(ModalRedondeado(context, customView));
                         LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                        LayoutVerDetalles.setVisibility(View.GONE);
                         LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
                         LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
-
-
-                        //Editar Usuario
-                        Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
+                        LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
+                        LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
+                        LinearLayout LayoutFinalizado = customView.findViewById(R.id.LayoutFinalizado);
                         EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
                         Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
+
+                        //Spinner de titulo de actividades
+
+                        Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
+                        nombresActividades.add(0, "Selecciona una opción");
+                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, nombresActividades);
+                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        SpinnerNombreActividad.setAdapter(spinnerAdapter);
+                        SpinnerNombreActividad.setSelection(0);
 
 
                         AlertDialog dialogOpcionesDeActividad = builder.create();
@@ -232,9 +241,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         });
 
 
+                        VerNombresActividades(context);
                         LayoutEditar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+
+                                LayoutVerDetalles.setVisibility(View.GONE);
                                 editextDescripcionActividad.setText(descripcionActividad);
                                 LayoutEditar.setVisibility(View.GONE);
                                 LayoutEliminar.setVisibility(View.GONE);
@@ -260,7 +272,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                             }
                         });
-
 
                         LayoutEliminar.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -298,9 +309,58 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             }
                         });
 
+
+                        LayoutActualizarEstado.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                LayoutVerDetalles.setVisibility(View.GONE);
+                                LayoutActualizarEstado.setVisibility(View.GONE);
+                                LayoutEditar.setVisibility(View.GONE);
+                                LayoutEliminar.setVisibility(View.GONE);
+
+                                if (estadoActividad.equals("Pendiente")) {
+                                    LayoutFinalizado.setVisibility(View.GONE);
+                                    LayoutIniciado.setVisibility(View.VISIBLE);
+                                } else if (estadoActividad.equals("Iniciado")) {
+                                    LayoutPendiente.setVisibility(View.GONE);
+                                    LayoutFinalizado.setVisibility(View.VISIBLE);
+                                }
+
+
+                                LayoutPendiente.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String selectedEstado = "Pendiente";
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialogOpcionesDeActividad.dismiss();
+                                    }
+                                });
+
+                                LayoutIniciado.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String selectedEstado = "Iniciado";
+                                        //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialogOpcionesDeActividad.dismiss();
+
+                                    }
+                                });
+
+                                LayoutFinalizado.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String selectedEstado = "Finalizado";
+                                        //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialogOpcionesDeActividad.dismiss();
+                                    }
+                                });
+                            }
+                        });
+
+
                     }
-
-
                 }
             });
 

@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" /> <!-- Color semitransparente de fondo del dialog -->
+    <corners android:radius="25dp" /> <!-- Radio de las esquinas para hacerlo redondeado -->
+</shape>

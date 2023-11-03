@@ -42,13 +42,14 @@ import java.util.Map;
 
 public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
 
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    String url;
     private RecyclerView recyclerViewUsuarios;
     private AdaptadorUsuarios adaptadorUsuarios;
     private List<JSONObject> dataList = new ArrayList<>();
     private EditText editTextBusqueda;
     private FloatingActionButton botonAgregarActividad;
 
+    Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +62,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        context = requireContext();
+        url = context.getResources().getString(R.string.urlApi);
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerViewUsuarios = view.findViewById(R.id.recyclerViewUsuarios);
         recyclerViewUsuarios.setLayoutManager(new LinearLayoutManager(getContext()));
