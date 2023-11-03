@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -15,4 +16,33 @@
         android:padding="16dp"
         android:textSize="18dp" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="2dp">
+
+        <Button
+            android:id="@+id/buttonCancelar"
+            android:layout_width="120dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="4dp"
+            android:backgroundTint="@color/naranja"
+            android:text="Cancelar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.061"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonAceptar"
+            android:layout_width="120dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="4dp"
+            android:backgroundTint="@color/naranjita"
+            android:text="Aceptar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.869"
+            app:layout_constraintStart_toEndOf="@+id/buttonCancelar"
+            app:layout_constraintTop_toTopOf="@+id/buttonCancelar" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

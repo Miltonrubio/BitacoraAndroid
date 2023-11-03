@@ -90,7 +90,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     AlertDialog.Builder builder;
 
     AlertDialog.Builder builderCargando;
-    AlertDialog.Builder builderCargandoTituloActividades;
 
     AlertDialog modalCargando;
 
@@ -292,7 +291,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String estadoActividad = jsonObject.getString("estadoActividad");
-                        if (!estadoActividad.equalsIgnoreCase("Finalizado")) {
+                        if (estadoActividad.equalsIgnoreCase("Pendiente") || estadoActividad.equalsIgnoreCase("Iniciado")) {
                             dataList.add(jsonObject);
                         }
                     }

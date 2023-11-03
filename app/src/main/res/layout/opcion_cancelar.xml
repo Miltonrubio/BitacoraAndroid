@@ -1,33 +1,64 @@
 <!-- dialog_layout.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginVertical="16dp"
+    android:orientation="vertical"
+    android:padding="6dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=" ¿SEGURO DESEAS CANCELAR?"
-        android:padding="16dp"
-        android:textStyle="bold"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="22sp" />
+        android:padding="16dp"
+        android:text=" ¿SEGURO DESEAS CANCELAR?"
+        android:textSize="22sp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ingresa el motivo de cancelación: "
         android:padding="16dp"
+        android:text="Ingresa el motivo de cancelación: "
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Escribe el motivo aquí"
-        android:padding="27dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:layout_marginStart="12dp"/>
+        android:hint="Escribe el motivo aquí"
+        android:padding="18dp" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="25dp">
+
+        <Button
+            android:id="@+id/buttonCancelar"
+            android:layout_width="120dp"
+            android:layout_height="52dp"
+            android:backgroundTint="@color/naranja"
+            android:text="Cancelar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.17"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonAceptar"
+            android:layout_width="120dp"
+            android:layout_height="52dp"
+            android:backgroundTint="@color/naranjita"
+            android:text="Aceptar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.59"
+            app:layout_constraintStart_toEndOf="@+id/buttonCancelar"
+            app:layout_constraintTop_toTopOf="@+id/buttonCancelar" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

@@ -53,6 +53,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -88,7 +89,9 @@ public class SubirFotoActivity extends AppCompatActivity {
     String nombreImagenKey = "nombreFoto";
 
 
-    ImageView imagenDesdeGaleriaIM;
+    LottieAnimationView lottieSinEvidencias;
+    TextView textSinEvidencias;
+    String descripcionActividad;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -100,10 +103,11 @@ public class SubirFotoActivity extends AppCompatActivity {
 
         Button btnGuardarFoto = findViewById(R.id.guardarFoto);
         TextView txtId = findViewById(R.id.txtId);
-        TextView txtDesc= findViewById(R.id.txtDesc);
+        TextView txtDesc = findViewById(R.id.txtDesc);
         Button fotoDesdeGaleria = findViewById(R.id.fotoDesdeGaleria);
         viewPager2 = findViewById(R.id.ViewPagerImagenes);
-        imagenDesdeGaleriaIM = findViewById(R.id.imagenDesdeGaleriaIM);
+        lottieSinEvidencias = findViewById(R.id.lottieSinEvidencias);
+        textSinEvidencias = findViewById(R.id.textSinEvidencias);
 
 
         // Intent intent = getIntent();
@@ -113,8 +117,8 @@ public class SubirFotoActivity extends AppCompatActivity {
         if (receivedBundle != null) {
             idActividad = receivedBundle.getString("ID_actividad");
             ID_usuario = receivedBundle.getString("ID_usuario");
-            String  nombre_actividad = receivedBundle.getString("nombre_actividad");
-            String  descripcionActividad = receivedBundle.getString("descripcionActividad");
+            String nombre_actividad = receivedBundle.getString("nombre_actividad");
+            descripcionActividad = receivedBundle.getString("descripcionActividad");
 
             txtId.setText("Estas actualizando la actividad: " + nombre_actividad);
             txtDesc.setText(descripcionActividad);
@@ -258,20 +262,21 @@ public class SubirFotoActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(SubirFotoActivity.this, "Imagen " + idActividad + " Enviada al servidor", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(SubirFotoActivity.this, Activity_Binding.class);
+            Utils.crearToastPersonalizado(context, "Evidencia de " + descripcionActividad + " Enviada al servidor");
+            Intent intent = new Intent(context, Activity_Binding.class);
             startActivity(intent);
         }
     }
 
 
-    private void CargarImagenes() {
+    List<SlideItem> slideItems = new ArrayList<>();
 
+    private void CargarImagenes() {
+        slideItems.clear();
         StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, urlApi,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        List<SlideItem> slideItems = new ArrayList<>();
 
                         if (!TextUtils.isEmpty(response)) {
                             try {
@@ -307,18 +312,28 @@ public class SubirFotoActivity extends AppCompatActivity {
                                         sliderHandler.postDelayed(sliderRunnable, 3000);
                                     }
                                 });
+
+                                if (slideItems.size() > 0) {
+
+                                    verDatos("conContenido");
+                                } else {
+
+                                    verDatos("Oculto");
+                                }
+
+
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                verDatos("Oculto");
                             }
                         } else {
-                            Log.d("API Response", "Respuesta vacía");
+                            verDatos("Oculto");
                         }
                     }
                 },
                 new com.android.volley.Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("API Error", "Error en la solicitud: " + error.getMessage());
+                        verDatos("Oculto");
                     }
                 }
         ) {
@@ -334,6 +349,21 @@ public class SubirFotoActivity extends AppCompatActivity {
         RequestQueue requestQueue3 = Volley.newRequestQueue(context);
         requestQueue3.add(stringRequest3);
 
+    }
+
+
+    private void verDatos(String estado) {
+        if (estado.equalsIgnoreCase("Oculto")) {
+
+            viewPager2.setVisibility(View.GONE);
+            textSinEvidencias.setVisibility(View.VISIBLE);
+            lottieSinEvidencias.setVisibility(View.VISIBLE);
+        } else {
+
+            viewPager2.setVisibility(View.VISIBLE);
+            textSinEvidencias.setVisibility(View.GONE);
+            lottieSinEvidencias.setVisibility(View.GONE);
+        }
     }
 
 

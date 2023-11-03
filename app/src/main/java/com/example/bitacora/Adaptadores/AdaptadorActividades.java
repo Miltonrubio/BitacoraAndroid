@@ -4,6 +4,7 @@ package com.example.bitacora.Adaptadores;
 import static android.app.PendingIntent.getActivity;
 
 import static com.example.bitacora.Utils.ModalRedondeado;
+import static com.example.bitacora.Utils.crearToastPersonalizado;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -69,7 +70,6 @@ import android.Manifest;
 
 public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActividades.ViewHolder> {
     private ArrayList<String> nombresActividades = new ArrayList<>();
-    String siguienteEstado = "";
     String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
     private Context context;
@@ -137,26 +137,37 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
 
 
-            SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy HH:mm", Locale.getDefault());
-            SimpleDateFormat formatoFin = new SimpleDateFormat("'Finalizada el ' dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
+            if (!estadoActividad.equalsIgnoreCase("Pendiente")) {
+                //Fecha de Fin
+                SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy HH:mm", Locale.getDefault());
+                SimpleDateFormat formatoFin = new SimpleDateFormat("'Finalizada el ' dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
 
-            try {
-                Date fecha = formatoOriginal.parse(fecha_fin);
-                String fechaFormateada = formatoFin.format(fecha);
+                try {
+                    Date fecha = formatoOriginal.parse(fecha_fin);
+                    String fechaFormateada = formatoFin.format(fecha);
 
-                setTextViewText(holder.textFechaFin, fechaFormateada, "Fecha no disponible");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                    setTextViewText(holder.textFechaFin, fechaFormateada, "Fecha no disponible");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-            try {
-                Date fecha = formatoOriginal.parse(fecha_inicio);
-                String fechaFormateada = formatoDeseado.format(fecha);
+                //Fecha de Inicio
 
-                setTextViewText(holder.textFechaActividad, fechaFormateada, "Fecha no disponible");
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    Date fecha = formatoOriginal.parse(fecha_inicio);
+                    String fechaFormateada = formatoDeseado.format(fecha);
+
+                    setTextViewText(holder.textFechaActividad, fechaFormateada, "Fecha no disponible");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                holder.textFechaFin.setVisibility(View.VISIBLE);
+            } else {
+
+                setTextViewText(holder.textFechaActividad, "Aun no se inicia la actividad", "Fecha no disponible");
+                holder.textFechaFin.setVisibility(View.GONE);
             }
 
 
@@ -172,6 +183,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             } else {
                 setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
             }
+
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -191,6 +203,157 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         AlertDialog dialogOpcionesDeActividad = builder.create();
                         dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         dialogOpcionesDeActividad.show();
+
+
+                        LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                                textViewTituloConfirmacion.setText("¿Estas seguro de mandar tu ubicación?");
+                                builder.setView(ModalRedondeado(context, customView));
+                                AlertDialog dialogConfirmacion = builder.create();
+                                dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialogConfirmacion.show();
+
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        obtenerUbicacion(context, ID_usuario, ID_actividad);
+                                        dialogConfirmacion.dismiss();
+                                        dialogOpcionesDeActividad.dismiss();
+
+                                    }
+                                });
+
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        dialogConfirmacion.dismiss();
+                                    }
+                                });
+                            }
+                        });
+
+
+                        LayoutMandarFoto.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(v.getContext(), SubirFotoActivity.class);
+                                intent.putExtras(bundle);
+                                v.getContext().startActivity(intent);
+                            }
+                        });
+
+
+                        LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                                detallesActividadesFragment.setArguments(bundle);
+
+                                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                                fragmentManager.beginTransaction()
+                                        .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                                        .addToBackStack(null)
+                                        .commit();
+
+                                dialogOpcionesDeActividad.dismiss();
+                            }
+                        });
+
+
+                        LayoutFinalizarActividad.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                                textViewTituloConfirmacion.setText("¿ESTAS SEGURO DE QUE DESEAS FINALIZAR ESTA ACTIVIDAD?");
+                                builder.setView(ModalRedondeado(context, customView));
+                                AlertDialog dialogConfirmacion = builder.create();
+                                dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialogConfirmacion.show();
+
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        String selectedEstado = "Finalizado";
+                                        //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                                        dialogConfirmacion.dismiss();
+                                        dialogOpcionesDeActividad.dismiss();
+                                    }
+                                });
+
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        dialogConfirmacion.dismiss();
+                                    }
+                                });
+                            }
+                        });
+
+
+                        LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // Inflar el diseño personalizado del diálogo
+                                View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.opcion_cancelar, null);
+
+                                EditText editText = dialogView.findViewById(R.id.editText);
+                                Button buttonCancelar = dialogView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = dialogView.findViewById(R.id.buttonAceptar);
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                builder.setView(ModalRedondeado(view.getContext(), dialogView));
+
+                                AlertDialog dialogCancelacion = builder.create();
+                                dialogCancelacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialogCancelacion.show();
+
+
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String userInput = editText.getText().toString();
+                                        if (userInput.isEmpty() || userInput.equals("")) {
+                                            Utils.crearToastPersonalizado(context, "Por favor ingresa el motivo de la cancelacion");
+                                        } else {
+                                            String selectedEstado = "Cancelado";
+                                            actionListener.onCancelarActividadesActivity(ID_actividad, selectedEstado, userInput);
+                                            dialogCancelacion.dismiss();
+                                            dialogOpcionesDeActividad.dismiss();
+
+                                        }
+                                    }
+                                });
+
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        dialogCancelacion.dismiss();
+                                    }
+                                });
+
+
+                            }
+                        });
 
 
                     } else if (estadoActividad.equalsIgnoreCase("Pendiente")) {
@@ -1092,7 +1255,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             holder.EstadoIniciado.setVisibility(View.INVISIBLE);
             holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
             holder.textStatus.setTextColor(colorAmarillo);
-            siguienteEstado = "Iniciado";
 
         } else if (estadoActividad.equals("Iniciado")) {
             int colorNegro = ContextCompat.getColor(context, R.color.black);
@@ -1215,6 +1377,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     private void obtenerUbicacion(Context context, String ID_usuario, String ID_actividad) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_LOCATION);
+
             return;
         }
 
@@ -1231,9 +1394,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             //MandarUbicacion(ID_usuario, ID_actividad, longitude, latitude, context);
                             actionListener.onMandarUbicacionActicity(ID_usuario, ID_actividad, longitude, latitude);
 
-
                         } else {
-                            Toast.makeText(context, "No se pudo obtener la ubicación.", Toast.LENGTH_SHORT).show();
+                            crearToastPersonalizado(context, "No se pudo obtener la ubicación. Revisa la conexión o los permisos");
+
                         }
                     }
                 });
@@ -1254,15 +1417,14 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad);
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    crearToastPersonalizado(context, "No se pudieron obtener los datos. Revisa la conexión");
                 }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "No hay internet", Toast.LENGTH_SHORT).show();
+                crearToastPersonalizado(context, "No se pudieron obtener los datos. Revisa la conexión");
             }
         }) {
             protected Map<String, String> getParams() {

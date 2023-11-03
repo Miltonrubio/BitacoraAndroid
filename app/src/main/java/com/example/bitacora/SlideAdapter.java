@@ -52,6 +52,7 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fotos_actividades, parent, false);
         SlideViewHolder viewHolder = new SlideViewHolder(view);
 
+
         return viewHolder;
     }
 
@@ -118,9 +119,12 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                /*
                 Uri uri = Uri.parse(imageUri);
                 String fileName = uri.getLastPathSegment();
                 //        cambiarImagenPrincipal(context, fileName);
+
+                 */
             }
         });
 

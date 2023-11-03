@@ -11,26 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="24dp"
         android:hint="Describe tu actividad"
         android:padding="12dp"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
 
     <TextView
         android:id="@+id/textViewTitulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="32dp"
+        android:gravity="center"
         android:text="TITULO ACTIVIDAD"
+        android:textColor="@color/naranja"
         android:textSize="24dp"
         android:textStyle="bold"
-        android:textColor="@color/naranja"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,33 +40,33 @@
         android:id="@+id/buttonCancelar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:layout_marginStart="6dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="28dp"
         android:backgroundTint="@color/naranja"
         android:text="Cancelar"
         android:textColor="@color/white"
         android:textSize="17dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.013"
+        app:layout_constraintHorizontal_bias="0.021"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/descripcionActividad" />
 
     <Button
         android:id="@+id/buttonAceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:layout_marginEnd="6dp"
+        android:layout_marginTop="28dp"
         android:backgroundTint="@color/naranjita"
         android:text="Aceptar"
+        android:layout_marginEnd="10dp"
         android:textColor="@color/white"
         android:textSize="17dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.993"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/descripcionActividad" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

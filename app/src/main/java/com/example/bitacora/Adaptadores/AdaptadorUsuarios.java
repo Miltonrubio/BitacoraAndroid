@@ -3,10 +3,14 @@ package com.example.bitacora.Adaptadores;
 
 import static android.app.PendingIntent.getActivity;
 
+import static com.example.bitacora.Utils.ModalRedondeado;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
@@ -44,269 +48,299 @@ import java.util.List;
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
 
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
-    String urlImagen = "http://hidalgo.no-ip.info:5610/bitacora/";
-    private static final int VIEW_TYPE_ERROR = 0;
-    private static final int VIEW_TYPE_ITEM = 1;
-
     private Context context;
 
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
 
-
-    public AdaptadorUsuarios(List<JSONObject> data, Context context) {
-        this.data = data;
-        this.context = context;
-        this.filteredData = new ArrayList<>(data);
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_ITEM) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_usuarios, parent, false);
-            return new ViewHolder(view);
-        } else {
-
-            View errorView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_sinusuarios, parent, false);
-            return new ViewHolder(errorView);
-        }
-
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_usuarios, parent, false);
+        return new ViewHolder(view);
     }
 
     @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
+        try {
+            JSONObject jsonObject2 = filteredData.get(position);
+            String ID_usuario = jsonObject2.optString("ID_usuario", "");
+            String correo = jsonObject2.optString("correo", "");
+            String nombre = jsonObject2.optString("nombre", "");
+            String permisos = jsonObject2.optString("permisos", "");
+            String telefono = jsonObject2.optString("telefono", "");
+            String clave = jsonObject2.optString("clave", "");
+            String foto_usuario = jsonObject2.optString("foto_usuario", "");
 
-        if (getItemViewType(position) == VIEW_TYPE_ITEM) {
-            try {
-                JSONObject jsonObject2 = filteredData.get(position);
-                String ID_usuario = jsonObject2.optString("ID_usuario", "");
-                String correo = jsonObject2.optString("correo", "");
-                String nombre = jsonObject2.optString("nombre", "");
-                String permisos = jsonObject2.optString("permisos", "");
-                String telefono = jsonObject2.optString("telefono", "");
-                String clave = jsonObject2.optString("clave", "");
-                String foto_usuario = jsonObject2.optString("foto_usuario", "");
-
-                Bundle bundle = new Bundle();
-                bundle.putString("ID_usuario", ID_usuario);
-                bundle.putString("permisos", permisos);
-                bundle.putString("nombre", nombre);
-                bundle.putString("correo", correo);
-                bundle.putString("telefono", telefono);
-                bundle.putString("foto_usuario", foto_usuario);
+            Bundle bundle = new Bundle();
+            bundle.putString("ID_usuario", ID_usuario);
+            bundle.putString("permisos", permisos);
+            bundle.putString("nombre", nombre);
+            bundle.putString("correo", correo);
+            bundle.putString("telefono", telefono);
+            bundle.putString("foto_usuario", foto_usuario);
 
 
-                setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
-                setTextViewText(holder.textRol, permisos, "Permisos no disponible");
-                setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
-                setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
+            setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
+            setTextViewText(holder.textRol, permisos, "Permisos no disponible");
+            setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
+            setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
 
-                String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
+            String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
-                String uniqueKey = new ObjectKey(image).toString();
+            String uniqueKey = new ObjectKey(image).toString();
 
 
-                Glide.with(holder.itemView.getContext())
-                        .load(image)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .signature(new ObjectKey(uniqueKey))
-                        .placeholder(R.drawable.imagendefault)
-                        .error(R.drawable.imagendefault)
-                        .into(holder.fotoDeUsuario);
+            Glide.with(holder.itemView.getContext())
+                    .load(image)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .signature(new ObjectKey(uniqueKey))
+                    .placeholder(R.drawable.imagendefault)
+                    .error(R.drawable.imagendefault)
+                    .into(holder.fotoDeUsuario);
 
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setTitle("Que desea hacer con:  " + nombre + " ?");
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                        View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_usuarios, null);
 
-                        LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
-                        LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
-                        LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
-                        LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
-                        Button BotonActualizarFotoUsuario = customView.findViewById(R.id.BotonActualizarFotoUsuario);
-                        builder.setView(customView);
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_usuarios, null);
 
-                        final AlertDialog dialogConBotones = builder.create();
-                        LayoutEditar.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setView(ModalRedondeado(view.getContext(), customView));
 
-                                LayoutVerActividades.setVisibility(View.GONE);
-                                LayoutEliminar.setVisibility(View.GONE);
-                                // Hacer visible el EditText
-                                EditText editTextNombreUsuario = customView.findViewById(R.id.editTextNombreUsuario);
-                                EditText editTextCorreoUsuario = customView.findViewById(R.id.editTextCorreoUsuario);
-                                EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
-                                EditText editTextTelefonoUsuario = customView.findViewById(R.id.editTextTelefonoUsuario);
-                                Spinner opcionesActualizarRol = customView.findViewById(R.id.opcionesActualizarRol);
-                                Button BotonActualizarUsuario = customView.findViewById(R.id.BotonActualizarUsuario);
-                                ImageView btnMostrarClave = customView.findViewById(R.id.VerClave);
+                    AlertDialog dialogConBotones = builder.create();
+                    dialogConBotones.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogConBotones.show();
 
-                                editTextNombreUsuario.setText(nombre);
-                                editTextCorreoUsuario.setText(correo);
-                                editTextTelefonoUsuario.setText(telefono);
-                                editTextClaveUsuario.setText(clave);
-                                editTextClaveUsuario.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                                btnMostrarClave.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        if (editTextClaveUsuario.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
-                                            // Si la contraseña está oculta, mostrarla
-                                            editTextClaveUsuario.setTransformationMethod(null);
-                                        } else {
-                                            // Si la contraseña se muestra, ocultarla
-                                            editTextClaveUsuario.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                                        }
+
+                    LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                    LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                    LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
+                    LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
+                    Button BotonActualizarFotoUsuario = customView.findViewById(R.id.BotonActualizarFotoUsuario);
+/*
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle("Que desea hacer con:  " + nombre + " ?");
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_usuarios, null);
+
+                    LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                    LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                    LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
+                    LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
+                    Button BotonActualizarFotoUsuario = customView.findViewById(R.id.BotonActualizarFotoUsuario);
+                    builder.setView(customView);
+
+                    final AlertDialog dialogConBotones = builder.create();
+
+
+                    builder.setNegativeButton("Cancelar", null);
+
+                    dialogConBotones.show(); // Muestra el diálogo
+                        */
+
+                    LayoutEditar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            LayoutVerActividades.setVisibility(View.GONE);
+                            LayoutEliminar.setVisibility(View.GONE);
+                            // Hacer visible el EditText
+                            EditText editTextNombreUsuario = customView.findViewById(R.id.editTextNombreUsuario);
+                            EditText editTextCorreoUsuario = customView.findViewById(R.id.editTextCorreoUsuario);
+                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                            EditText editTextTelefonoUsuario = customView.findViewById(R.id.editTextTelefonoUsuario);
+                            Spinner opcionesActualizarRol = customView.findViewById(R.id.opcionesActualizarRol);
+                            Button BotonActualizarUsuario = customView.findViewById(R.id.BotonActualizarUsuario);
+                            ImageView btnMostrarClave = customView.findViewById(R.id.VerClave);
+
+                            editTextNombreUsuario.setText(nombre);
+                            editTextCorreoUsuario.setText(correo);
+                            editTextTelefonoUsuario.setText(telefono);
+                            editTextClaveUsuario.setText(clave);
+                            editTextClaveUsuario.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                            btnMostrarClave.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (editTextClaveUsuario.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
+                                        // Si la contraseña está oculta, mostrarla
+                                        editTextClaveUsuario.setTransformationMethod(null);
+                                    } else {
+                                        // Si la contraseña se muestra, ocultarla
+                                        editTextClaveUsuario.setTransformationMethod(PasswordTransformationMethod.getInstance());
                                     }
-                                });
+                                }
+                            });
 
 
-                                btnMostrarClave.setVisibility(View.VISIBLE);
-                                editTextNombreUsuario.setVisibility(View.VISIBLE);
-                                editTextCorreoUsuario.setVisibility(View.VISIBLE);
-                                editTextClaveUsuario.setVisibility(View.VISIBLE);
-                                editTextTelefonoUsuario.setVisibility(View.VISIBLE);
-                                opcionesActualizarRol.setVisibility(View.VISIBLE);
+                            btnMostrarClave.setVisibility(View.VISIBLE);
+                            editTextNombreUsuario.setVisibility(View.VISIBLE);
+                            editTextCorreoUsuario.setVisibility(View.VISIBLE);
+                            editTextClaveUsuario.setVisibility(View.VISIBLE);
+                            editTextTelefonoUsuario.setVisibility(View.VISIBLE);
+                            opcionesActualizarRol.setVisibility(View.VISIBLE);
 
-                                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
-                                        R.array.opciones_rol, android.R.layout.simple_spinner_item);
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                opcionesActualizarRol.setAdapter(adapter);
-                                BotonActualizarUsuario.setVisibility(View.VISIBLE);
+                            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
+                                    R.array.opciones_rol, android.R.layout.simple_spinner_item);
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            opcionesActualizarRol.setAdapter(adapter);
+                            BotonActualizarUsuario.setVisibility(View.VISIBLE);
 
-                                dialogConBotones.show(); // Muestra el diálogo
+                            dialogConBotones.show(); // Muestra el diálogo
 
-                                BotonActualizarUsuario.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
+                            BotonActualizarUsuario.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
 
-                                        String nuevoNombreUsuario = editTextNombreUsuario.getText().toString();
-                                        String nuevoCorreoUsuario = editTextCorreoUsuario.getText().toString();
-                                        String nuevaClaveUsuario = editTextClaveUsuario.getText().toString();
-                                        String nuevOTelefonoUsuario = editTextTelefonoUsuario.getText().toString().replaceAll(" ", "");
-                                        String nuevoRolUsuario = opcionesActualizarRol.getSelectedItem().toString();
+                                    String nuevoNombreUsuario = editTextNombreUsuario.getText().toString();
+                                    String nuevoCorreoUsuario = editTextCorreoUsuario.getText().toString();
+                                    String nuevaClaveUsuario = editTextClaveUsuario.getText().toString();
+                                    String nuevOTelefonoUsuario = editTextTelefonoUsuario.getText().toString().replaceAll(" ", "");
+                                    String nuevoRolUsuario = opcionesActualizarRol.getSelectedItem().toString();
 
-                                        if (nuevoNombreUsuario.isEmpty() || nuevoCorreoUsuario.isEmpty() || nuevaClaveUsuario.isEmpty() || nuevOTelefonoUsuario.isEmpty() || nuevoRolUsuario.isEmpty()) {
-                                            Toast.makeText(view.getContext(), "No puedes ingresar campos vacios", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            actionListener.onEditarUsuarioActivity(ID_usuario, nuevoNombreUsuario, nuevoCorreoUsuario, nuevaClaveUsuario, nuevOTelefonoUsuario, nuevoRolUsuario);
-                                            dialogConBotones.dismiss();
-                                        }
-
-                                    }
-                                });
-
-                            }
-                        });
-
-
-                        LayoutActualizarFoto.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                LayoutVerActividades.setVisibility(View.GONE);
-                                LayoutEliminar.setVisibility(View.GONE);
-                                LayoutEditar.setVisibility(View.GONE);
-                                BotonActualizarFotoUsuario.setVisibility(View.VISIBLE);
-
-
-                                BotonActualizarFotoUsuario.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        // Crear un Intent y adjuntar el Bundle
-                                        Intent intent = new Intent(v.getContext(), SubirFotoUsuarioActivity.class);
-                                        intent.putExtras(bundle);
-                                        v.getContext().startActivity(intent);
-                                    }
-                                });
-
-                            }
-                        });
-
-
-                        LayoutEliminar.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Crear un AlertDialog
-                                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                builder.setTitle("Confirmar Eliminación");
-                                builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
-
-                                // Agregar el botón de Aceptar
-                                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                        //     EliminarUsuario(ID_usuario, view.getContext(), holder);
-                                        actionListener.onEliminarUsuarioActivity(ID_usuario);
+                                    if (nuevoNombreUsuario.isEmpty() || nuevoCorreoUsuario.isEmpty() || nuevaClaveUsuario.isEmpty() || nuevOTelefonoUsuario.isEmpty() || nuevoRolUsuario.isEmpty()) {
+                                        Toast.makeText(view.getContext(), "No puedes ingresar campos vacios", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        actionListener.onEditarUsuarioActivity(ID_usuario, nuevoNombreUsuario, nuevoCorreoUsuario, nuevaClaveUsuario, nuevOTelefonoUsuario, nuevoRolUsuario);
                                         dialogConBotones.dismiss();
                                     }
-                                });
 
-                                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
+                                }
+                            });
 
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
-                            }
-                        });
+                        }
+                    });
 
 
-                        LayoutVerActividades.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                ActividadesPorUsuarioFragment actividadesPorUsuarioFragment = new ActividadesPorUsuarioFragment();
-                                actividadesPorUsuarioFragment.setArguments(bundle);
-
-                                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                                fragmentManager.beginTransaction()
-                                        .replace(R.id.frame_layouts_fragments, actividadesPorUsuarioFragment)
-                                        .addToBackStack(null)
-                                        .commit();
-
-                                dialogConBotones.dismiss();
-                            }
-                        });
+                    LayoutActualizarFoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            LayoutVerActividades.setVisibility(View.GONE);
+                            LayoutEliminar.setVisibility(View.GONE);
+                            LayoutEditar.setVisibility(View.GONE);
+                            BotonActualizarFotoUsuario.setVisibility(View.VISIBLE);
 
 
-                        builder.setNegativeButton("Cancelar", null);
+                            BotonActualizarFotoUsuario.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Crear un Intent y adjuntar el Bundle
+                                    Intent intent = new Intent(v.getContext(), SubirFotoUsuarioActivity.class);
+                                    intent.putExtras(bundle);
+                                    v.getContext().startActivity(intent);
+                                }
+                            });
 
-                        dialogConBotones.show(); // Muestra el diálogo
-                    }
-                });
+                        }
+                    });
 
-            } finally {
 
-            }
+                    LayoutEliminar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                            TextView textViewTituloConfirmacion= customView.findViewById(R.id.textViewTituloConfirmacion);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                            textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar a "+ nombre+ " ?");
+                            builder.setView(ModalRedondeado(context, customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogConfirmacion.show();
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+/*
+                                    actionListener.onDeleteActivity(ID_actividad);
+                                    dialogConfirmacion.dismiss();
+                                    dialogOpcionesDeActividad.dismiss();
+*/
+                                    actionListener.onEliminarUsuarioActivity(ID_usuario, nombre);
+                                    dialogConBotones.dismiss();
+                                }
+                            });
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+/*
+                            // Crear un AlertDialog
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            builder.setTitle("Confirmar Eliminación");
+                            builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
+
+                            // Agregar el botón de Aceptar
+                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    //     EliminarUsuario(ID_usuario, view.getContext(), holder);
+                                    actionListener.onEliminarUsuarioActivity(ID_usuario, nombre);
+                                    dialogConBotones.dismiss();
+                                }
+                            });
+
+                            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+
+ */
+                        }
+                    });
+
+
+                    LayoutVerActividades.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ActividadesPorUsuarioFragment actividadesPorUsuarioFragment = new ActividadesPorUsuarioFragment();
+                            actividadesPorUsuarioFragment.setArguments(bundle);
+
+                            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_layouts_fragments, actividadesPorUsuarioFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+
+                            dialogConBotones.dismiss();
+                        }
+                    });
+
+
+                }
+            });
+
+        } finally {
+
         }
     }
 
 
     @Override
     public int getItemCount() {
-        return filteredData.isEmpty() ? 1 : filteredData.size();
-
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return filteredData.isEmpty() ? VIEW_TYPE_ERROR : VIEW_TYPE_ITEM;
+        return filteredData.size();
     }
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textNombreUsuario, textCorreoUsuario, textRol, textTelefonoUsuario;
-        FrameLayout FrameActividades;
         ImageView fotoDeUsuario;
 
 
@@ -376,7 +410,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     public interface OnActivityActionListener {
         void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario);
 
-        void onEliminarUsuarioActivity(String ID_usuario);
+        void onEliminarUsuarioActivity(String ID_usuario, String nombre);
     }
 
     private AdaptadorUsuarios.OnActivityActionListener actionListener;
@@ -387,7 +421,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         this.filteredData = new ArrayList<>(data);
         this.actionListener = actionListener;
     }
-
 
 }
 
