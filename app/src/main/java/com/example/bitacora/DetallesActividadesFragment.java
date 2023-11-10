@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,6 +52,7 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
+import com.itextpdf.text.pdf.parser.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,11 +80,18 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     String url;
 
     private Handler sliderHandler = new Handler();
+    List<SlideItem> slideItems = new ArrayList<>();
 
-    int colorBlanco,colorAmarillo,colorVerde,colorRojo,colorAzulito,colorNegro,colorGris;
+    int colorBlanco, colorAmarillo, colorVerde, colorRojo, colorAzulito, colorNegro, colorGris;
     ViewPager2 ViewPagerImagenesEvidencia;
 
     Context context;
+    LinearLayout ContenedorEvidencias;
+    LottieAnimationView animacionSinEvidencias;
+    TextView textSinEvidencias;
+
+    LinearLayout EvidenciaMapa;
+    LinearLayout SinEvidenciasMapa;
 
     public static DetallesActividadesFragment newInstance(String param1, String param2) {
         DetallesActividadesFragment fragment = new DetallesActividadesFragment();
@@ -102,6 +111,8 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         }
     }
 
+    String ID_actividad;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,42 +120,42 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
+
         TextView tvNombreActividad = view.findViewById(R.id.tvNombreActividad);
         TextView tvDetallesActividad = view.findViewById(R.id.tvDetallesActividad);
         TextView tvEstadoActividad = view.findViewById(R.id.tvEstadoActividad);
         TextView tvFechaInicio = view.findViewById(R.id.tvFechaInicio);
         TextView tvFechaFinalizado = view.findViewById(R.id.tvFechaFinalizado);
-
-
-        TextView tvMotivoCancelacion = view.findViewById(R.id.tvMotivoCancelacion);
-        LinearLayout  tvCancelacion= view.findViewById(R.id.Cancelacion);
-
-
-        mapView = view.findViewById(R.id.mapView);
         TextView evidenciasDeActividad = view.findViewById(R.id.evidenciasDeActividad);
-
         ViewPagerImagenesEvidencia = view.findViewById(R.id.ViewPagerImagenesEvidencia);
+        TextView tvMotivoCancelacion = view.findViewById(R.id.tvMotivoCancelacion);
+        LinearLayout tvCancelacion = view.findViewById(R.id.Cancelacion);
+        textSinEvidencias = view.findViewById(R.id.textSinEvidencias);
+        animacionSinEvidencias = view.findViewById(R.id.animacionSinEvidencias);
+        ContenedorEvidencias = view.findViewById(R.id.ContenedorEvidencias);
+        EvidenciaMapa = view.findViewById(R.id.EvidenciaMapa);
+        SinEvidenciasMapa = view.findViewById(R.id.SinEvidenciasMapa);
 
-        if (isAdded()) {
-             colorBlanco = ContextCompat.getColor(requireContext(), R.color.white);
-             colorAmarillo = ContextCompat.getColor(requireContext(), R.color.amarillo);
-             colorVerde = ContextCompat.getColor(requireContext(), R.color.verde);
-             colorRojo = ContextCompat.getColor(requireContext(), R.color.rojo);
-             colorAzulito = ContextCompat.getColor(requireContext(), R.color.azulitoSuave);
-             colorNegro = ContextCompat.getColor(requireContext(), R.color.black);
-             colorGris = ContextCompat.getColor(requireContext(), R.color.gris);
-        }
+
+        colorBlanco = ContextCompat.getColor(context, R.color.white);
+        colorAmarillo = ContextCompat.getColor(context, R.color.amarillo);
+        colorVerde = ContextCompat.getColor(context, R.color.verde);
+        colorRojo = ContextCompat.getColor(context, R.color.rojo);
+        colorAzulito = ContextCompat.getColor(context, R.color.azulitoSuave);
+        colorNegro = ContextCompat.getColor(context, R.color.black);
+        colorGris = ContextCompat.getColor(context, R.color.gris);
+
+
         Bundle bundle = getArguments();
         if (bundle != null) {
-            String ID_actividad = bundle.getString("ID_actividad", "");
+            ID_actividad = bundle.getString("ID_actividad", "");
             String ID_usuario = bundle.getString("ID_usuario", "");
             String estadoActividad = bundle.getString("estadoActividad", "");
             String fecha_fin = bundle.getString("fecha_fin", "");
             String fecha_inicio = bundle.getString("fecha_inicio", "");
             String nombre_actividad = bundle.getString("nombre_actividad", "");
             String descripcionActividad = bundle.getString("descripcionActividad", "");
-            String motivocancelacion= bundle.getString("motivocancelacion","");
-
+            String motivocancelacion = bundle.getString("motivocancelacion", "");
 
 
             String nombre = bundle.getString("nombre", "");
@@ -155,6 +166,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
             CargarImagenes(ID_actividad);
             CargarUbicaciones(ID_actividad);
+            mapView = view.findViewById(R.id.mapView);
 
             // Crear un objeto SimpleDateFormat para el formato deseado
             SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -173,10 +185,10 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 Date fechafin = formatoOriginal.parse(fecha_fin);
                 String fechaFormateadafin = formatoDeseado.format(fechafin);
 
-                if(estadoActividad.equalsIgnoreCase("Cancelado")){
+                if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                     tvFechaFinalizado.setText("Cancelada el :" + fechaFormateadafin);
                     tvFechaFinalizado.setTextColor(colorRojo);
-                }else{
+                } else {
                     tvFechaFinalizado.setText("Finalizada el: " + fechaFormateadafin);
                 }
 
@@ -188,10 +200,9 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             tvNombreActividad.setText(nombre_actividad);
 
 
+            tvDetallesActividad.setText("Descripcion de la actividad: " + descripcionActividad);
 
-            tvDetallesActividad.setText("Descripcion de la actividad: "+ descripcionActividad);
-
-            if(estadoActividad.equalsIgnoreCase("Cancelado")){
+            if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                 tvEstadoActividad.setTextColor(colorRojo);
                 tvCancelacion.setVisibility(View.VISIBLE);
                 tvMotivoCancelacion.setVisibility(View.VISIBLE);
@@ -208,12 +219,11 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
 
     private void CargarImagenes(String ID_actividad) {
-
+        slideItems.clear();
         StringRequest stringRequest3 = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        List<SlideItem> slideItems = new ArrayList<>();
 
                         if (!TextUtils.isEmpty(response) || !response.equals("No se encontraron evidencias")) {
                             try {
@@ -251,17 +261,23 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                                     }
                                 });
 
+                                if (slideItems.size() > 0) {
+
+                                    OcultarYMostrar("Evidencias");
+                                } else {
+
+                                    OcultarYMostrar("SinEvidencias");
+                                }
+
+
                             } catch (JSONException e) {
-                                e.printStackTrace();
-                                Log.d("API Response", "Respuesta vacía");
-                                ViewPagerImagenesEvidencia.setVisibility(View.GONE);
+
+                                OcultarYMostrar("SinEvidencias");
                             }
                         } else {
-                            if (isAdded()){
-                                Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
-                            }
 
-                            ViewPagerImagenesEvidencia.setVisibility(View.GONE);
+                            Utils.crearToastPersonalizado(context, "No tienes conexión a internet, no se cargaran las evidencias");
+                            OcultarYMostrar("SinEvidencias");
 
                         }
                     }
@@ -269,9 +285,8 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if (isAdded()){
-                            Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
-                        }
+                        Utils.crearToastPersonalizado(context, "No tienes conexión a internet, no se cargaran las evidencias");
+                        OcultarYMostrar("SinEvidencias");
 
                     }
                 }
@@ -288,6 +303,21 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         RequestQueue requestQueue3 = Volley.newRequestQueue(requireContext());
         requestQueue3.add(stringRequest3);
 
+    }
+
+
+    private void OcultarYMostrar(String estado) {
+
+        if (estado.equalsIgnoreCase("SinEvidencias")) {
+            ContenedorEvidencias.setVisibility(View.GONE);
+            animacionSinEvidencias.setVisibility(View.VISIBLE);
+            textSinEvidencias.setVisibility(View.VISIBLE);
+        } else {
+
+            ContenedorEvidencias.setVisibility(View.VISIBLE);
+            animacionSinEvidencias.setVisibility(View.GONE);
+            textSinEvidencias.setVisibility(View.GONE);
+        }
     }
 
 
@@ -310,7 +340,9 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
                                     Log.d("Coordenadas", "Latitud: " + latitud + ", Longitud: " + longitud);
                                     markerList.add(new Ubicaciones(LATITUD, LONGITUD, "Numero de evidencia de ubicacion: " + ID_ubicacion_actividad));
+
                                 }
+
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -374,6 +406,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         mapView.onLowMemory();
     }
 
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -399,15 +432,23 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 googleMap.addMarker(markerOptions);
             }
             LatLngBounds bounds = builder.build();
-            int padding = 50; // Espacio en píxeles desde los bordes del mapa para los marcadores
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-            googleMap.animateCamera(cu);
+
+            // Espera a que el mapa se realice antes de ajustar la cámara
+            googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    int padding = 50; // Espacio en píxeles desde los bordes del mapa para los marcadores
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    googleMap.animateCamera(cu);
+                }
+            });
         } else {
             // Manejar el caso en el que markerList esté vacío
             // Puedes centrar el mapa en una ubicación predeterminada o mostrar un mensaje de error, por ejemplo.
             Log.d("MARKERLIST: ", "El markerlist está vacío");
         }
     }
+
 
     // Método para obtener la dirección a partir de las coordenadas
     private String getAddressFromLatLng(double lat, double lng) {

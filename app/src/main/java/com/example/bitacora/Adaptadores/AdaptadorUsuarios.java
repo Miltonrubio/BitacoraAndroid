@@ -39,6 +39,7 @@ import com.bumptech.glide.signature.ObjectKey;
 import com.example.bitacora.ActividadesPorUsuarioFragment;
 import com.example.bitacora.R;
 import com.example.bitacora.SubirFotoUsuarioActivity;
+import com.example.bitacora.Utils;
 
 import org.json.JSONObject;
 
@@ -82,10 +83,10 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             bundle.putString("foto_usuario", foto_usuario);
 
 
-            setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
+          //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
             setTextViewText(holder.textRol, permisos, "Permisos no disponible");
             setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
-            setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
+            setTextViewText(holder.textNombreUsuario, nombre.toUpperCase(), "Nombre no disponible");
 
             String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
@@ -120,7 +121,16 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
                     LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
                     LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
-                    Button BotonActualizarFotoUsuario = customView.findViewById(R.id.BotonActualizarFotoUsuario);
+
+                    LayoutActualizarFoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            Intent intent = new Intent(v.getContext(), SubirFotoUsuarioActivity.class);
+                            intent.putExtras(bundle);
+                            v.getContext().startActivity(intent);
+                        }
+                    });
 /*
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -146,8 +156,70 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         @Override
                         public void onClick(View v) {
 
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            View customView = LayoutInflater.from(context).inflate(R.layout.insertar_nuevo_usuario, null);
+                            builder.setView(ModalRedondeado(view.getContext(), customView));
+                            AlertDialog dialogEditar = builder.create();
+                            dialogEditar.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogEditar.show();
+
+
+                            TextView titulo = customView.findViewById(R.id.titulo);
+                            titulo.setText("Estas editanto a " + nombre.toUpperCase());
+                            EditText textViewNombreUsuario = customView.findViewById(R.id.textViewNombreUsuario);
+                            EditText textViewCorreoUsuario = customView.findViewById(R.id.textViewCorreoUsuario);
+                            EditText TextViewClaveUsuario = customView.findViewById(R.id.TextViewClaveUsuario);
+                            EditText TextViewTelefonoUsuario = customView.findViewById(R.id.TextViewTelefonoUsuario);
+                            Spinner spinnerRolUsuario = customView.findViewById(R.id.spinnerRolUsuario);
+                            Button botonAgregarCliente = customView.findViewById(R.id.botonAgregarCliente);
+                            Button botonCancelar = customView.findViewById(R.id.botonCancelar);
+                            //   ImageView btnMostrarClave = customView.findViewById(R.id.VerClave);
+                            textViewNombreUsuario.setText(nombre);
+                            textViewCorreoUsuario.setText(correo);
+                            TextViewTelefonoUsuario.setText(telefono);
+                            TextViewClaveUsuario.setText(clave);
+
+                            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
+                                    R.array.opciones_rol, android.R.layout.simple_spinner_item);
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            spinnerRolUsuario.setAdapter(adapter);
+
+                            botonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogEditar.dismiss();
+                                }
+                            });
+
+                            botonAgregarCliente.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    String nuevoNombreUsuario = textViewNombreUsuario.getText().toString();
+                                    String nuevoCorreoUsuario = textViewCorreoUsuario.getText().toString();
+                                    String nuevaClaveUsuario = TextViewClaveUsuario.getText().toString();
+                                    String nuevOTelefonoUsuario = TextViewTelefonoUsuario.getText().toString().replaceAll(" ", "");
+                                    String nuevoRolUsuario = spinnerRolUsuario.getSelectedItem().toString();
+
+                                    if (nuevoNombreUsuario.isEmpty() || nuevoCorreoUsuario.isEmpty() || nuevaClaveUsuario.isEmpty() || nuevOTelefonoUsuario.isEmpty() || nuevoRolUsuario.isEmpty()) {
+                                        Utils.crearToastPersonalizado(context, "Tienes campos vacios, por favor rellenalos");
+                                    } else {
+                                        actionListener.onEditarUsuarioActivity(ID_usuario, nuevoNombreUsuario, nuevoCorreoUsuario, nuevaClaveUsuario, nuevOTelefonoUsuario, nuevoRolUsuario);
+                                        dialogConBotones.dismiss();
+                                        dialogEditar.dismiss();
+                                    }
+
+                                }
+                            });
+
+
+
+                            /*
+
                             LayoutVerActividades.setVisibility(View.GONE);
                             LayoutEliminar.setVisibility(View.GONE);
+                            LayoutActualizarFoto.setVisibility(View.GONE);
                             // Hacer visible el EditText
                             EditText editTextNombreUsuario = customView.findViewById(R.id.editTextNombreUsuario);
                             EditText editTextCorreoUsuario = customView.findViewById(R.id.editTextCorreoUsuario);
@@ -189,12 +261,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                             opcionesActualizarRol.setAdapter(adapter);
                             BotonActualizarUsuario.setVisibility(View.VISIBLE);
 
-                            dialogConBotones.show(); // Muestra el diálogo
-
                             BotonActualizarUsuario.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-
                                     String nuevoNombreUsuario = editTextNombreUsuario.getText().toString();
                                     String nuevoCorreoUsuario = editTextCorreoUsuario.getText().toString();
                                     String nuevaClaveUsuario = editTextClaveUsuario.getText().toString();
@@ -218,7 +287,12 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     LayoutActualizarFoto.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            LayoutVerActividades.setVisibility(View.GONE);
+                            Intent intent = new Intent(v.getContext(), SubirFotoUsuarioActivity.class);
+                            intent.putExtras(bundle);
+                            v.getContext().startActivity(intent);
+                            /*
+                                                        LayoutVerActividades.setVisibility(View.GONE);
+
                             LayoutEliminar.setVisibility(View.GONE);
                             LayoutEditar.setVisibility(View.GONE);
                             BotonActualizarFotoUsuario.setVisibility(View.VISIBLE);
@@ -233,6 +307,8 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                     v.getContext().startActivity(intent);
                                 }
                             });
+*/
+
 
                         }
                     });
@@ -245,10 +321,10 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
                             View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
-                            TextView textViewTituloConfirmacion= customView.findViewById(R.id.textViewTituloConfirmacion);
+                            TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
                             Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
                             Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-                            textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar a "+ nombre+ " ?");
+                            textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar a " + nombre + " ?");
                             builder.setView(ModalRedondeado(context, customView));
                             AlertDialog dialogConfirmacion = builder.create();
                             dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -264,13 +340,13 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 */
                                     actionListener.onEliminarUsuarioActivity(ID_usuario, nombre);
                                     dialogConBotones.dismiss();
+                                    dialogConfirmacion.dismiss();
                                 }
                             });
 
                             buttonCancelar.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-
                                     dialogConfirmacion.dismiss();
                                 }
                             });
@@ -348,7 +424,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             super(itemView);
 
             textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
-            textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
+          //  textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
             textRol = itemView.findViewById(R.id.textRol);
             fotoDeUsuario = itemView.findViewById(R.id.fotoDeUsuario);
 

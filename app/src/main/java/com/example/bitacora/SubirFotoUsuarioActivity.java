@@ -60,23 +60,21 @@ import okhttp3.Response;
 
 public class SubirFotoUsuarioActivity extends AppCompatActivity {
 
-    private Handler sliderHandler = new Handler();
-
-    private String urlApi = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    private String url;
 
     ImageView IMGFotoPerfil;
-    private CameraManager cameraManager;
 
     String rutaImagen;
     String ID_usuario, nombre;
     Context context;
-
+/*
+    private CameraManager cameraManager;
     Bitmap bitmapDesdeGaleria;
     int PICK_IMAGE_REQUEST = 2;
     String imageKey = "fotoImagen";
 
     String nombreImagenKey = "nombreFoto";
-
+*/
 
     ImageView imagenDesdeGaleriaIM;
 
@@ -86,6 +84,8 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         context = this;
+        url = context.getResources().getString(R.string.urlApi);
+
         setContentView(R.layout.activity_subir_foto_usuario);
 
         Button btnGuardarFoto = findViewById(R.id.guardarFoto);
@@ -99,11 +99,11 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
 
         if (receivedBundle != null) {
             ID_usuario = receivedBundle.getString("ID_usuario");
-             nombre = receivedBundle.getString("nombre");
+            nombre = receivedBundle.getString("nombre");
 
-            txtId.setText("Actualizando a " + ID_usuario+" "+ nombre);
+            txtId.setText("Actualizando a " + ID_usuario + " " + nombre);
 
-            String imageUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario"+ID_usuario+".jpg";
+            String imageUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
             RequestOptions options = new RequestOptions()
                     .placeholder(R.drawable.imagendefault)
@@ -232,7 +232,7 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
                             RequestBody.create(MediaType.parse("image/jpeg"), imageFile))
                     .build();
             Request request = new Request.Builder()
-                    .url(urlApi)
+                    .url(url)
                     .post(requestBody)
                     .build();
             try {
@@ -253,9 +253,10 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(SubirFotoUsuarioActivity.this, "Imagen de " + nombre + " actualizada", Toast.LENGTH_SHORT).show();
+            Utils.crearToastPersonalizado(context, "Se actualizó la imagen de " + nombre);
             Intent intent = new Intent(SubirFotoUsuarioActivity.this, Activity_Binding.class);
             startActivity(intent);
+            finish();
         }
     }
 

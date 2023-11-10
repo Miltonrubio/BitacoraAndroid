@@ -1,8 +1,12 @@
 package com.example.bitacora;
 
+import static com.example.bitacora.Utils.ModalRedondeado;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -89,9 +95,18 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        /*
         recyclerViewUsuarios.setLayoutManager(new LinearLayoutManager(context));
         adaptadorUsuarios = new AdaptadorUsuarios(dataList, context, this);
         recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
+        */
+
+        GridLayoutManager gridLayoutManagerDelantero = new GridLayoutManager(context, 2);
+        recyclerViewUsuarios.setLayoutManager(gridLayoutManagerDelantero);
+        adaptadorUsuarios = new AdaptadorUsuarios(dataList, context, this);
+        recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
+
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String ID_usuario = sharedPreferences.getString("ID_usuario", "");
@@ -120,6 +135,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+/*
                 // Crear el AlertDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -128,12 +144,28 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 View dialogView = inflater.inflate(R.layout.insertar_nuevo_usuario, null);
                 builder.setView(dialogView);
 
-                // Obtener las referencias a los EditText dentro del diálogo
-                final EditText textViewNombreUsuario = dialogView.findViewById(R.id.textViewNombreUsuario);
-                final EditText textViewCorreoUsuario = dialogView.findViewById(R.id.textViewCorreoUsuario);
-                final EditText TextViewClaveUsuario = dialogView.findViewById(R.id.TextViewClaveUsuario);
-                final EditText TextViewTelefonoUsuario = dialogView.findViewById(R.id.TextViewTelefonoUsuario);
-                final Spinner spinnerRolUsuario = dialogView.findViewById(R.id.spinnerRolUsuario);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                */
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                View customView = LayoutInflater.from(context).inflate(R.layout.insertar_nuevo_usuario, null);
+                builder.setView(ModalRedondeado(view.getContext(), customView));
+                AlertDialog dialogActividades = builder.create();
+                dialogActividades.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialogActividades.show();
+
+                EditText textViewNombreUsuario = customView.findViewById(R.id.textViewNombreUsuario);
+                EditText textViewCorreoUsuario = customView.findViewById(R.id.textViewCorreoUsuario);
+                EditText TextViewClaveUsuario = customView.findViewById(R.id.TextViewClaveUsuario);
+                EditText TextViewTelefonoUsuario = customView.findViewById(R.id.TextViewTelefonoUsuario);
+                Spinner spinnerRolUsuario = customView.findViewById(R.id.spinnerRolUsuario);
+
+
+                Button botonCancelar = customView.findViewById(R.id.botonCancelar);
+                Button botonAgregarCliente = customView.findViewById(R.id.botonAgregarCliente);
+
 
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
                         R.array.opciones_rol, android.R.layout.simple_spinner_item);
@@ -142,6 +174,37 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 // Establece el ArrayAdapter en el Spinner
                 spinnerRolUsuario.setAdapter(adapter);
 
+
+                botonCancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogActividades.dismiss();
+                    }
+                });
+
+
+                botonAgregarCliente.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String nombreUsuario = textViewNombreUsuario.getText().toString();
+                        String correoUsuario = textViewCorreoUsuario.getText().toString();
+                        String ClaveUsuario = TextViewClaveUsuario.getText().toString();
+                        String TelefonoUsuario = TextViewTelefonoUsuario.getText().toString().replaceAll(" ", "");
+                        String RolUsuario = spinnerRolUsuario.getSelectedItem().toString();
+
+                        if (nombreUsuario.isEmpty() || correoUsuario.isEmpty() || ClaveUsuario.isEmpty() || TelefonoUsuario.isEmpty()) {
+
+                            Utils.crearToastPersonalizado(context, "Tienes campos vacios, por favor rellenalos");
+
+
+                        } else {
+
+                            AgregarNuevoUsuario(nombreUsuario, correoUsuario, ClaveUsuario, TelefonoUsuario, RolUsuario, dialogActividades);
+                        }
+                    }
+                });
+
+                /*
                 builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -161,12 +224,11 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                         }
                     }
                 });
-                builder.setNegativeButton("Cancelar", null);
+             */
 
-                // Mostrar el AlertDialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
+
             }
+
         });
 
     }
@@ -249,21 +311,18 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    private void AgregarNuevoUsuario(String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String permisos) {
+    private void AgregarNuevoUsuario(String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String permisos, AlertDialog dialogActividades) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
                 if (response.equals("Error: El correo, nombre o teléfono ya existen en la base de datos.")) {
 
-                    if (isAdded()) {
-                        Toast.makeText(requireContext(), "No puedes insertar Datos repetidos", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
+                    Utils.crearToastPersonalizado(context, "No puedes insertar Datos repetidos");
 
-                    if (isAdded()) {
-                        Toast.makeText(requireContext(), "Insertado Correctamente", Toast.LENGTH_SHORT).show();
-                    }
+                } else {
+                    Utils.crearToastPersonalizado(context, "Insertado Correctamente");
+                    dialogActividades.dismiss();
                     MostrarUsuarios();
                 }
 
@@ -271,11 +330,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-
-                if (isAdded()) {
-                    Toast.makeText(requireContext(), "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
-                }
+                Utils.crearToastPersonalizado(context, "No se agrego, revisa la conexión");
 
             }
         }) {
@@ -291,7 +346,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             }
         };
 
-        Volley.newRequestQueue(requireContext()).add(postrequest);
+        Volley.newRequestQueue(context).add(postrequest);
     }
 
 
@@ -342,7 +397,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
             @Override
             public void onResponse(String response) {
                 MostrarUsuarios();
-                Utils.crearToastPersonalizado(context, "Se actualizo a "+ nombreUsuario);
+                Utils.crearToastPersonalizado(context, "Se actualizo a " + nombreUsuario);
             }
         }, new Response.ErrorListener() {
             @Override

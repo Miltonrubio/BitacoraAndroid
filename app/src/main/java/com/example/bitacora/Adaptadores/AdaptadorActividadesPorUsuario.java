@@ -52,10 +52,6 @@ import java.util.Map;
 public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<AdaptadorActividadesPorUsuario.ViewHolder> {
 
     private ArrayList<String> nombresActividades = new ArrayList<>();
-    String siguienteEstado = "";
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
-    private static final int VIEW_TYPE_ERROR = 0;
-    private static final int VIEW_TYPE_ITEM = 1;
 
     private Context context;
 
@@ -75,14 +71,8 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
 
-        if (viewType == VIEW_TYPE_ITEM) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_actividades, parent, false);
-            return new ViewHolder(view);
-        } else {
-
-            View errorView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_error, parent, false);
-            return new ViewHolder(errorView);
-        }
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_actividades, parent, false);
+        return new ViewHolder(view);
 
     }
 
@@ -92,130 +82,145 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         Context context = holder.itemView.getContext();
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-
         String permisosUsuario = sharedPreferences.getString("permisos", "");
 
-        if (getItemViewType(position) == VIEW_TYPE_ITEM) {
+        try {
+            JSONObject jsonObject2 = filteredData.get(position);
+            String ID_actividad = jsonObject2.optString("ID_actividad", "");
+            String ID_nombre_actividad = jsonObject2.optString("ID_nombre_actividad", "");
+            String ID_usuario = jsonObject2.optString("ID_usuario", "");
+            String fecha_inicio = jsonObject2.optString("fecha_inicio", "");
+            String fecha_fin = jsonObject2.optString("fecha_fin", "");
+            String estadoActividad = jsonObject2.optString("estadoActividad", "");
+            String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
+            String descripcionActividad = jsonObject2.optString("descripcionActividad", "");
+            String permisos = jsonObject2.optString("permisos", "");
+            String nombre = jsonObject2.optString("nombre", "");
+            String correo = jsonObject2.optString("correo", "");
+            String telefono = jsonObject2.optString("telefono", "");
+            String foto_usuario = jsonObject2.optString("foto_usuario", "");
+            String motivocancelacion = jsonObject2.optString("motivocancelacion", "");
+
+            Bundle bundle = new Bundle();
+            bundle.putString("ID_actividad", ID_actividad);
+            bundle.putString("ID_usuario", ID_usuario);
+            bundle.putString("estadoActividad", estadoActividad);
+            bundle.putString("fecha_fin", fecha_fin);
+            bundle.putString("fecha_inicio", fecha_inicio);
+            bundle.putString("nombre_actividad", nombre_actividad);
+            bundle.putString("descripcionActividad", descripcionActividad);
+            bundle.putString("permisos", permisos);
+            bundle.putString("nombre", nombre);
+            bundle.putString("correo", correo);
+            bundle.putString("telefono", telefono);
+            bundle.putString("foto_usuario", foto_usuario);
+            bundle.putString("motivocancelacion", motivocancelacion);
+
+            if (!permisosUsuario.equals("SUPERADMIN")) {
+                holder.textNombreUsuario.setVisibility(View.GONE);
+                holder.textIdActividad.setVisibility(View.GONE);
+                holder.textTelefonoUsuario.setVisibility(View.GONE);
+            }
+
+            setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
+            setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
+
+            SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", Locale.getDefault());
+
             try {
-                JSONObject jsonObject2 = filteredData.get(position);
-                String ID_actividad = jsonObject2.optString("ID_actividad", "");
-                String ID_nombre_actividad = jsonObject2.optString("ID_nombre_actividad", "");
-                String ID_usuario = jsonObject2.optString("ID_usuario", "");
-                String fecha_inicio = jsonObject2.optString("fecha_inicio", "");
-                String fecha_fin = jsonObject2.optString("fecha_fin", "");
-                String estadoActividad = jsonObject2.optString("estadoActividad", "");
-                String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
-                String descripcionActividad = jsonObject2.optString("descripcionActividad", "");
-                String permisos = jsonObject2.optString("permisos", "");
-                String nombre = jsonObject2.optString("nombre", "");
-                String correo = jsonObject2.optString("correo", "");
-                String telefono = jsonObject2.optString("telefono", "");
-                String foto_usuario = jsonObject2.optString("foto_usuario", "");
-                String motivocancelacion = jsonObject2.optString("motivocancelacion", "");
-
-                Bundle bundle = new Bundle();
-                bundle.putString("ID_actividad", ID_actividad);
-                bundle.putString("ID_usuario", ID_usuario);
-                bundle.putString("estadoActividad", estadoActividad);
-                bundle.putString("fecha_fin", fecha_fin);
-                bundle.putString("fecha_inicio", fecha_inicio);
-                bundle.putString("nombre_actividad", nombre_actividad);
-                bundle.putString("descripcionActividad", descripcionActividad);
-                bundle.putString("permisos", permisos);
-                bundle.putString("nombre", nombre);
-                bundle.putString("correo", correo);
-                bundle.putString("telefono", telefono);
-                bundle.putString("foto_usuario", foto_usuario);
-                bundle.putString("motivocancelacion", motivocancelacion);
-
-                if (!permisosUsuario.equals("SUPERADMIN")) {
-                    holder.textNombreUsuario.setVisibility(View.GONE);
-                    holder.textIdActividad.setVisibility(View.GONE);
-                    holder.textTelefonoUsuario.setVisibility(View.GONE);
-                }
-
-                setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
-                setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
-
-                SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", Locale.getDefault());
-
-                try {
-                    Date fecha = formatoOriginal.parse(fecha_inicio);
-                    String fechaFormateada = "Iniciada el: " + formatoDeseado.format(fecha);
-                    setTextViewText(holder.textFechaActividad, fechaFormateada, "Aun no se ha iniciado la actividad");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Date fecha = formatoOriginal.parse(fecha_inicio);
+                String fechaFormateada = "Iniciada el: " + formatoDeseado.format(fecha);
+                setTextViewText(holder.textFechaActividad, fechaFormateada, "Aun no se ha iniciado la actividad");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
-                try {
-                    Date fecha = formatoOriginal.parse(fecha_fin);
-
-                    if (estadoActividad.equalsIgnoreCase("Cancelado")){
-
-                        String fechaFormateadafin = "Cancelada el: " + formatoDeseado.format(fecha);
-                        setTextViewText(holder.textFechaFin, fechaFormateadafin, "No se encontro la fecha la actividad");
-                    }else{
-
-                        String fechaFormateadafin = "Finalizada el: " + formatoDeseado.format(fecha);
-                        setTextViewText(holder.textFechaFin, fechaFormateadafin, "Aun no se ha finalizado la actividad");
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-                setTextViewText(holder.textStatus, estadoActividad.toUpperCase(), "Estado no disponible");
+            try {
+                Date fecha = formatoOriginal.parse(fecha_fin);
 
                 if (estadoActividad.equalsIgnoreCase("Cancelado")) {
-                    holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.rojo));
-                    holder.textMotivoCancelacion.setVisibility(View.VISIBLE);
-                    setTextViewText(holder.textMotivoCancelacion, motivocancelacion, "No se agrego motivo");
-                    holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackgroundgris);
-                    holder.EstadoCancelado.setVisibility(View.VISIBLE);
-                    holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+
+                    String fechaFormateadafin = "Cancelada el: " + formatoDeseado.format(fecha);
+                    setTextViewText(holder.textFechaFin, fechaFormateadafin, "No se encontro la fecha la actividad");
+                } else {
+
+                    String fechaFormateadafin = "Finalizada el: " + formatoDeseado.format(fecha);
+                    setTextViewText(holder.textFechaFin, fechaFormateadafin, "Aun no se ha finalizado la actividad");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            setTextViewText(holder.textStatus, estadoActividad.toUpperCase(), "Estado no disponible");
+
+            if (estadoActividad.equalsIgnoreCase("Cancelado")) {
+                holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.rojo));
+                holder.textMotivoCancelacion.setVisibility(View.VISIBLE);
+                setTextViewText(holder.textMotivoCancelacion, motivocancelacion, "No se agrego motivo");
+                holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackgroundgris);
+                holder.EstadoCancelado.setVisibility(View.VISIBLE);
+                holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+                holder.EstadoIniciado.setVisibility(View.INVISIBLE);
+                holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+
+            } else {
+                holder.EstadoCancelado.setVisibility(View.INVISIBLE);
+                holder.textMotivoCancelacion.setVisibility(View.GONE);
+                holder.textStatus.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+                holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackground);
+
+                if (estadoActividad.equalsIgnoreCase("Pendiente")) {
+
+                    holder.EstadoPendiente.setVisibility(View.VISIBLE);
                     holder.EstadoIniciado.setVisibility(View.INVISIBLE);
                     holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+                }
+                if (estadoActividad.equalsIgnoreCase("Iniciado")) {
 
-                } else {
-                    holder.EstadoCancelado.setVisibility(View.INVISIBLE);
-                    holder.textMotivoCancelacion.setVisibility(View.GONE);
-                    holder.textStatus.setTextColor(ContextCompat.getColor(context, android.R.color.black));
-                    holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackground);
+                    holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+                    holder.EstadoIniciado.setVisibility(View.VISIBLE);
+                    holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+                }
+                if (estadoActividad.equalsIgnoreCase("Finalizado")) {
 
-                    if (estadoActividad.equalsIgnoreCase("Pendiente")) {
-
-                        holder.EstadoPendiente.setVisibility(View.VISIBLE);
-                        holder.EstadoIniciado.setVisibility(View.INVISIBLE);
-                        holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
-                    }
-                    if (estadoActividad.equalsIgnoreCase("Iniciado")) {
-
-                        holder.EstadoPendiente.setVisibility(View.INVISIBLE);
-                        holder.EstadoIniciado.setVisibility(View.VISIBLE);
-                        holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
-                    }
-                    if (estadoActividad.equalsIgnoreCase("Finalizado")) {
-
-                        holder.EstadoPendiente.setVisibility(View.INVISIBLE);
-                        holder.EstadoIniciado.setVisibility(View.INVISIBLE);
-                        holder.EstadoFinalizado.setVisibility(View.VISIBLE);
-                    }
-
+                    holder.EstadoPendiente.setVisibility(View.INVISIBLE);
+                    holder.EstadoIniciado.setVisibility(View.INVISIBLE);
+                    holder.EstadoFinalizado.setVisibility(View.VISIBLE);
                 }
 
+            }
 
-                setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
-                setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad no disponible");
 
-                if (ID_actividad.isEmpty() || ID_actividad.equals("null")) {
+            setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
+            setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad no disponible");
 
-                    setTextViewText(holder.textIdActividad, "ID no disponible", "ID no disponible");
-                } else {
-                    setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
+            if (ID_actividad.isEmpty() || ID_actividad.equals("null")) {
+
+                setTextViewText(holder.textIdActividad, "ID no disponible", "ID no disponible");
+            } else {
+                setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
+            }
+
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                    detallesActividadesFragment.setArguments(bundle);
+
+                    FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                            .addToBackStack(null)
+                            .commit();
+
                 }
+            });
+                /*
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -281,11 +286,11 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                         dialog.show(); // Muestra el diálogo
                     }
                 });
+*/
+        } finally {
 
-            } finally {
-
-            }
         }
+
     }
 
 
@@ -293,13 +298,8 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     public int getItemCount() {
 
         //return filteredData.size();
-        return filteredData.isEmpty() ? 1 : filteredData.size();
+        return filteredData.size();
 
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return filteredData.isEmpty() ? VIEW_TYPE_ERROR : VIEW_TYPE_ITEM;
     }
 
 
@@ -326,7 +326,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             EstadoFinalizado = itemView.findViewById(R.id.EstadoFinalizado);
             EstadoIniciado = itemView.findViewById(R.id.EstadoIniciado);
             EstadoPendiente = itemView.findViewById(R.id.EstadoPendiente);
-            EstadoCancelado= itemView.findViewById(R.id.EstadoCancelado);
+            EstadoCancelado = itemView.findViewById(R.id.EstadoCancelado);
             textMotivoCancelacion = itemView.findViewById(R.id.textMotivoCancelacion);
 
         }
@@ -388,15 +388,15 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         }
     }
 
-
+/*
     private void VerNombresActividades(Context context) {
+        nombresActividades.clear();
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-                    nombresActividades.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String ID_nombre_actividad = jsonObject.getString("ID_nombre_actividad");
@@ -436,7 +436,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         }
         return null;
     }
-
+*/
 
 }
 

@@ -32,8 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:paddingStart="12dp"
-                    >
+                    android:paddingStart="12dp">
 
                     <TextView
                         android:id="@+id/tvNombreActividad"
@@ -96,6 +95,7 @@
                 android:text="HOY"
                 app:elevation="6dp" />
         </FrameLayout>
+
         <FrameLayout
             android:id="@+id/frameLayoutSemana"
             android:layout_width="0dp"
@@ -113,6 +113,7 @@
                 android:text="SEM"
                 app:elevation="6dp" />
         </FrameLayout>
+
         <FrameLayout
             android:id="@+id/frameLayoutMes"
             android:layout_width="0dp"
@@ -161,15 +162,52 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvActividadesUsuario"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieNoInternet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="nointernet.json"
+            app:lottie_imageAssetsFolder="assets"
+            app:lottie_loop="true" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieNoActividades"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="noActividades.json"
+            app:lottie_imageAssetsFolder="assets"
+            app:lottie_loop="true" />
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabBotonFlotante"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:backgroundTint="@color/naranjita"
             android:layout_margin="16dp"
+            android:backgroundTint="@color/naranjita"
             android:src="@drawable/baseline_picture_as_pdf_24"
             app:elevation="6dp" />
 

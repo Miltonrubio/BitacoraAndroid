@@ -8,6 +8,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
 import android.content.Context;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -91,8 +93,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     int versionSDK = Build.VERSION.SDK_INT;
 
 
-    private Runnable runnableRecargarDatos;
-
     public ActividadesPorUsuarioFragment() {
     }
 
@@ -104,6 +104,22 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
     Context context;
+    RecyclerView rvActividadesUsuario;
+    LottieAnimationView lottieNoActividades;
+    LottieAnimationView lottieNoInternet;
+
+    AlertDialog.Builder builder;
+
+    AlertDialog modalCargando;
+
+    Calendar calendar = Calendar.getInstance();
+    int year = calendar.get(Calendar.YEAR);
+    int month = calendar.get(Calendar.MONTH) + 1;
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+    String fechaActual = String.format("%04d-%02d-%02d", year, month, day);
+
+
+
 
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
 
@@ -112,13 +128,20 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_actividades_por_usuario, container, false);
 
+        builder = new AlertDialog.Builder(view.getContext());
+        builder.setCancelable(false);
+
         Button btnFiltrarDeHOY = view.findViewById(R.id.btnFiltrarDeHOY);
         Button btnFiltrarDeLaSemana = view.findViewById(R.id.btnFiltrarDeLaSemana);
         Button btnFiltrarPorMes = view.findViewById(R.id.btnFiltrarPorMes);
         Button btnFiltrarDelAnio = view.findViewById(R.id.btnFiltrarDelAnio);
         FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
-        RecyclerView rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
+        rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
         ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
+
+
+        lottieNoActividades = view.findViewById(R.id.lottieNoActividades);
+        lottieNoInternet = view.findViewById(R.id.lottieNoInternet);
 
 
         context = requireContext();
@@ -136,8 +159,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
         rvActividadesUsuario.setLayoutManager(new LinearLayoutManager(getContext()));
-            adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context);
-
+        adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context);
         rvActividadesUsuario.setAdapter(adaptadorActividades);
 
 
@@ -181,7 +203,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                 if (versionSDK > Build.VERSION_CODES.S) {
                     if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
 
-                        Utils.crearToastPersonalizado(context,"No hay actividades para generar el reporte" );
+                        Utils.crearToastPersonalizado(context, "No hay actividades para generar el reporte");
 
                     } else {
                         generarPDF(datosDependiendoDeFecha);
@@ -191,13 +213,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     if (checkPermission()) {
                         if (datosDependiendoDeFecha.isEmpty() || datosDependiendoDeFecha.equals(null)) {
 
-                            Utils.crearToastPersonalizado(context,"No hay actividades para generar el reporte" );
+                            Utils.crearToastPersonalizado(context, "No hay actividades para generar el reporte");
                         } else {
                             generarPDF(datosDependiendoDeFecha);
                         }
                     } else {
                         requestPermissions();
-                        Utils.crearToastPersonalizado(context,"No se pudo dar permisos");
+                        Utils.crearToastPersonalizado(context, "No se pudo dar permisos");
                     }
                 }
             }
@@ -278,6 +300,15 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
+        if (datosDependiendoDeFecha.size() > 0) {
+
+            MostrarAnimaciones("Actividades");
+        } else {
+
+            MostrarAnimaciones("SinActividades");
+        }
+
+
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
 
@@ -309,6 +340,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
+        if (datosDependiendoDeFecha.size() > 0) {
+
+            MostrarAnimaciones("Actividades");
+        } else {
+
+            MostrarAnimaciones("SinActividades");
+        }
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
@@ -340,6 +378,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
+        if (datosDependiendoDeFecha.size() > 0) {
+
+            MostrarAnimaciones("Actividades");
+        } else {
+
+            MostrarAnimaciones("SinActividades");
+        }
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
@@ -368,6 +413,13 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             }
         }
 
+        if (datosDependiendoDeFecha.size() > 0) {
+
+            MostrarAnimaciones("Actividades");
+        } else {
+
+            MostrarAnimaciones("SinActividades");
+        }
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
     }
@@ -644,29 +696,36 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
     private void ActividadesPorUsuario(String ID_usuario) {
+        dataList.clear();
+        modalCargando = Utils.ModalCargando(context, builder);
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-                    dataList.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+
                         dataList.add(jsonObject);
                     }
+
+
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
+
                 } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    MostrarAnimaciones("SinActividades");
 
                 }
-                mostrarDatosDelDiaDeHoy();
+                  mostrarDatosDelDiaDeHoy();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
+                MostrarAnimaciones("SinInternet");
                 Utils.crearToastPersonalizado(context, "No tienes conexion a internet");
 
             }
@@ -682,6 +741,33 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Volley.newRequestQueue(context).add(postrequest);
     }
 
+
+    private void MostrarAnimaciones(String estado) {
+        if (estado.equalsIgnoreCase("SinActividades")) {
+            lottieNoInternet.setVisibility(View.GONE);
+            rvActividadesUsuario.setVisibility(View.GONE);
+            lottieNoActividades.setVisibility(View.VISIBLE);
+
+        } else if (estado.equalsIgnoreCase("SinInternet")) {
+
+            lottieNoInternet.setVisibility(View.VISIBLE);
+            rvActividadesUsuario.setVisibility(View.GONE);
+            lottieNoActividades.setVisibility(View.GONE);
+        } else {
+
+            lottieNoInternet.setVisibility(View.GONE);
+            rvActividadesUsuario.setVisibility(View.VISIBLE);
+            lottieNoActividades.setVisibility(View.GONE);
+        }
+        onLoadComplete();
+    }
+
+
+    public void onLoadComplete() {
+        if (modalCargando.isShowing() && modalCargando != null) {
+            modalCargando.dismiss();
+        }
+    }
 
 }
 

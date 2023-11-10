@@ -71,23 +71,23 @@ public class SubirFotoActivity extends AppCompatActivity {
 
     private Handler sliderHandler = new Handler();
 
-    private String urlApi = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    private String url;
 
     ViewPager2 viewPager2;
-    private CameraManager cameraManager;
 
     String rutaImagen;
     String idActividad, ID_usuario;
     Context context;
 
-
+/*
     //Para api
+    private CameraManager cameraManager;
     Bitmap bitmapDesdeGaleria;
     int PICK_IMAGE_REQUEST = 2;
     String imageKey = "fotoImagen";
 
     String nombreImagenKey = "nombreFoto";
-
+*/
 
     LottieAnimationView lottieSinEvidencias;
     TextView textSinEvidencias;
@@ -98,8 +98,10 @@ public class SubirFotoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        context = this;
         setContentView(R.layout.activity_subir_foto);
+
+        context = this;
+        url = context.getResources().getString(R.string.urlApi);
 
         Button btnGuardarFoto = findViewById(R.id.guardarFoto);
         TextView txtId = findViewById(R.id.txtId);
@@ -227,7 +229,6 @@ public class SubirFotoActivity extends AppCompatActivity {
             Bitmap imageBitmap = bitmaps[0];
 
             OkHttpClient client = new OkHttpClient();
-            String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
 
             String nombreArchivo = "imagen" + System.currentTimeMillis() + ".jpg";
             File imageFile = bitmapToFile(imageBitmap, "image.jpg");
@@ -273,7 +274,7 @@ public class SubirFotoActivity extends AppCompatActivity {
 
     private void CargarImagenes() {
         slideItems.clear();
-        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, urlApi,
+        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, url,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
