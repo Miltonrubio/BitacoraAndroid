@@ -1,6 +1,4 @@
-package com.example.bitacora;
-
-import static com.example.bitacora.Utils.ModalRedondeado;
+package com.bitala.bitacora;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,46 +16,34 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.bitacora.Adaptadores.AdaptadorActividades;
-import com.example.bitacora.Adaptadores.AdaptadorListaActividades;
-import com.example.bitacora.Adaptadores.AdaptadorNombreActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
+import com.bitala.bitacora.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import okhttp3.internal.Util;
 
 public class HomeFragment extends Fragment implements AdaptadorActividades.OnActivityActionListener, AdaptadorListaActividades.OnActivityActionListener {
     List<JSONObject> nombresActividades = new ArrayList<>();
@@ -164,7 +150,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             public void onClick(View v) {
                 builder = new AlertDialog.Builder(view.getContext());
                 View customView = LayoutInflater.from(context).inflate(R.layout.opciones_titulo_actividad, null);
-                builder.setView(ModalRedondeado(view.getContext(), customView));
+                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
 
 
                 RecyclerViewTituloActividades = customView.findViewById(R.id.RecyclerViewTituloActividades);
@@ -203,6 +189,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         });
 
     }
+
+
 
 
     private void VerNombresActividades(Context contextModal) {

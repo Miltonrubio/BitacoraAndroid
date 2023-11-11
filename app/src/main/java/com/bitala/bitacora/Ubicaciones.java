@@ -1,4 +1,4 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 
 public class Ubicaciones {

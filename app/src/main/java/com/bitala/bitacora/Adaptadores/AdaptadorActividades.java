@@ -1,15 +1,14 @@
-package com.example.bitacora.Adaptadores;
+package com.bitala.bitacora.Adaptadores;
 
 
 import static android.app.PendingIntent.getActivity;
 
-import static com.example.bitacora.Utils.ModalRedondeado;
-import static com.example.bitacora.Utils.crearToastPersonalizado;
+import static com.bitala.bitacora.Utils.ModalRedondeado;
+import static com.bitala.bitacora.Utils.crearToastPersonalizado;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,7 +16,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -45,10 +42,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.bitacora.DetallesActividadesFragment;
-import com.example.bitacora.R;
-import com.example.bitacora.SubirFotoActivity;
-import com.example.bitacora.Utils;
+import com.bitala.bitacora.DetallesActividadesFragment;
+import com.bitala.bitacora.R;
+import com.bitala.bitacora.SubirFotoActivity;
+import com.bitala.bitacora.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -96,6 +93,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         String nombresesioniniciada = sharedPreferences.getString("nombre", "");
         IDSesionIniciada = sharedPreferences.getString("ID_usuario", "");
 
+        holder.textMotivoCancelacion.setVisibility(View.GONE);
+
         try {
             JSONObject jsonObject2 = filteredData.get(position);
             String ID_actividad = jsonObject2.optString("ID_actividad", "");
@@ -128,21 +127,16 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
             if (!permisosUsuario.equals("SUPERADMIN")) {
-                holder.textNombreUsuario.setVisibility(View.GONE);
                 holder.textIdActividad.setVisibility(View.GONE);
-                holder.textTelefonoUsuario.setVisibility(View.GONE);
             }
 
-            setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
             setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
 
-
             if (!estadoActividad.equalsIgnoreCase("Pendiente")) {
-                //Fecha de Fin
+
                 SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                 SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy HH:mm", Locale.getDefault());
                 SimpleDateFormat formatoFin = new SimpleDateFormat("'Finalizada el ' dd 'de' MMMM 'de' yyyy  HH:mm", Locale.getDefault());
-
                 try {
                     Date fecha = formatoOriginal.parse(fecha_fin);
                     String fechaFormateada = formatoFin.format(fecha);
@@ -151,7 +145,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 //Fecha de Inicio
 
                 try {
@@ -164,7 +157,21 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 }
 
                 holder.textFechaFin.setVisibility(View.VISIBLE);
+
+
+                int colorIcono = ContextCompat.getColor(context, R.color.black);
+                int drawableResId = R.drawable.baseline_checklist_24;
+                holder.ImagenDeEstado.setImageResource(drawableResId);
+                holder.ImagenDeEstado.setColorFilter(colorIcono);
+                holder.textStatus.setTextColor(colorIcono);
+
             } else {
+
+                int colorIcono = ContextCompat.getColor(context, R.color.amarillo);
+                int drawableResId = R.drawable.baseline_access_time_24;
+                holder.ImagenDeEstado.setImageResource(drawableResId);
+                holder.ImagenDeEstado.setColorFilter(colorIcono);
+                holder.textStatus.setTextColor(colorIcono);
 
                 setTextViewText(holder.textFechaActividad, "Aun no se inicia la actividad", "Fecha no disponible");
                 holder.textFechaFin.setVisibility(View.GONE);
@@ -174,7 +181,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             setTextViewText(holder.textStatus, estadoActividad.toUpperCase(), "Estado no disponible");
             actualizarEstadoYVista(holder, estadoActividad);
 
-            setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
             setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad sin descripcion");
 
             if (ID_actividad.isEmpty() || ID_actividad.equals("null")) {
@@ -319,9 +325,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 Button buttonCancelar = dialogView.findViewById(R.id.buttonCancelar);
                                 Button buttonAceptar = dialogView.findViewById(R.id.buttonAceptar);
 
+                                TextView tituloCancelacion = dialogView.findViewById(R.id.tituloCancelacion);
+                                tituloCancelacion.setText("Agrega el motivo para cancelar la actividad "+ nombre_actividad+ ":");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                                 builder.setView(ModalRedondeado(view.getContext(), dialogView));
-
                                 AlertDialog dialogCancelacion = builder.create();
                                 dialogCancelacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                 dialogCancelacion.show();
@@ -330,16 +337,45 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 buttonAceptar.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        String userInput = editText.getText().toString();
-                                        if (userInput.isEmpty() || userInput.equals("")) {
-                                            Utils.crearToastPersonalizado(context, "Por favor ingresa el motivo de la cancelacion");
-                                        } else {
-                                            String selectedEstado = "Cancelado";
-                                            actionListener.onCancelarActividadesActivity(ID_actividad, selectedEstado, userInput);
-                                            dialogCancelacion.dismiss();
-                                            dialogOpcionesDeActividad.dismiss();
 
-                                        }
+
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                        View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                                        TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                                        Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                        Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                                        textViewTituloConfirmacion.setText("¿Estas seguro que deseas cancelar la actividad " + nombre_actividad + " ?");
+                                        builder.setView(Utils.ModalRedondeado(context, customView));
+                                        AlertDialog dialogConfirmacion = builder.create();
+                                        dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                        dialogConfirmacion.show();
+
+
+                                        buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                dialogConfirmacion.dismiss();
+                                            }
+                                        });
+
+                                        buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+
+                                                String userInput = editText.getText().toString();
+                                                if (userInput.isEmpty() || userInput.equals("")) {
+                                                    Utils.crearToastPersonalizado(context, "Por favor ingresa el motivo de la cancelacion");
+                                                } else {
+                                                    String selectedEstado = "Cancelado";
+                                                    actionListener.onCancelarActividadesActivity(ID_actividad, selectedEstado, userInput);
+                                                    dialogCancelacion.dismiss();
+                                                    dialogOpcionesDeActividad.dismiss();
+                                                    dialogConfirmacion.dismiss();
+
+                                                }
+                                            }
+                                        });
+
                                     }
                                 });
 
@@ -1251,28 +1287,41 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         if (estadoActividad.equals("Pendiente")) {
             int colorAmarillo = ContextCompat.getColor(context, R.color.amarillo);
 
+            /*
             holder.EstadoPendiente.setVisibility(View.VISIBLE);
             holder.EstadoIniciado.setVisibility(View.INVISIBLE);
             holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+
+             */
             holder.textStatus.setTextColor(colorAmarillo);
 
         } else if (estadoActividad.equals("Iniciado")) {
             int colorNegro = ContextCompat.getColor(context, R.color.black);
+            /*
 
             holder.EstadoPendiente.setVisibility(View.INVISIBLE);
             holder.EstadoIniciado.setVisibility(View.VISIBLE);
             holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
-            holder.textStatus.setTextColor(colorNegro);
 
+             */
+
+            holder.textStatus.setTextColor(colorNegro);
         } else if (estadoActividad.equals("Finalizado")) {
+
+            /*
+
             holder.EstadoPendiente.setVisibility(View.INVISIBLE);
             holder.EstadoIniciado.setVisibility(View.INVISIBLE);
             holder.EstadoFinalizado.setVisibility(View.VISIBLE);
-            holder.textStatus.setTextColor(colorVerde);
+             */
 
+            holder.textStatus.setTextColor(colorVerde);
         } else if (estadoActividad.equals("Cancelado")) {
+
             int colorRojo = ContextCompat.getColor(context, R.color.rojo);
             holder.textStatus.setTextColor(colorRojo);
+
+
         } else {
             int colorRojo = ContextCompat.getColor(context, R.color.rojo);
             holder.textStatus.setTextColor(colorRojo);
@@ -1287,14 +1336,16 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
+        TextView textFechaActividad, textStatus, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
         FrameLayout FrameActividades;
 
-        ImageView IMNoInternet, EstadoFinalizado, EstadoIniciado, EstadoPendiente;
+        ImageView IMNoInternet; //, EstadoFinalizado, EstadoIniciado, EstadoPendiente;
 
         TextView errorMessageTextView;
         Button myButton;
+        ImageView ImagenDeEstado;
 
+        TextView textMotivoCancelacion;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -1302,15 +1353,18 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             textFechaActividad = itemView.findViewById(R.id.textFechaActividad);
             textStatus = itemView.findViewById(R.id.textStatus);
             IMNoInternet = itemView.findViewById(R.id.IMNoInternet);
-            textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
-            textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
             textActividad = itemView.findViewById(R.id.textActividad);
             FrameActividades = itemView.findViewById(R.id.FrameActividades);
             textDetallesActividad = itemView.findViewById(R.id.textDetallesActividad);
             textIdActividad = itemView.findViewById(R.id.textIdActividad);
+            textMotivoCancelacion = itemView.findViewById(R.id.textMotivoCancelacion);
+            /*
             EstadoFinalizado = itemView.findViewById(R.id.EstadoFinalizado);
             EstadoIniciado = itemView.findViewById(R.id.EstadoIniciado);
             EstadoPendiente = itemView.findViewById(R.id.EstadoPendiente);
+
+             */
+            ImagenDeEstado = itemView.findViewById(R.id.ImagenDeEstado);
             textFechaFin = itemView.findViewById(R.id.textFechaFin);
 
             myButton = itemView.findViewById(R.id.myButton);
@@ -1462,7 +1516,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
         void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
-
 
     }
 

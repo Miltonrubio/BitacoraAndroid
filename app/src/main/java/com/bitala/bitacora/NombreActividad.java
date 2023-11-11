@@ -1,4 +1,4 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 public class NombreActividad {
     private String ID_nombre_actividad;
     private String nombre_actividad;

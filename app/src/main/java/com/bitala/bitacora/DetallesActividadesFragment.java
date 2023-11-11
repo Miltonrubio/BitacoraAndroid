@@ -1,7 +1,6 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -20,11 +19,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
@@ -34,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,17 +39,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.DirectionsApi;
-import com.google.maps.DirectionsApiRequest;
-import com.google.maps.GeoApiContext;
-import com.google.maps.PendingResult;
-import com.google.maps.android.PolyUtil;
-import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
-import com.google.maps.model.TravelMode;
-import com.itextpdf.text.pdf.parser.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -188,19 +174,18 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                     tvFechaFinalizado.setText("Cancelada el :" + fechaFormateadafin);
                     tvFechaFinalizado.setTextColor(colorRojo);
-                } else {
+                } else if ((estadoActividad.equalsIgnoreCase("Finalizada"))){
                     tvFechaFinalizado.setText("Finalizada el: " + fechaFormateadafin);
+                } else {
+                    tvFechaFinalizado.setVisibility(View.GONE);
                 }
-
-
             } catch (Exception e) {
-                e.printStackTrace();
+                tvFechaFinalizado.setVisibility(View.GONE);
             }
-
             tvNombreActividad.setText(nombre_actividad);
 
 
-            tvDetallesActividad.setText("Descripcion de la actividad: " + descripcionActividad);
+            tvDetallesActividad.setText("Descripción de la actividad: \n" + descripcionActividad);
 
             if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                 tvEstadoActividad.setTextColor(colorRojo);

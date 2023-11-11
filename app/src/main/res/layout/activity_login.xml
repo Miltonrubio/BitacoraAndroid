@@ -10,7 +10,7 @@
     android:paddingTop="20dp"
     android:paddingBottom="15dp"
     android:scrollbars="none"
-    tools:context=".LoginActivity">
+    tools:context="com.bitala.bitacora.LoginActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             app:endIconDrawable="@drawable/baseline_lock_24"
-            app:endIconMode="custom">
+            app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordET"
@@ -97,6 +97,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Contraseña"
                 android:inputType="textPassword"
+
                 android:textColor="#1A237E"
                 android:textColorHint="@color/naranja"
                 android:textSize="16sp"

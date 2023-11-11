@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PruebaActivity">
+    tools:context="com.bitala.bitacora.PruebaActivity">
 
     <Button
         android:id="@+id/selectImageButton"

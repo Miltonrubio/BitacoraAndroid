@@ -1,4 +1,4 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+
+import com.bitala.bitacora.R;
 
 public class Utils {
 

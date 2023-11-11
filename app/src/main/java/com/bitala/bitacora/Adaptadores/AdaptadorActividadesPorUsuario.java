@@ -1,4 +1,4 @@
-package com.example.bitacora.Adaptadores;
+package com.bitala.bitacora.Adaptadores;
 
 
 import static android.app.PendingIntent.getActivity;
@@ -11,42 +11,26 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.bitacora.DetallesActividadesFragment;
-import com.example.bitacora.R;
+import com.bitala.bitacora.DetallesActividadesFragment;
+import com.bitala.bitacora.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 
 public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<AdaptadorActividadesPorUsuario.ViewHolder> {
@@ -58,7 +42,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
-
 
     public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context) {
         this.data = data;
@@ -80,6 +63,9 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         Context context = holder.itemView.getContext();
+
+        int drawableResId = 0;
+        int colorIcono = 0;
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String permisosUsuario = sharedPreferences.getString("permisos", "");
@@ -116,21 +102,14 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             bundle.putString("foto_usuario", foto_usuario);
             bundle.putString("motivocancelacion", motivocancelacion);
 
-            if (!permisosUsuario.equals("SUPERADMIN")) {
-                holder.textNombreUsuario.setVisibility(View.GONE);
-                holder.textIdActividad.setVisibility(View.GONE);
-                holder.textTelefonoUsuario.setVisibility(View.GONE);
-            }
 
-            setTextViewText(holder.textNombreUsuario, nombre, "Nombre no disponible");
-            setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
-
+            setTextViewText(holder.textActividad, nombre_actividad.toUpperCase(), "Actividad no disponible");
             SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", Locale.getDefault());
 
             try {
                 Date fecha = formatoOriginal.parse(fecha_inicio);
-                String fechaFormateada = "Iniciada el: " + formatoDeseado.format(fecha);
+                String fechaFormateada = "Inicio: " + formatoDeseado.format(fecha);
                 setTextViewText(holder.textFechaActividad, fechaFormateada, "Aun no se ha iniciado la actividad");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -141,12 +120,11 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                 Date fecha = formatoOriginal.parse(fecha_fin);
 
                 if (estadoActividad.equalsIgnoreCase("Cancelado")) {
-
-                    String fechaFormateadafin = "Cancelada el: " + formatoDeseado.format(fecha);
+                    String fechaFormateadafin = "Cancelación: " + formatoDeseado.format(fecha);
                     setTextViewText(holder.textFechaFin, fechaFormateadafin, "No se encontro la fecha la actividad");
                 } else {
 
-                    String fechaFormateadafin = "Finalizada el: " + formatoDeseado.format(fecha);
+                    String fechaFormateadafin = "Finalizó: " + formatoDeseado.format(fecha);
                     setTextViewText(holder.textFechaFin, fechaFormateadafin, "Aun no se ha finalizado la actividad");
                 }
 
@@ -154,55 +132,58 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                 e.printStackTrace();
             }
 
-
             setTextViewText(holder.textStatus, estadoActividad.toUpperCase(), "Estado no disponible");
 
+
             if (estadoActividad.equalsIgnoreCase("Cancelado")) {
+
+                setTextViewText(holder.textMotivoCancelacion, motivocancelacion, "No se agrego motivo");
                 holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.rojo));
                 holder.textMotivoCancelacion.setVisibility(View.VISIBLE);
-                setTextViewText(holder.textMotivoCancelacion, motivocancelacion, "No se agrego motivo");
                 holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackgroundgris);
-                holder.EstadoCancelado.setVisibility(View.VISIBLE);
-                holder.EstadoPendiente.setVisibility(View.INVISIBLE);
-                holder.EstadoIniciado.setVisibility(View.INVISIBLE);
-                holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+                colorIcono = ContextCompat.getColor(context, R.color.rojo);
+                drawableResId = R.drawable.baseline_cancel_24;
 
             } else {
-                holder.EstadoCancelado.setVisibility(View.INVISIBLE);
+
                 holder.textMotivoCancelacion.setVisibility(View.GONE);
                 holder.textStatus.setTextColor(ContextCompat.getColor(context, android.R.color.black));
-                holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackground);
+
 
                 if (estadoActividad.equalsIgnoreCase("Pendiente")) {
+                    holder.FrameActividades.setBackgroundResource(R.drawable.rounded_amarillo);
+                    colorIcono = ContextCompat.getColor(context, R.color.amarillo);
+                    drawableResId = R.drawable.baseline_access_time_24;
 
-                    holder.EstadoPendiente.setVisibility(View.VISIBLE);
-                    holder.EstadoIniciado.setVisibility(View.INVISIBLE);
-                    holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
                 }
+
+
                 if (estadoActividad.equalsIgnoreCase("Iniciado")) {
-
-                    holder.EstadoPendiente.setVisibility(View.INVISIBLE);
-                    holder.EstadoIniciado.setVisibility(View.VISIBLE);
-                    holder.EstadoFinalizado.setVisibility(View.INVISIBLE);
+                    holder.FrameActividades.setBackgroundResource(R.drawable.rounded_verdecito);
+                    colorIcono = ContextCompat.getColor(context, R.color.black);
+                    drawableResId = R.drawable.baseline_checklist_24;
                 }
-                if (estadoActividad.equalsIgnoreCase("Finalizado")) {
 
-                    holder.EstadoPendiente.setVisibility(View.INVISIBLE);
-                    holder.EstadoIniciado.setVisibility(View.INVISIBLE);
-                    holder.EstadoFinalizado.setVisibility(View.VISIBLE);
+
+                if (estadoActividad.equalsIgnoreCase("Finalizado")) {
+                    holder.FrameActividades.setBackgroundResource(R.drawable.rounded_verdecito);
+                    colorIcono = ContextCompat.getColor(context, R.color.verde);
+                    drawableResId = R.drawable.baseline_done_24;
                 }
 
             }
 
+            holder.ImagenDeEstado.setImageResource(drawableResId);
+            holder.ImagenDeEstado.setColorFilter(colorIcono);
+            holder.textStatus.setTextColor(colorIcono);
 
-            setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
             setTextViewText(holder.textDetallesActividad, descripcionActividad, "Actividad no disponible");
 
             if (ID_actividad.isEmpty() || ID_actividad.equals("null")) {
 
                 setTextViewText(holder.textIdActividad, "ID no disponible", "ID no disponible");
             } else {
-                setTextViewText(holder.textIdActividad, "ID de actividad: " + ID_actividad, "ID no disponible");
+                setTextViewText(holder.textIdActividad, "ID: " + ID_actividad, "ID no disponible");
             }
 
 
@@ -304,10 +285,12 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textFechaActividad, textStatus, textTelefonoUsuario, textNombreUsuario, textActividad, textDetallesActividad, textIdActividad, textFechaFin, textMotivoCancelacion;
+        TextView textFechaActividad, textStatus, textActividad, textDetallesActividad, textIdActividad, textFechaFin, textMotivoCancelacion;
         FrameLayout FrameActividades;
 
-        ImageView IMNoInternet, EstadoFinalizado, EstadoIniciado, EstadoPendiente, EstadoCancelado;
+        ImageView IMNoInternet; //, EstadoFinalizado, EstadoIniciado, EstadoPendiente, EstadoCancelado;
+
+        ImageView ImagenDeEstado;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -316,17 +299,18 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             textFechaActividad = itemView.findViewById(R.id.textFechaActividad);
             textStatus = itemView.findViewById(R.id.textStatus);
             IMNoInternet = itemView.findViewById(R.id.IMNoInternet);
-            textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
-            textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
             textActividad = itemView.findViewById(R.id.textActividad);
             FrameActividades = itemView.findViewById(R.id.FrameActividades);
             textDetallesActividad = itemView.findViewById(R.id.textDetallesActividad);
             textFechaFin = itemView.findViewById(R.id.textFechaFin);
             textIdActividad = itemView.findViewById(R.id.textIdActividad);
+            ImagenDeEstado = itemView.findViewById(R.id.ImagenDeEstado);
+            /*
             EstadoFinalizado = itemView.findViewById(R.id.EstadoFinalizado);
             EstadoIniciado = itemView.findViewById(R.id.EstadoIniciado);
             EstadoPendiente = itemView.findViewById(R.id.EstadoPendiente);
             EstadoCancelado = itemView.findViewById(R.id.EstadoCancelado);
+            */
             textMotivoCancelacion = itemView.findViewById(R.id.textMotivoCancelacion);
 
         }

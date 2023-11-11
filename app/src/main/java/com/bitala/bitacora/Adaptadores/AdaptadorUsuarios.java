@@ -1,31 +1,25 @@
-package com.example.bitacora.Adaptadores;
+package com.bitala.bitacora.Adaptadores;
 
 
 import static android.app.PendingIntent.getActivity;
 
-import static com.example.bitacora.Utils.ModalRedondeado;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -33,13 +27,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bitala.bitacora.ActividadesPorUsuarioFragment;
+import com.bitala.bitacora.SubirFotoUsuarioActivity;
+import com.bitala.bitacora.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
-import com.example.bitacora.ActividadesPorUsuarioFragment;
-import com.example.bitacora.R;
-import com.example.bitacora.SubirFotoUsuarioActivity;
-import com.example.bitacora.Utils;
+import com.bitala.bitacora.R;
 
 import org.json.JSONObject;
 
@@ -83,7 +77,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             bundle.putString("foto_usuario", foto_usuario);
 
 
-          //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
+            //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
             setTextViewText(holder.textRol, permisos, "Permisos no disponible");
             setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
             setTextViewText(holder.textNombreUsuario, nombre.toUpperCase(), "Nombre no disponible");
@@ -110,7 +104,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_usuarios, null);
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setView(ModalRedondeado(view.getContext(), customView));
+                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
 
                     AlertDialog dialogConBotones = builder.create();
                     dialogConBotones.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -159,7 +153,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                             View customView = LayoutInflater.from(context).inflate(R.layout.insertar_nuevo_usuario, null);
-                            builder.setView(ModalRedondeado(view.getContext(), customView));
+                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
                             AlertDialog dialogEditar = builder.create();
                             dialogEditar.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             dialogEditar.show();
@@ -325,7 +319,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                             Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
                             Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
                             textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar a " + nombre + " ?");
-                            builder.setView(ModalRedondeado(context, customView));
+                            builder.setView(Utils.ModalRedondeado(context, customView));
                             AlertDialog dialogConfirmacion = builder.create();
                             dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             dialogConfirmacion.show();
@@ -424,7 +418,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             super(itemView);
 
             textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
-          //  textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
+            //  textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
             textRol = itemView.findViewById(R.id.textRol);
             fotoDeUsuario = itemView.findViewById(R.id.fotoDeUsuario);
 
@@ -466,6 +460,13 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             }
         }
 
+        if (filteredData.isEmpty()) {
+            actionListener.onFilterData(false); // Indica que no hay resultados
+        } else {
+            actionListener.onFilterData(true); // Indica que hay resultados
+        }
+
+
         notifyDataSetChanged();
     }
 
@@ -487,6 +488,8 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario);
 
         void onEliminarUsuarioActivity(String ID_usuario, String nombre);
+
+        void onFilterData(Boolean estado);
     }
 
     private AdaptadorUsuarios.OnActivityActionListener actionListener;

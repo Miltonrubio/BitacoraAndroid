@@ -1,9 +1,6 @@
-package com.example.bitacora;
-
-import static com.example.bitacora.Utils.ModalRedondeado;
+package com.bitala.bitacora;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,8 +13,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -26,15 +23,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.bitacora.Adaptadores.AdaptadorNombreActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorNombreActividades;
+import com.bitala.bitacora.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -68,6 +64,8 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
 
     ConstraintLayout SinActividades;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,7 +81,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
         ContenedorContenido = view.findViewById(R.id.ContenedorContenido);
         LayoutSinInternet = view.findViewById(R.id.LayoutSinInternet);
         SinActividades = view.findViewById(R.id.SinActividades);
-
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         builderCargando = new AlertDialog.Builder(view.getContext());
         builderCargando.setCancelable(false);
         return view;
@@ -120,6 +118,15 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             }
         });
 
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MostrarActividades();
+
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +135,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.insertar_nuevo_nombre_actividad, null);
 
-                builder.setView(ModalRedondeado(view.getContext(), customView));
+                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
                 AlertDialog dialogView = builder.create();
                 dialogView.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogView.show();
@@ -174,6 +181,18 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
             }
         });
     }
+
+
+    private void animacionLupe(String estado) {
+        if (estado.equals("Oculto")) {
+            recyclerViewNombreActividades.setVisibility(View.VISIBLE);
+            SinActividades.setVisibility(View.GONE);
+        } else {
+            recyclerViewNombreActividades.setVisibility(View.GONE);
+            SinActividades.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     private void MostrarActividades() {
         dataList.clear();
@@ -336,5 +355,19 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     public void onDeleteActivity(String ID_nombre_actividad) {
 
         EliminarNombreActividad(ID_nombre_actividad);
+    }
+
+    @Override
+    public void onFilterData(Boolean estado) {
+        if (estado) {
+            animacionLupe("Oculto");
+        } else {
+            if ((editTextBusqueda.getText().toString().equals("") || editTextBusqueda.getText().toString().isEmpty())) {
+                animacionLupe("Oculto");
+            } else {
+                animacionLupe("Visible");
+            }
+        }
+
     }
 }

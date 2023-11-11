@@ -1,5 +1,5 @@
 
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 import android.Manifest;
 
@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.SweepGradient;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -25,8 +26,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.Request;
@@ -42,9 +42,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.Adaptadores.AdaptadorActividadesPorUsuario;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.bitacora.Adaptadores.AdaptadorActividadesPorUsuario;
+import com.bitala.bitacora.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -74,8 +75,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import okhttp3.internal.Util;
 
 public class ActividadesPorUsuarioFragment extends Fragment {
 
@@ -119,9 +118,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     String fechaActual = String.format("%04d-%02d-%02d", year, month, day);
 
 
-
-
+    TextView textSinActividades;
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -138,10 +138,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
         rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
         ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
-
-
+        textSinActividades = view.findViewById(R.id.textSinActividades);
         lottieNoActividades = view.findViewById(R.id.lottieNoActividades);
         lottieNoInternet = view.findViewById(R.id.lottieNoInternet);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
 
         context = requireContext();
@@ -193,6 +193,18 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             tvRolDeUsuario.setText(permisos);
 
             ActividadesPorUsuario(ID_usuario);
+
+
+
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+
+                    ActividadesPorUsuario(ID_usuario);
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
         }
 
 
@@ -317,6 +329,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
     private void mostrarDatosDelMesActual() {
+
         reiniciarDatosDependiendoDeFecha();
         // Obtiene la fecha actual
         Calendar calendar = Calendar.getInstance();
@@ -687,7 +700,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/pdf");
 
-        Uri uri = FileProvider.getUriForFile(context, "com.example.bitacora.fileprovider", file);
+        Uri uri = FileProvider.getUriForFile(context, "com.bitala.bitacora.fileprovider", file);
 
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.putExtra(Intent.EXTRA_TEXT, "Compartir archivo PDF");
@@ -709,8 +722,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
                         dataList.add(jsonObject);
                     }
-
-
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
@@ -720,7 +731,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     MostrarAnimaciones("SinActividades");
 
                 }
-                  mostrarDatosDelDiaDeHoy();
+                mostrarDatosDelDiaDeHoy();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -747,16 +758,20 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             lottieNoInternet.setVisibility(View.GONE);
             rvActividadesUsuario.setVisibility(View.GONE);
             lottieNoActividades.setVisibility(View.VISIBLE);
+            textSinActividades.setVisibility(View.VISIBLE);
 
         } else if (estado.equalsIgnoreCase("SinInternet")) {
 
             lottieNoInternet.setVisibility(View.VISIBLE);
             rvActividadesUsuario.setVisibility(View.GONE);
             lottieNoActividades.setVisibility(View.GONE);
+            textSinActividades.setVisibility(View.GONE);
+
         } else {
 
             lottieNoInternet.setVisibility(View.GONE);
             rvActividadesUsuario.setVisibility(View.VISIBLE);
+            textSinActividades.setVisibility(View.GONE);
             lottieNoActividades.setVisibility(View.GONE);
         }
         onLoadComplete();

@@ -1,6 +1,7 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -24,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.Manifest;
+
+import okhttp3.internal.Util;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -47,11 +51,17 @@ public class LoginActivity extends AppCompatActivity {
 
     CheckBox checkBoxRememberMe;
 
+
+    AlertDialog.Builder builder;
+
+
+    AlertDialog dialogCargando;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -66,6 +76,10 @@ public class LoginActivity extends AppCompatActivity {
         }
         context = this;
         url = context.getResources().getString(R.string.urlApi);
+
+
+        builder = new AlertDialog.Builder(context);
+        builder.setCancelable(false);
 
         rq = Volley.newRequestQueue(context);
         inputUsername = findViewById(R.id.correoET);
@@ -152,9 +166,12 @@ public class LoginActivity extends AppCompatActivity {
 
 
         if (correo.isEmpty() || clave.isEmpty()) {
-            Toast.makeText(context, "LLENE TODOS LOS CAMPOS", Toast.LENGTH_SHORT).show();
+            Utils.crearToastPersonalizado(context, "Tienes campos vacios, por favor rellenalos");
+
         } else {
             Login(correo, clave);
+            dialogCargando = Utils.ModalCargando(context, builder);
+
         }
     }
 
@@ -166,7 +183,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 if (response.equals(response)) {
                     if (response.equals("fallo")) {
-                        Toast.makeText(context, "USUARIO O CONTRASEÑA INCORRECTA", Toast.LENGTH_SHORT).show();
+                        Utils.crearToastPersonalizado(context, "Usuario o contraseña incorrecta");
                     } else {
 
                         try {
@@ -176,16 +193,13 @@ public class LoginActivity extends AppCompatActivity {
 
                             // Procesar los datos del JSONArray si es necesario
                             for (int i = 0; i < jsonArray.length(); i++) {
-
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-
                                 String ID_usuario = jsonObject.getString("ID_usuario");
                                 String nombre = jsonObject.getString("nombre");
                                 String clave = jsonObject.getString("clave");
                                 String telefono = jsonObject.getString("telefono");
                                 String correo = jsonObject.getString("correo");
                                 String permisos = jsonObject.getString("permisos");
-
 
                                 guardarCredenciales(ID_usuario, nombre, clave, telefono, correo, permisos, rememberMe);
 
@@ -196,22 +210,26 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
 
                         } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(context, "Los datos son incorrectos", Toast.LENGTH_LONG).show();
+                            Utils.crearToastPersonalizado(context, "Usuario o contraseña incorrecta");
                         }
                     }
                 } else {
-                    Toast.makeText(context, "SERVIDORES EN MANTENIMIENTO... VUELVA A INTENTAR MAS TARDE ", Toast.LENGTH_LONG).show();
+                    Utils.crearToastPersonalizado(context, "Hay problemas con el servidor, por favor intenta mas tarde.");
                 }
+                onLoadComplete();
             }
+
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof NoConnectionError) {
-                    Toast.makeText(context, "ERROR AL CONECTAR", Toast.LENGTH_LONG).show();
+                    Utils.crearToastPersonalizado(context, "Hay errores al intentar conectar, por favor intenta mas tarde.");
+
                 } else {
-                    Toast.makeText(context, "SERVIDORES EN MANTENIMIENTO, VUELVA A INTENTAR MAS TARDE ", Toast.LENGTH_LONG).show();
+                    Utils.crearToastPersonalizado(context, "Hay problemas con el servidor, por favor intenta mas tarde.");
+
                 }
+                onLoadComplete();
             }
 
         }) {
@@ -228,5 +246,10 @@ public class LoginActivity extends AppCompatActivity {
         rq.add(requestLogin);
     }
 
+    public void onLoadComplete() {
+        if (dialogCargando.isShowing() && dialogCargando != null) {
+            dialogCargando.dismiss();
+        }
+    }
 
 }

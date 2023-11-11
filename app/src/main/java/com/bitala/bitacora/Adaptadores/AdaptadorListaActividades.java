@@ -1,13 +1,10 @@
-package com.example.bitacora.Adaptadores;
+package com.bitala.bitacora.Adaptadores;
 
 
 import static android.app.PendingIntent.getActivity;
 
-import static com.example.bitacora.Utils.ModalRedondeado;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
@@ -16,22 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bitacora.R;
-import com.example.bitacora.Utils;
+import com.bitala.bitacora.Utils;
+import com.bitala.bitacora.R;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.internal.Util;
 
 
 public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorListaActividades.ViewHolder> {
@@ -86,7 +80,7 @@ public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorLis
                     textViewTitulo.setText(nombre_actividad.toUpperCase());
 
 
-                    builder.setView(ModalRedondeado(context, customView));
+                    builder.setView(Utils.ModalRedondeado(context, customView));
                     final AlertDialog dialogConBotones = builder.create();
                     dialogConBotones.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialogConBotones.show();

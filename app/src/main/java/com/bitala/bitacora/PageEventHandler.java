@@ -1,4 +1,4 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfPageEventHelper;

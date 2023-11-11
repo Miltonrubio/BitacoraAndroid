@@ -1,4 +1,4 @@
-package com.example.bitacora.Adaptadores;
+package com.bitala.bitacora.Adaptadores;
 
 import android.annotation.SuppressLint;
 import android.location.Address;

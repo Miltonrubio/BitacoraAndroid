@@ -1,9 +1,6 @@
-package com.example.bitacora;
-
-import static com.example.bitacora.Utils.ModalRedondeado;
+package com.bitala.bitacora;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,10 +12,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -29,14 +25,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.bitacora.Adaptadores.AdaptadorUsuarios;
+import com.bitala.bitacora.Adaptadores.AdaptadorUsuarios;
+import com.bitala.bitacora.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -68,6 +64,10 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     AlertDialog.Builder builderCargando;
 
     AlertDialog modalCargando;
+    String permisosUsuario;
+    String Sesion_UsuarioID;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,7 +81,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         LayoutContenido = view.findViewById(R.id.LayoutContenido);
         SinActividades = view.findViewById(R.id.SinActividades);
         LayoutSinInternet = view.findViewById(R.id.LayoutSinInternet);
-
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
 
@@ -89,6 +89,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         builderCargando = new AlertDialog.Builder(view.getContext());
         builderCargando.setCancelable(false);
         return view;
+
+
     }
 
     @Override
@@ -102,6 +104,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
         */
 
+
         GridLayoutManager gridLayoutManagerDelantero = new GridLayoutManager(context, 2);
         recyclerViewUsuarios.setLayoutManager(gridLayoutManagerDelantero);
         adaptadorUsuarios = new AdaptadorUsuarios(dataList, context, this);
@@ -109,8 +112,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-        String ID_usuario = sharedPreferences.getString("ID_usuario", "");
-
+        Sesion_UsuarioID = sharedPreferences.getString("ID_usuario", "");
+        permisosUsuario = sharedPreferences.getString("permisos", "");
 
         MostrarUsuarios();
 
@@ -151,7 +154,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 View customView = LayoutInflater.from(context).inflate(R.layout.insertar_nuevo_usuario, null);
-                builder.setView(ModalRedondeado(view.getContext(), customView));
+                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
                 AlertDialog dialogActividades = builder.create();
                 dialogActividades.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogActividades.show();
@@ -231,6 +234,39 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
         });
 
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MostrarUsuarios();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+
+    @Override
+    public void onFilterData(Boolean estado) {
+        if (estado) {
+            animacionLupe("Oculto");
+        } else {
+            if ((editTextBusqueda.getText().toString().equals("") || editTextBusqueda.getText().toString().isEmpty())) {
+                animacionLupe("Oculto");
+            } else {
+                animacionLupe("Visible");
+            }
+        }
+    }
+
+
+    private void animacionLupe(String estado) {
+        if (estado.equals("Oculto")) {
+            recyclerViewUsuarios.setVisibility(View.VISIBLE);
+            SinActividades.setVisibility(View.GONE);
+        } else {
+            recyclerViewUsuarios.setVisibility(View.GONE);
+            SinActividades.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -244,7 +280,12 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dataList.add(jsonObject); // Agrega cada objeto JSON a la lista
+                        String permisos = jsonObject.getString("permisos");
+                        String ID_usuario = jsonObject.getString("ID_usuario");
+
+                        if (!permisos.equalsIgnoreCase("SUPERADMIN") || ID_usuario.equalsIgnoreCase(Sesion_UsuarioID)) {
+                            dataList.add(jsonObject);
+                        }
                     }
                     adaptadorUsuarios.notifyDataSetChanged();
                     adaptadorUsuarios.setFilteredData(dataList);
@@ -315,7 +356,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
                 if (response.equals("Error: El correo, nombre o teléfono ya existen en la base de datos.")) {
 
                     Utils.crearToastPersonalizado(context, "No puedes insertar Datos repetidos");
@@ -363,7 +403,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
 
     private void EliminarUsuario(String ID_usuario, String nombre) {
-
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

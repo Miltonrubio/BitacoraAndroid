@@ -67,7 +67,9 @@
         android:layout_height="50dp"
         android:visibility="gone"
         android:textSize="30dp"
+        style="@style/editTexts"
         />
+
     <LinearLayout
         android:layout_marginTop="22dp"
         android:layout_width="match_parent"
@@ -77,13 +79,14 @@
 
         <EditText
             android:id="@+id/editextDescripcionActividad"
-            android:layout_width="0dp"
-            android:layout_height="140dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:visibility="gone"
             android:hint="Ingrese Descripcion de Actividad"
             android:textSize="22sp"
             android:padding="6dp"
+            style="@style/EditTextNoBorder"
             />
     </LinearLayout>
 

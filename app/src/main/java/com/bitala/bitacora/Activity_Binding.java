@@ -1,4 +1,4 @@
-package com.example.bitacora;
+package com.bitala.bitacora;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -8,13 +8,18 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 
-import com.example.bitacora.databinding.ActivityBindingBinding;
+import com.bitala.bitacora.R;
+import com.bitala.bitacora.databinding.ActivityBindingBinding;
 
 
 public class Activity_Binding extends AppCompatActivity {
 
     ActivityBindingBinding binding;
+
+    private boolean doubleBackToExitPressedOnce = false;
+    String permisosUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +31,7 @@ public class Activity_Binding extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
 
-        String permisosUsuario = sharedPreferences.getString("permisos", "");
+        permisosUsuario = sharedPreferences.getString("permisos", "");
 
         setupMenu(permisosUsuario);
 
@@ -42,7 +47,7 @@ public class Activity_Binding extends AppCompatActivity {
                     replaceFragment(new CrudUsuariosFragment());
                     break;
 
-                    case (R.id.menuadmin_actividades):
+                case (R.id.menuadmin_actividades):
                     replaceFragment(new ActividadesFragment());
                     break;
 
@@ -53,12 +58,11 @@ public class Activity_Binding extends AppCompatActivity {
 
         if (!"SUPERADMIN".equals(permisosUsuario)) {
             binding.bottomNavigationView.setSelectedItemId(R.id.menu_home);
-        }else{
+        } else {
             binding.bottomNavigationView.setSelectedItemId(R.id.menu_admin_agregar_usuarios);
         }
 
     }
-
 
 
     private void setupMenu(String permisosUsuario) {
@@ -66,11 +70,11 @@ public class Activity_Binding extends AppCompatActivity {
             binding.bottomNavigationView.getMenu().findItem(R.id.menu_admin_agregar_usuarios).setVisible(false);
             binding.bottomNavigationView.getMenu().findItem(R.id.menuadmin_actividades).setVisible(false);
 
-         //   replaceFragment(new HomeFragment());
-        }else{
+            //   replaceFragment(new HomeFragment());
+        } else {
             binding.bottomNavigationView.getMenu().findItem(R.id.menu_home).setVisible(false);
 
-         //  replaceFragment(new CrudUsuariosFragment());
+            //  replaceFragment(new CrudUsuariosFragment());
         }
     }
 
@@ -81,5 +85,38 @@ public class Activity_Binding extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+
+
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frame_layouts_fragments);
+
+        if (currentFragment instanceof ActividadesFragment || currentFragment instanceof UsuarioFragment) {
+
+
+            if (!"SUPERADMIN".equals(permisosUsuario)) {
+                binding.bottomNavigationView.setSelectedItemId(R.id.menu_home);
+            } else {
+                binding.bottomNavigationView.setSelectedItemId(R.id.menu_admin_agregar_usuarios);
+            }
+
+        } else if (currentFragment instanceof HomeFragment || currentFragment instanceof CrudUsuariosFragment) {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+            } else {
+                this.doubleBackToExitPressedOnce = true;
+                Utils.crearToastPersonalizado(Activity_Binding.this, "Presiona atrás otra vez para salir");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, 2000);
+            }
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
 }

@@ -1,9 +1,7 @@
-package com.example.bitacora.Adaptadores;
+package com.bitala.bitacora.Adaptadores;
 
 
 import static android.app.PendingIntent.getActivity;
-
-import static com.example.bitacora.Utils.ModalRedondeado;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,7 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bitacora.R;
+import com.bitala.bitacora.Utils;
+import com.bitala.bitacora.R;
 
 import org.json.JSONObject;
 
@@ -62,7 +61,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_nombre_acitividad, null);
 
-                    builder.setView(ModalRedondeado(view.getContext(), customView));
+                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
                     AlertDialog dialogConBotones = builder.create();
                     dialogConBotones.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialogConBotones.show();
@@ -123,6 +122,38 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                         @Override
                         public void onClick(View v) {
 
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                            TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                            textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar la actividad " + nombre_actividad + " ?");
+                            builder.setView(Utils.ModalRedondeado(context, customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogConfirmacion.show();
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    actionListener.onDeleteActivity(ID_nombre_actividad);
+                                    dialogConBotones.dismiss();
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+
+
+
+                            /*
                             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                             builder.setTitle("Confirmar Eliminación");
                             builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
@@ -143,9 +174,10 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                             });
                             AlertDialog dialog = builder.create();
                             dialog.show();
+
+                            */
                         }
                     });
-
                 }
             });
 
@@ -194,6 +226,11 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                 }
             }
         }
+        if (filteredData.isEmpty()) {
+            actionListener.onFilterData(false); // Indica que no hay resultados
+        } else {
+            actionListener.onFilterData(true); // Indica que hay resultados
+        }
         notifyDataSetChanged();
     }
 
@@ -214,6 +251,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
         void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad);
 
         void onDeleteActivity(String ID_nombre_actividad);
+        void onFilterData(Boolean estado);
     }
 
     private OnActivityActionListener actionListener;

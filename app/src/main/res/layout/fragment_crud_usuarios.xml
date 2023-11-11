@@ -1,149 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".HomeFragment">
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/LayoutContenido"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        tools:context="com.bitala.bitacora.HomeFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/yourConstraintLayoutId"
+        <RelativeLayout
+            android:id="@+id/LayoutContenido"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/naranjita"
-            android:padding="11dp">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/searchButtonArrastres"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/yourConstraintLayoutId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/naranjita"
+                android:padding="4dp">
+
+                <ImageView
+                    android:id="@+id/searchButtonArrastres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:contentDescription="Buscar"
+                    android:padding="4dp"
+                    android:src="@drawable/baseline_search_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/searchEditTextArrastres"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_marginStart="8dp"
+                    android:hint="Buscar por ID, fecha, etc"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/gris"
+                    android:textColorHint="@color/gris"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/searchButtonArrastres"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewUsuarios"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/yourConstraintLayoutId" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/botonAgregarActividad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:contentDescription="Buscar"
-                android:padding="4dp"
-                android:src="@drawable/baseline_search_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="23dp"
+                android:layout_marginBottom="28dp"
+                android:backgroundTint="@color/naranjita"
+                android:src="@drawable/baseline_person_add_24" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/searchEditTextArrastres"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_marginStart="8dp"
-                android:hint="Buscar por ID, fecha, etc"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/gris"
-                android:textColorHint="@color/gris"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/searchButtonArrastres"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewUsuarios"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/SinActividades"
+                android:layout_width="match_parent"
+                android:layout_height="649dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="82dp"
+                android:visibility="gone">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieNoActividades"
+                    android:layout_width="322dp"
+                    android:layout_height="322dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.494"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.155"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="noActividades.json"
+                    app:lottie_imageAssetsFolder="assets"
+                    app:lottie_loop="true" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginTop="11dp"
+                    android:gravity="center"
+                    android:text="No hay Usuarios que coincidan con tu busqueda"
+                    android:textSize="22dp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lottieNoActividades" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </RelativeLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/LayoutSinInternet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/yourConstraintLayoutId" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/botonAgregarActividad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="23dp"
-            android:layout_marginBottom="28dp"
-            android:backgroundTint="@color/naranjita"
-            android:src="@drawable/baseline_person_add_24" />
+            android:layout_marginTop="-15dp"
+            android:visibility="gone">
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieNoInternet"
+                android:layout_width="322dp"
+                android:layout_height="322dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="nointernet.json"
+                app:lottie_imageAssetsFolder="assets"
+                app:lottie_loop="true" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </RelativeLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/LayoutSinInternet"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="-15dp">
-
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottieNoInternet"
-            android:layout_width="322dp"
-            android:layout_height="322dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_fileName="nointernet.json"
-            app:lottie_imageAssetsFolder="assets"
-            app:lottie_loop="true" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/SinActividades"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:visibility="gone"
-        android:layout_marginTop="0dp">
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottieNoActividades"
-            android:layout_width="322dp"
-            android:layout_height="322dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.494"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.356"
-            app:lottie_autoPlay="true"
-            app:lottie_fileName="noActividades.json"
-            app:lottie_imageAssetsFolder="assets"
-            app:lottie_loop="true" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="12dp"
-            android:gravity="center"
-            android:text="No hay Usuarios para mostrar"
-            android:textSize="22dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.333"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.693" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</RelativeLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
