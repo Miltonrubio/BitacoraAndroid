@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -30,6 +31,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorUbicaciones;
 import com.bitala.bitacora.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,7 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class DetallesActividadesFragment extends Fragment implements OnMapReadyCallback {
+public class DetallesActividadesFragment extends Fragment implements OnMapReadyCallback, AdaptadorUbicaciones.OnActivityActionListener {
 
     private MapView mapView;
     private GoogleMap googleMap;
@@ -79,12 +82,14 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     LinearLayout EvidenciaMapa;
     LinearLayout SinEvidenciasMapa;
 
-    public static DetallesActividadesFragment newInstance(String param1, String param2) {
-        DetallesActividadesFragment fragment = new DetallesActividadesFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
+    AdaptadorUbicaciones adaptadorUbicaciones;
+
+
+    List<JSONObject> listaUbicaciones = new ArrayList<>();
+
+
+    String ID_actividad;
+    RecyclerView RecyclerViewUbicaciones;
 
     public DetallesActividadesFragment() {
         // Required empty public constructor
@@ -96,8 +101,6 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         if (getArguments() != null) {
         }
     }
-
-    String ID_actividad;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,6 +124,13 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         ContenedorEvidencias = view.findViewById(R.id.ContenedorEvidencias);
         EvidenciaMapa = view.findViewById(R.id.EvidenciaMapa);
         SinEvidenciasMapa = view.findViewById(R.id.SinEvidenciasMapa);
+
+        RecyclerViewUbicaciones = view.findViewById(R.id.RecyclerViewUbicaciones);
+
+
+        adaptadorUbicaciones = new AdaptadorUbicaciones(listaUbicaciones, context, this);
+        RecyclerViewUbicaciones.setLayoutManager(new LinearLayoutManager(context));
+        RecyclerViewUbicaciones.setAdapter(adaptadorUbicaciones);
 
 
         colorBlanco = ContextCompat.getColor(context, R.color.white);
@@ -174,7 +184,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                     tvFechaFinalizado.setText("Cancelada el :" + fechaFormateadafin);
                     tvFechaFinalizado.setTextColor(colorRojo);
-                } else if ((estadoActividad.equalsIgnoreCase("Finalizada"))){
+                } else if ((estadoActividad.equalsIgnoreCase("Finalizada"))) {
                     tvFechaFinalizado.setText("Finalizada el: " + fechaFormateadafin);
                 } else {
                     tvFechaFinalizado.setVisibility(View.GONE);
@@ -305,8 +315,8 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         }
     }
 
-
     private void CargarUbicaciones(String ID_actividad) {
+        listaUbicaciones.clear();
         StringRequest stringRequest3 = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -325,23 +335,51 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
                                     Log.d("Coordenadas", "Latitud: " + latitud + ", Longitud: " + longitud);
                                     markerList.add(new Ubicaciones(LATITUD, LONGITUD, "Numero de evidencia de ubicacion: " + ID_ubicacion_actividad));
+                                    listaUbicaciones.add(ubicacionObj);
+                                }
+
+
+                                if (listaUbicaciones.size() > 0) {
+                                    RecyclerViewUbicaciones.setVisibility(View.VISIBLE);
+                                    SinEvidenciasMapa.setVisibility(View.GONE);
+                                    mapView.setVisibility(View.VISIBLE);
+
+                                } else {
+
+                                    RecyclerViewUbicaciones.setVisibility(View.GONE);
+                                    SinEvidenciasMapa.setVisibility(View.VISIBLE);
+                                    mapView.setVisibility(View.GONE);
 
                                 }
 
 
+                                adaptadorUbicaciones.notifyDataSetChanged();
+                                adaptadorUbicaciones.setFilteredData(listaUbicaciones);
+                                adaptadorUbicaciones.filter("");
+
+
                             } catch (JSONException e) {
-                                e.printStackTrace();
-                                Log.d("API Response", "Respuesta vacía");
+
+
+                                RecyclerViewUbicaciones.setVisibility(View.GONE);
+                                SinEvidenciasMapa.setVisibility(View.VISIBLE);
+                                mapView.setVisibility(View.GONE);
+
                             }
                         } else {
-                            Log.d("API Response", "Respuesta vacía");
+                            RecyclerViewUbicaciones.setVisibility(View.GONE);
+                            SinEvidenciasMapa.setVisibility(View.VISIBLE);
+                            mapView.setVisibility(View.GONE);
+
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("API Error", "Error en la solicitud: " + error.getMessage());
+                        RecyclerViewUbicaciones.setVisibility(View.GONE);
+                        SinEvidenciasMapa.setVisibility(View.VISIBLE);
+                        mapView.setVisibility(View.GONE);
                     }
                 }
         ) {
@@ -356,6 +394,26 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
         RequestQueue requestQueue3 = Volley.newRequestQueue(requireContext());
         requestQueue3.add(stringRequest3);
+    }
+
+
+    @Override
+    public void onTomarCoordenadas(String latitud, String longitud) {
+
+        double newLat = Double.parseDouble(latitud);
+        double newLng = Double.parseDouble(longitud);
+
+        LatLng newLatLng = new LatLng(newLat, newLng);
+        String address = getAddressFromLatLng(newLat, newLng); // Puedes usar geocodificación inversa para obtener la dirección
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(newLatLng)
+                .title(address);
+
+        // Agrega el marcador al mapa
+        googleMap.addMarker(markerOptions);
+
+        // Mueve la cámara a la nueva ubicación
+        googleMap.animateCamera(CameraUpdateFactory.newLatLng(newLatLng));
     }
 
 
@@ -450,6 +508,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         }
         return "Dirección desconocida"; // En caso de error o si no se encuentra la dirección
     }
+
 
 }
 

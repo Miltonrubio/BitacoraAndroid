@@ -1,125 +1,144 @@
 package com.bitala.bitacora.Adaptadores;
 
+
+import static android.app.PendingIntent.getActivity;
+
 import android.annotation.SuppressLint;
-import android.location.Address;
-import android.location.Geocoder;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
+import com.bitala.bitacora.Utils;
+import com.bitala.bitacora.R;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class AdaptadorUbicaciones {
 
-}/* extends RecyclerView.Adapter<AdaptadorUbicaciones.ViewHolder>{
+public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicaciones.ViewHolder> {
 
-    private OnItemClickListener onItemClickListener;
-
-    private List<Ubicaciones> listaUbicaciones;
-
-    public AdaptadorUbicaciones(List<Ubicaciones> listaUbicaciones) {
-        this.listaUbicaciones = listaUbicaciones;
-    }
+    private Context context;
+    private List<JSONObject> filteredData;
+    private List<JSONObject> data;
 
     @NonNull
     @Override
-    public AdaptadorUbicaciones.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
-        return new AdaptadorUbicaciones.ViewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ubicaciones, parent, false);
+        return new ViewHolder(view);
+
     }
 
-    @Override
+    public void setFilteredData(List<JSONObject> filteredData) {
+        this.filteredData = new ArrayList<>(filteredData);
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Ubicaciones ubicaciones = listaUbicaciones.get(position);
-        Double latitud_destino = ubicaciones.getLatitud_inicio();
-        Double longitud_destino = ubicaciones.getLongitud_inicio();
 
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(position);
-                }
-            }
-        });
-
-
-        Geocoder geocoder = new Geocoder(holder.itemView.getContext());
         try {
-            List<Address> addresses = geocoder.getFromLocation(latitud_destino, longitud_destino, 1);
+            JSONObject jsonObject2 = filteredData.get(position);
+            String longitud_actividad = jsonObject2.optString("longitud_actividad", "");
+            String latitud_actividad = jsonObject2.optString("latitud_actividad", "");
 
-            if (!addresses.isEmpty()) {
-                Address address = addresses.get(0);
+            setTextViewText(holder.direccionUbicacion, "La ubicacion es: " + longitud_actividad + " " + latitud_actividad, "No se encontro esta actividad");
 
-                String calle = address.getThoroughfare();
-                String numero = address.getSubThoroughfare();
-                String colonia = address.getSubLocality();
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                StringBuilder direccionBuilder = new StringBuilder();
-                if (calle != null) {
-                    direccionBuilder.append(calle);
-                    if (numero != null) {
-                        direccionBuilder.append(" #").append(numero);
-                    }
+                    actionListener.onTomarCoordenadas(latitud_actividad, longitud_actividad);
                 }
-                if (colonia != null) {
-                    direccionBuilder.append(", ").append(colonia);
-                }
+            });
 
-                String direccion = direccionBuilder.toString();
 
-                holder.direccionRuta.setText(direccion);
-            } else {
-                holder.direccionRuta.setText("No disponible");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } finally {
         }
     }
 
 
     @Override
     public int getItemCount() {
-        return listaUbicaciones.size();
+
+        return filteredData.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView direccionRuta;
 
-        ImageView imageViewRuta;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView direccionUbicacion;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageViewRuta = itemView.findViewById(R.id.imageViewRuta);
-
-            direccionRuta = itemView.findViewById(R.id.direccionRuta);
+            direccionUbicacion = itemView.findViewById(R.id.direccionUbicacion);
         }
     }
 
+    public void filter(String query) {
+        filteredData.clear();
 
-    public void actualizarLista(List<Ubicaciones> nuevaLista) {
-        listaUbicaciones.clear();
-        listaUbicaciones.addAll(nuevaLista);
+        if (TextUtils.isEmpty(query)) {
+            filteredData.addAll(data);
+        } else {
+            String[] keywords = query.toLowerCase().split(" ");
+
+            for (JSONObject item : data) {
+                String ID_actividad = item.optString("ID_actividad", "").toLowerCase();
+                String nombre_actividad = item.optString("nombre_actividad", "").toLowerCase();
+                boolean matchesAllKeywords = true;
+
+                for (String keyword : keywords) {
+                    if (!(nombre_actividad.contains(keyword) || ID_actividad.contains(keyword))) {
+                        matchesAllKeywords = false;
+                        break;
+                    }
+                }
+
+                if (matchesAllKeywords) {
+                    filteredData.add(item);
+                }
+            }
+        }
         notifyDataSetChanged();
     }
 
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
+    private void setTextViewText(TextView textView, String text, String defaultText) {
+        if (text.equals(null) || text.equals("") || text.equals(":null") || text.equals("null") || text.isEmpty()) {
+            textView.setText(defaultText);
+        } else {
+            textView.setText(text);
+        }
     }
 
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
+    public interface OnActivityActionListener {
+        void onTomarCoordenadas(String latitud, String longitud);
+
+    }
+
+    private OnActivityActionListener actionListener;
+
+    public AdaptadorUbicaciones(List<JSONObject> data, Context context, AdaptadorUbicaciones.OnActivityActionListener actionListener) {
+        this.data = data;
+        this.context = context;
+        this.filteredData = new ArrayList<>(data);
+        this.actionListener = actionListener; // Asigna el listener
     }
 
 
 }
-*/
+

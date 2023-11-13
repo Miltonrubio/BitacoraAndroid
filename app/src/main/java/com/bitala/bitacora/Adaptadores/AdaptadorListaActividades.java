@@ -35,13 +35,6 @@ public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorLis
     private List<JSONObject> data;
     AlertDialog.Builder builder;
 
-
-    public AdaptadorListaActividades(List<JSONObject> data, Context context) {
-        this.data = data;
-        this.context = context;
-        this.filteredData = new ArrayList<>(data);
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
