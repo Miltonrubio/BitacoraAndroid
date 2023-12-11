@@ -13,6 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/white"
+
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -32,14 +33,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-
-        android:background="@color/naranjita"
-        app:itemIconTint="@color/naranja"
-
+        style="@style/NavigationViewComun"
+        app:itemIconTint="@drawable/icon_selector"
         app:labelVisibilityMode="unlabeled"
-        app:itemRippleColor="@color/naranja"
-        android:outlineSpotShadowColor="@color/naranja"
-        android:outlineAmbientShadowColor="@color/naranja"
         app:menu="@menu/menus_combinados"
         />
 

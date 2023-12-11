@@ -1339,8 +1339,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         TextView textFechaActividad, textStatus, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
         FrameLayout FrameActividades;
 
-        ImageView IMNoInternet; //, EstadoFinalizado, EstadoIniciado, EstadoPendiente;
-
         TextView errorMessageTextView;
         Button myButton;
         ImageView ImagenDeEstado;
@@ -1352,7 +1350,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
             textFechaActividad = itemView.findViewById(R.id.textFechaActividad);
             textStatus = itemView.findViewById(R.id.textStatus);
-            IMNoInternet = itemView.findViewById(R.id.IMNoInternet);
             textActividad = itemView.findViewById(R.id.textActividad);
             FrameActividades = itemView.findViewById(R.id.FrameActividades);
             textDetallesActividad = itemView.findViewById(R.id.textDetallesActividad);
@@ -1366,9 +1363,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
              */
             ImagenDeEstado = itemView.findViewById(R.id.ImagenDeEstado);
             textFechaFin = itemView.findViewById(R.id.textFechaFin);
-
-            myButton = itemView.findViewById(R.id.myButton);
-            errorMessageTextView = itemView.findViewById(R.id.errorMessageTextView);
         }
     }
 

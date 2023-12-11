@@ -6,19 +6,24 @@ import static android.app.PendingIntent.getActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bitala.bitacora.Utils;
@@ -35,6 +40,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
 
+    String valorTipoActividad;
 
     @NonNull
     @Override
@@ -50,7 +56,39 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
             JSONObject jsonObject2 = filteredData.get(position);
             String ID_nombre_actividad = jsonObject2.optString("ID_nombre_actividad", "");
             String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
+            String tipo_actividad = jsonObject2.optString("tipo_actividad", "");
+
+
             setTextViewText(holder.TextNombreDeActividad, nombre_actividad, "Nombre de actividad no disponible");
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+            String permisosUsuario = sharedPreferences.getString("permisos", "");
+
+            int colorRes;
+            Drawable drawable;
+            /*
+            if(permisosUsuario.equalsIgnoreCase("SUPERADMIN")){
+                 drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+                colorRes = R.color.vino;
+
+            }else {
+                 drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+                colorRes = R.color.naranjita;
+            }
+            */
+
+            if (tipo_actividad.equalsIgnoreCase("OFICINAS")) {
+                drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+                colorRes = R.color.vino;
+            } else {
+
+                drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+                colorRes = R.color.naranjita;
+            }
+
+            holder.FrameActividades.setBackground(drawable);
+            int color = ContextCompat.getColor(context, colorRes);
+            holder.TextNombreDeActividad.setTextColor(color);
 
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -69,26 +107,41 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
 
                     LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                     LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                    LinearLayout ContenedorRadios = customView.findViewById(R.id.ContenedorRadios);
+
+                    RadioButton radioButtonGENERAL = customView.findViewById(R.id.radioButtonGENERAL);
+                    RadioButton radioButtonOFICINAS = customView.findViewById(R.id.radioButtonOFICINAS);
+
+                    if (tipo_actividad.equalsIgnoreCase("OFICINAS")) {
+                        radioButtonOFICINAS.setChecked(true);
+                        radioButtonGENERAL.setChecked(false);
+                        valorTipoActividad="OFICINAS";
+
+                    } else {
+                        radioButtonGENERAL.setChecked(true);
+                        radioButtonOFICINAS.setChecked(false);
+                        valorTipoActividad="GENERAL";
+                    }
+
+                    radioButtonGENERAL.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            valorTipoActividad="GENERAL";
+                            radioButtonGENERAL.setChecked(true);
+                            radioButtonOFICINAS.setChecked(false);
+                        }
+                    });
+
+                    radioButtonOFICINAS.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            valorTipoActividad="OFICINAS";
+                            radioButtonGENERAL.setChecked(false);
+                            radioButtonOFICINAS.setChecked(true);
+                        }
+                    });
 
 
-/*
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle("Que desea hacer con:  " + nombre_actividad + " ?");
-
-                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_nombre_acitividad, null);
-
-                    LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
-                    LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
-
-                    builder.setView(customView);
-
-                    final AlertDialog dialogConBotones = builder.create();
-
-                    builder.setNegativeButton("Cancelar", null);
-
-                    dialogConBotones.show(); // Muestra el diálogo
-
-*/
 
                     LayoutEditar.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -99,17 +152,29 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                             Button BotonActualizarNombre = customView.findViewById(R.id.BotonActualizarNombre);
                             editTextNombreActividad.setVisibility(View.VISIBLE);
                             BotonActualizarNombre.setVisibility(View.VISIBLE);
+                            ContenedorRadios.setVisibility(View.VISIBLE);
+                            LayoutEditar.setVisibility(View.GONE);
                             LayoutEliminar.setVisibility(View.GONE);
 
-                            dialogConBotones.show(); // Muestra el diálogo
+                            Drawable drawableInterno;
+                            if (tipo_actividad.equalsIgnoreCase("OFICINAS")) {
+                                drawableInterno = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+                            } else {
+                                drawableInterno = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+                            }
+
+                            editTextNombreActividad.setBackground(drawableInterno);
+
+
+                            dialogConBotones.show();
 
                             BotonActualizarNombre.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    LayoutEliminar.setVisibility(View.GONE);
+
                                     String nuevoNombreActividad = editTextNombreActividad.getText().toString();
 
-                                    actionListener.onEditActivity(ID_nombre_actividad, nuevoNombreActividad);
+                                    actionListener.onEditActivity(ID_nombre_actividad, nuevoNombreActividad, valorTipoActividad);
                                     dialogConBotones.dismiss();
                                 }
                             });
@@ -151,31 +216,6 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                             });
 
 
-
-
-                            /*
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            builder.setTitle("Confirmar Eliminación");
-                            builder.setMessage("¿Estás seguro de que deseas eliminar esta actividad?");
-                            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    actionListener.onDeleteActivity(ID_nombre_actividad);
-                                    dialogConBotones.dismiss();
-                                }
-                            });
-
-                            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-
-                            */
                         }
                     });
                 }
@@ -194,10 +234,12 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView TextNombreDeActividad;
+        FrameLayout FrameActividades;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             TextNombreDeActividad = itemView.findViewById(R.id.TextNombreDeActividad);
+            FrameActividades = itemView.findViewById(R.id.FrameActividades);
         }
     }
 
@@ -248,9 +290,10 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
     }
 
     public interface OnActivityActionListener {
-        void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad);
+        void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad, String valorTipoActividad);
 
         void onDeleteActivity(String ID_nombre_actividad);
+
         void onFilterData(Boolean estado);
     }
 

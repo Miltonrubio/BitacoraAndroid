@@ -64,7 +64,7 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
 
         SlideViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageSlide);
+            imageView = itemView.findViewById(R.id.imageView);
         }
 
         void setImage(SlideItem slideItem) {

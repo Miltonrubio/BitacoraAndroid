@@ -1,47 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
+
+
 
     <EditText
         android:id="@+id/TextViewNombreActividad"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        android:background="@drawable/roundedbackgroundgris"
+        android:background="@drawable/redondeadoconbordevino"
         android:hint="Nombre de actividad"
         android:padding="16dp"
         android:textSize="18dp" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingVertical="2dp">
 
+
+        <RadioButton
+            android:id="@+id/radioButtonGeneral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="16dp"
+            android:text="General"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
+        <RadioButton
+            android:id="@+id/radioButtonOficinistas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="44dp"
+            android:text="Oficinistas"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
         <Button
             android:id="@+id/buttonCancelar"
             android:layout_width="120dp"
             android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            android:backgroundTint="@color/naranja"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="24dp"
+            android:backgroundTint="@color/black"
             android:text="Cancelar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.061"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/radioButtonGeneral"
+            app:layout_constraintVertical_bias="0.0" />
 
         <Button
             android:id="@+id/buttonAceptar"
             android:layout_width="120dp"
             android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            android:backgroundTint="@color/naranjita"
+            android:backgroundTint="@color/vino"
             android:text="Aceptar"
+            android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.869"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/buttonCancelar"
             app:layout_constraintTop_toTopOf="@+id/buttonCancelar" />
     </androidx.constraintlayout.widget.ConstraintLayout>

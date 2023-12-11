@@ -298,7 +298,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
             textFechaActividad = itemView.findViewById(R.id.textFechaActividad);
             textStatus = itemView.findViewById(R.id.textStatus);
-            IMNoInternet = itemView.findViewById(R.id.IMNoInternet);
             textActividad = itemView.findViewById(R.id.textActividad);
             FrameActividades = itemView.findViewById(R.id.FrameActividades);
             textDetallesActividad = itemView.findViewById(R.id.textDetallesActividad);

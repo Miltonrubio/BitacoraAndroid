@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="15dp"
     android:orientation="vertical"
     android:padding="20dp">
@@ -12,14 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/baseline_edit_24"
-            app:tint="@color/amarillo"/>
+            app:tint="@color/amarillo" />
 
         <TextView
             android:layout_width="match_parent"
@@ -27,45 +26,77 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Editar"
-            android:textSize="30dp"
-            />
+            android:textSize="30dp" />
 
     </LinearLayout>
 
-    <!-- Agregar EditText aquí dentro del LinearLayout LayoutEditar -->
+
     <EditText
         android:id="@+id/editTextNombreActividad"
+        style="@style/EditTextNoBorder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/redondeadoconbordevino"
         android:hint="Ingrese texto"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="18dp"
+        android:textSize="28dp"
+        android:visibility="gone" />
 
+    <LinearLayout
+        android:id="@+id/ContenedorRadios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
         android:visibility="gone"
-        android:textSize="30sp"
-        android:padding="6dp"
-        />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <RadioButton
+            android:id="@+id/radioButtonGENERAL"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:padding="12dp"
+            android:layout_margin="12dp"
+            android:layout_height="wrap_content"
+            android:text="GENERAL" />
+
+        <RadioButton
+            android:id="@+id/radioButtonOFICINAS"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:layout_margin="12dp"
+            android:textSize="18dp"
+            android:layout_height="wrap_content"
+            android:text="OFICINAS" />
+    </LinearLayout>
 
     <Button
 
-        android:layout_marginTop="12dp"
         android:id="@+id/BotonActualizarNombre"
-        android:layout_width="match_parent"
-        android:backgroundTint="@color/naranjita"
-        android:layout_height="60dp"
-        android:text="Editar"
-        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="18dp"
         android:layout_marginBottom="25dp"
-        />
+        android:backgroundTint="@color/naranjita"
+        android:paddingHorizontal="35dp"
+        android:paddingVertical="8dp"
+        android:text="Editar"
+        android:textSize="25dp"
+        android:visibility="gone" />
 
-    <!-- Segundo LinearLayout -->
     <LinearLayout
         android:id="@+id/LayoutEliminar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-
-
-
         android:layout_marginTop="25dp"
+
+
+        android:layout_marginBottom="25dp"
         android:clickable="true"
         android:orientation="horizontal">
 

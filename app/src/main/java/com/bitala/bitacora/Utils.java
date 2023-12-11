@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
 import com.bitala.bitacora.R;
 
@@ -39,10 +40,12 @@ public class Utils {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
+
         cardView.setBackgroundResource(R.drawable.roundedbackground_nombre_actividad);
         cardView.addView(viewModal);
         return cardView;
     }
+
 
 
     public static androidx.appcompat.app.AlertDialog ModalCargando(Context contextDialog, androidx.appcompat.app.AlertDialog.Builder builder) {

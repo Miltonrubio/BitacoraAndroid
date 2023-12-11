@@ -1,5 +1,7 @@
 package com.bitala.bitacora;
 
+import static com.bitala.bitacora.Utils.crearToastPersonalizado;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +28,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,13 +58,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
     AlertDialog.Builder builder;
-
-
     AlertDialog dialogCargando;
 
 
+    String ID_usuario;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -101,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
     }
 
     public void onRequestLocation(View view) {
@@ -166,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
         if (correo.isEmpty() || clave.isEmpty()) {
-            Utils.crearToastPersonalizado(context, "Tienes campos vacios, por favor rellenalos");
+            crearToastPersonalizado(context, "Tienes campos vacios, por favor rellenalos");
 
         } else {
             Login(correo, clave);
@@ -183,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 if (response.equals(response)) {
                     if (response.equals("fallo")) {
-                        Utils.crearToastPersonalizado(context, "Usuario o contraseña incorrecta");
+                        crearToastPersonalizado(context, "Usuario o contraseña incorrecta");
                     } else {
 
                         try {
@@ -194,13 +200,13 @@ public class LoginActivity extends AppCompatActivity {
                             // Procesar los datos del JSONArray si es necesario
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                String ID_usuario = jsonObject.getString("ID_usuario");
+                                 ID_usuario = jsonObject.getString("ID_usuario");
                                 String nombre = jsonObject.getString("nombre");
                                 String clave = jsonObject.getString("clave");
                                 String telefono = jsonObject.getString("telefono");
                                 String correo = jsonObject.getString("correo");
                                 String permisos = jsonObject.getString("permisos");
-
+                                generarToken(ID_usuario);
                                 guardarCredenciales(ID_usuario, nombre, clave, telefono, correo, permisos, rememberMe);
 
                             }
@@ -210,11 +216,11 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
 
                         } catch (JSONException e) {
-                            Utils.crearToastPersonalizado(context, "Usuario o contraseña incorrecta");
+                            crearToastPersonalizado(context, "Usuario o contraseña incorrecta");
                         }
                     }
                 } else {
-                    Utils.crearToastPersonalizado(context, "Hay problemas con el servidor, por favor intenta mas tarde.");
+                    crearToastPersonalizado(context, "Hay problemas con el servidor, por favor intenta mas tarde.");
                 }
                 onLoadComplete();
             }
@@ -223,10 +229,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof NoConnectionError) {
-                    Utils.crearToastPersonalizado(context, "Hay errores al intentar conectar, por favor intenta mas tarde.");
+                    crearToastPersonalizado(context, "Hay errores al intentar conectar, por favor intenta mas tarde.");
 
                 } else {
-                    Utils.crearToastPersonalizado(context, "Hay problemas con el servidor, por favor intenta mas tarde.");
+                    crearToastPersonalizado(context, "Hay problemas con el servidor, por favor intenta mas tarde.");
 
                 }
                 onLoadComplete();
@@ -251,5 +257,54 @@ public class LoginActivity extends AppCompatActivity {
             dialogCargando.dismiss();
         }
     }
+
+
+    private void generarToken(String IDInicioSesion) {
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+                    @Override
+                    public void onSuccess(String token) {
+
+                      ActualizarToken(IDInicioSesion, token);
+                        Log.d("TOKEN FIRABSE", token);
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        crearToastPersonalizado(context, "No se obtuvo el token, no recibiras notificaciones");
+                    }
+                });
+    }
+
+
+    private void ActualizarToken(String ID_usuario, String TokenFIREBASE) {
+        StringRequest requestLogin = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                crearToastPersonalizado(context, "No se obtuvo el token, no recibiras notificaciones");
+            }
+
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("opcion", "28");
+                params.put("ID_usuario", ID_usuario);
+                params.put("TokenFIREBASE", TokenFIREBASE);
+                return params;
+            }
+        };
+        rq.add(requestLogin);
+    }
+
 
 }

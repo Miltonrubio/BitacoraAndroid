@@ -10,6 +10,21 @@
         <!-- Otros atributos de estilo que desees aplicar -->
     </style>
 
+    <style name="NavigationViewOficina" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/vino</item>
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemIconSize">24dp</item>
+    </style>
+
+
+    <style name="NavigationViewComun" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/naranjita</item>
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemIconSize">24dp</item>
+    </style>
+
+
+
 
 
 

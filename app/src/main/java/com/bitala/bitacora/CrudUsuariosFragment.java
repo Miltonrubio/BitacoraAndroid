@@ -31,6 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.Adaptadores.AdaptadorListaAsignarActividades;
 import com.bitala.bitacora.Adaptadores.AdaptadorUsuarios;
 import com.bitala.bitacora.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -44,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
+public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener{
 
     String url;
     private RecyclerView recyclerViewUsuarios;
@@ -69,6 +70,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
     SwipeRefreshLayout swipeRefreshLayout;
 
+    AlertDialog dialogActividades;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -77,7 +80,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         recyclerViewUsuarios = view.findViewById(R.id.recyclerViewUsuarios);
         editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
-
         LayoutContenido = view.findViewById(R.id.LayoutContenido);
         SinActividades = view.findViewById(R.id.SinActividades);
         LayoutSinInternet = view.findViewById(R.id.LayoutSinInternet);
@@ -96,13 +98,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
-        /*
-        recyclerViewUsuarios.setLayoutManager(new LinearLayoutManager(context));
-        adaptadorUsuarios = new AdaptadorUsuarios(dataList, context, this);
-        recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
-        */
 
 
         GridLayoutManager gridLayoutManagerDelantero = new GridLayoutManager(context, 2);
@@ -138,24 +133,11 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-/*
-                // Crear el AlertDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                // Inflar el diseño personalizado para el AlertDialog
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.insertar_nuevo_usuario, null);
-                builder.setView(dialogView);
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                */
-
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 View customView = LayoutInflater.from(context).inflate(R.layout.insertar_nuevo_usuario, null);
                 builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                AlertDialog dialogActividades = builder.create();
+                 dialogActividades = builder.create();
                 dialogActividades.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogActividades.show();
 
@@ -460,5 +442,72 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
         Volley.newRequestQueue(context).add(postrequest);
     }
+
+
+
+@Override
+    public void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Utils.crearToastPersonalizado(context, "Se le asignó la tarea a " + nombre);
+                MostrarUsuarios();
+
+                MandarNotificacionAUsuario(token,nombre, descripcion);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudo asignar la tarea a " + nombre + ", revisa la conexión");
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "4");
+                params.put("ID_nombre_actividad", idNombreActividad);
+                params.put("descripcionActividad", descripcion);
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+    private void MandarNotificacionAUsuario(String token,String nombreUsuario, String descripcion){
+
+        String mensaje="Se te asignó una nueva actividad";
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Utils.crearToastPersonalizado(context, "Se envió una notificación al usuario");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudó enviar la notificación");
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "27");
+                params.put("TokenFIREBASE", token);
+                params.put("TituloMensaje", mensaje);
+                params.put("CuerpoMensaje", descripcion);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+
+    }
+
+
+
 
 }

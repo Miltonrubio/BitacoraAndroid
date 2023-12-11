@@ -3,14 +3,17 @@ package com.bitala.bitacora;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,17 +50,17 @@ import java.util.List;
 import java.util.Map;
 
 public class HomeFragment extends Fragment implements AdaptadorActividades.OnActivityActionListener, AdaptadorListaActividades.OnActivityActionListener {
+
     List<JSONObject> nombresActividades = new ArrayList<>();
     String permisos;
     String ID_usuario;
     String url;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerViewActividades;
     private AdaptadorActividades adaptadorActividades;
     private List<JSONObject> dataList = new ArrayList<>();
     Context context;
-    private EditText editTextBusqueda;
-    private FloatingActionButton botonAgregarActividad;
-    Button btnFinalizadas, btnPendientes;
+
+    private ImageView botonAgregarActividad;
     ConstraintLayout SinInternet;
     RelativeLayout LayoutContenido;
     ConstraintLayout SinActividades;
@@ -80,7 +84,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     AlertDialog modalCargando;
 
 
-
+    RelativeLayout ContenedorCompleto;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,14 +100,12 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         textViewBienvenida = view.findViewById(R.id.textViewBienvenida);
-        recyclerView = view.findViewById(R.id.recyclerViewFragmentArrastres);
+        recyclerViewActividades = view.findViewById(R.id.recyclerViewActividades);
         SinInternet = view.findViewById(R.id.SinInternet);
         LayoutContenido = view.findViewById(R.id.LayoutContenido);
         SinActividades = view.findViewById(R.id.SinActividades);
-        btnFinalizadas = view.findViewById(R.id.btnFinalizadas);
-        btnPendientes = view.findViewById(R.id.btnPendientes);
-        editTextBusqueda = view.findViewById(R.id.searchEditTextArrastres);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        ContenedorCompleto = view.findViewById(R.id.ContenedorCompleto);
         return view;
     }
 
@@ -114,16 +116,33 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         //Adaptadores
         adaptadorActividades = new AdaptadorActividades(dataList, context, this);
         adaptadorListaActividades = new AdaptadorListaActividades(nombresActividades, context, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(adaptadorActividades);
+        recyclerViewActividades.setLayoutManager(new LinearLayoutManager(context));
+        recyclerViewActividades.setAdapter(adaptadorActividades);
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         ID_usuario = sharedPreferences.getString("ID_usuario", "");
         permisos = sharedPreferences.getString("permisos", "");
         nombreSesionIniciada = sharedPreferences.getString("nombre", "");
+        int colorRes;
+        Drawable drawable;
+        if (permisos.equalsIgnoreCase("OFICINISTA")) {
+
+            drawable = ContextCompat.getDrawable(context, R.color.vino);
+            colorRes = ContextCompat.getColor(context, R.color.vino);
+        } else {
+
+            drawable = ContextCompat.getDrawable(context, R.color.naranjita);
+            colorRes = ContextCompat.getColor(context, R.color.naranjita);
+        }
+
+        ContenedorCompleto.setBackground(drawable);
+        botonAgregarActividad.setBackgroundTintList(ColorStateList.valueOf(colorRes));
+
+
         ActividadesPorUsuario(ID_usuario);
 
+        /*
         editTextBusqueda.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -139,12 +158,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
             }
         });
 
-        btnPendientes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActividadesPorUsuario(ID_usuario);
-            }
-        });
+         */
+
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,8 +206,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-
-
     private void VerNombresActividades(Context contextModal) {
         nombresActividades.clear();
         mostrarItemsNombreActividades("sinVista");
@@ -204,14 +217,29 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        nombresActividades.add(jsonObject);
+                        String tipo_actividad = jsonObject.getString("tipo_actividad");
+
+
+                        if(!tipo_actividad.equals("OCULTA")){
+
+                        if (permisos.equalsIgnoreCase("OFICINISTA")) {
+                            nombresActividades.add(jsonObject);
+                        } else {
+                            if (!tipo_actividad.equalsIgnoreCase("OFICINAS")) {
+
+                                nombresActividades.add(jsonObject);
+                            }
+
+                        }
+
+                        }
                     }
                     if (nombresActividades.size() > 0) {
                         mostrarItemsNombreActividades("conDatos");
 
                     } else {
 
-                     mostrarItemsNombreActividades("sinDatos");
+                        mostrarItemsNombreActividades("sinDatos");
                     }
                     adaptadorListaActividades.notifyDataSetChanged();
                     adaptadorListaActividades.setFilteredData(dataList);
@@ -554,154 +582,5 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         }
     }
 
-
-/*
-    private void ActividadesFinalizadas(String ID_usuario) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONArray jsonArray = new JSONArray(response);
-                    dataList.clear();
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                        dataList.add(jsonObject);
-                    }
-                    adaptadorActividades.notifyDataSetChanged();
-                    adaptadorActividades.setFilteredData(dataList);
-                    adaptadorActividades.filter("");
-                    mostrarDatosDelDiaDeHoy();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-
-                if (isAdded()) {
-                    Toast.makeText(context, "No tienes conexión a internet", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "2");
-                params.put("ID_usuario", ID_usuario);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-*/
-
-   /* private void reiniciarDatosDependiendoDeFecha() {
-        datosDependiendoDeFecha.clear();
-    }
-
-    private void mostrarDatosDelDiaDeHoy() {
-        reiniciarDatosDependiendoDeFecha();
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        for (JSONObject jsonObject : dataList) {
-            try {
-                String fechaInicio = jsonObject.getString("fecha_fin");
-                String estadoActividad = jsonObject.getString("estadoActividad"); // Obtener el estado de la actividad
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date fecha = sdf.parse(fechaInicio);
-
-                Calendar actividadCalendar = Calendar.getInstance();
-                actividadCalendar.setTime(fecha);
-                int actividadYear = actividadCalendar.get(Calendar.YEAR);
-                int actividadMonth = actividadCalendar.get(Calendar.MONTH) + 1;
-                int actividadDay = actividadCalendar.get(Calendar.DAY_OF_MONTH);
-
-                if (estadoActividad.equals("Finalizado") && actividadYear == year && actividadMonth == month && actividadDay == day) {
-                    datosDependiendoDeFecha.add(jsonObject);
-                }
-
-                if (datosDependiendoDeFecha.size() > 0) {
-                    LayoutContenido.setVisibility(View.VISIBLE);
-                    SinInternet.setVisibility(View.GONE);
-                } else {
-
-                    SinInternet.setVisibility(View.VISIBLE);
-                    LayoutContenido.setVisibility(View.GONE);
-                }
-
-
-            } catch (JSONException | ParseException e) {
-                e.printStackTrace();
-
-                SinInternet.setVisibility(View.VISIBLE);
-                LayoutContenido.setVisibility(View.GONE);
-
-            }
-        }
-        adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
-        adaptadorActividades.notifyDataSetChanged();
-    }
-*/
-/*
-    private void mostrarActividadesPendientes() {
-        reiniciarDatosDependiendoDeFecha();
-
-        for (JSONObject jsonObject : dataList) {
-            try {
-                String estadoActividad = jsonObject.getString("estadoActividad"); // Obtener el estado de la actividad
-
-
-                if (estadoActividad.equals("Iniciado") || estadoActividad.equals("Pendiente")) {
-                    datosDependiendoDeFecha.add(jsonObject);
-                }
-
-
-                if (dataList.size() > 0) {
-                    SinInternet.setVisibility(View.GONE);
-                    LayoutContenido.setVisibility(View.VISIBLE);
-                    SinActividades.setVisibility(View.GONE);
-                } else {
-                    SinInternet.setVisibility(View.GONE);
-                    SinActividades.setVisibility(View.VISIBLE);
-                    LayoutContenido.setVisibility(View.GONE);
-                }
-
-            } catch (JSONException e) {
-                SinInternet.setVisibility(View.GONE);
-                SinActividades.setVisibility(View.VISIBLE);
-                LayoutContenido.setVisibility(View.GONE);
-            }
-        }
-        adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
-        adaptadorActividades.notifyDataSetChanged();
-    }
-*/
-
-/*
-    private String obtenerIDDesdeNombre(String nombreSeleccionado) {
-        for (String actividad : nombresActividades) {
-            if (actividad.equals(nombreSeleccionado)) {
-
-                String[] partes = actividad.split(":");
-                if (partes.length > 0) {
-                    return partes[0].trim();
-                }
-            }
-        }
-        return null;
-    }
-
-
- */
 }
 

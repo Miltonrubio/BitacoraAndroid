@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
 import com.android.volley.Request;
@@ -65,6 +66,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     ConstraintLayout SinActividades;
 
     SwipeRefreshLayout swipeRefreshLayout;
+    String tipo_actividad;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -130,33 +132,43 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.insertar_nuevo_nombre_actividad, null);
-
                 builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
                 AlertDialog dialogView = builder.create();
                 dialogView.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogView.show();
 
-                /*
-
-                // Crear el AlertDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-
-                // Inflar el diseño personalizado para el AlertDialog
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.insertar_nuevo_nombre_actividad, null);
-                builder.setView(dialogView);
-                builder.setNegativeButton("Cancelar", null);
-
-                // Mostrar el AlertDialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
-*/
-
                 EditText TextViewNombreActividad = dialogView.findViewById(R.id.TextViewNombreActividad);
+
+                RadioButton radioButtonGeneral= dialogView.findViewById(R.id.radioButtonGeneral);
+                RadioButton radioButtonOficinistas= dialogView.findViewById(R.id.radioButtonOficinistas);
+                radioButtonGeneral.setChecked(true);
+
+                radioButtonOficinistas.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        radioButtonOficinistas.setChecked(true);
+                        radioButtonGeneral.setChecked(false);
+
+                         tipo_actividad="OFICINAS";
+
+                    }
+                });
+
+
+                radioButtonGeneral.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        radioButtonOficinistas.setChecked(false);
+                        radioButtonGeneral.setChecked(true);
+
+                         tipo_actividad="GENERAL";
+
+                    }
+                });
+
+
 
                 Button buttonCancelar = dialogView.findViewById(R.id.buttonCancelar);
                 Button buttonAceptar = dialogView.findViewById(R.id.buttonAceptar);
@@ -174,7 +186,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
 
                         String nombreActividad = TextViewNombreActividad.getText().toString();
 
-                        AgregarNombreActividad(nombreActividad);
+                        AgregarNombreActividad(nombreActividad, tipo_actividad);
                         dialogView.dismiss();
                     }
                 });
@@ -204,7 +216,13 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dataList.add(jsonObject); // Agrega cada objeto JSON a la lista
+
+                        String tipo_actividad= jsonObject.getString("tipo_actividad");
+
+                        if (!tipo_actividad.equals("OCULTA")){
+                            dataList.add(jsonObject); // Agrega cada objeto JSON a la lista
+                        }
+
                     }
                     adaptadorNombreActividades.notifyDataSetChanged();
                     adaptadorNombreActividades.setFilteredData(dataList);
@@ -268,7 +286,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
         }
     }
 
-    private void AgregarNombreActividad(String nuevoNombreActividad) {
+    private void AgregarNombreActividad(String nuevoNombreActividad, String tipo_actividad) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -287,6 +305,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 Map<String, String> params = new HashMap<>();
                 params.put("opcion", "6");
                 params.put("nuevoNombreActividad", nuevoNombreActividad);
+                params.put("tipo_actividad", tipo_actividad);
                 return params;
             }
         };
@@ -295,7 +314,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
     }
 
 
-    private void EditarNombreActividad(String ID_nombre_actividad, String nuevoNombreActividad) {
+    private void EditarNombreActividad(String ID_nombre_actividad, String nuevoNombreActividad,String valorTipoActividad) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -314,6 +333,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 params.put("opcion", "7");
                 params.put("ID_nombre_actividad", ID_nombre_actividad);
                 params.put("nuevoNombreActividad", nuevoNombreActividad);
+                params.put("nuevoTipoActividad", valorTipoActividad);
                 return params;
             }
         };
@@ -347,8 +367,8 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
 
 
     @Override
-    public void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad) {
-        EditarNombreActividad(ID_nombre_actividad, nuevoNombreActividad);
+    public void onEditActivity(String ID_nombre_actividad, String nuevoNombreActividad, String valorTipoActividad) {
+        EditarNombreActividad(ID_nombre_actividad, nuevoNombreActividad, valorTipoActividad);
     }
 
     @Override

@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:background="@color/naranjita"
+                android:background="@color/vino"
                 android:padding="6dp">
 
                 <ImageView
@@ -147,8 +147,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/naranjita"
-            android:src="@drawable/baseline_library_add_24" />
+            android:backgroundTint="@color/vino"
+            app:tint="@color/white"
+            android:src="@drawable/baseline_add_24" />
 
 
     </RelativeLayout>

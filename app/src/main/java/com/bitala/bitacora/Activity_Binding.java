@@ -23,15 +23,20 @@ public class Activity_Binding extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+        permisosUsuario = sharedPreferences.getString("permisos", "");
+        int theme = getThemeByUserType(permisosUsuario);
+        setTheme(theme);
+
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_binding);
 
         binding = ActivityBindingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-
-        permisosUsuario = sharedPreferences.getString("permisos", "");
 
         setupMenu(permisosUsuario);
 
@@ -56,14 +61,42 @@ public class Activity_Binding extends AppCompatActivity {
         });
 
 
-        if (!"SUPERADMIN".equals(permisosUsuario)) {
-            binding.bottomNavigationView.setSelectedItemId(R.id.menu_home);
-        } else {
+        if ("SUPERADMIN".equals(permisosUsuario)) {
+
             binding.bottomNavigationView.setSelectedItemId(R.id.menu_admin_agregar_usuarios);
+            binding.bottomNavigationView.setBackgroundResource(R.color.vino);
+        }
+        else if(permisosUsuario.equalsIgnoreCase("OFICINISTA")){
+            binding.bottomNavigationView.setSelectedItemId(R.id.menu_home);
+            binding.bottomNavigationView.setBackgroundResource(R.color.vino);
+        }
+
+        else {
+            binding.bottomNavigationView.setSelectedItemId(R.id.menu_home);
+            binding.bottomNavigationView.setBackgroundResource(R.color.naranjita);
+
+
         }
 
     }
 
+    public int getThemeByUserType(String userType) {
+        int themeResId;
+
+        switch (userType) {
+            case "SUPERADMIN":
+                themeResId = R.style.Base_Theme_BitacoraAdmin;
+                break;
+            case "OFICINISTA":
+                themeResId = R.style.Base_Theme_BitacoraAdmin;
+                break;
+            default:
+                themeResId = R.style.Base_Theme_Bitacora;
+                break;
+        }
+
+        return themeResId;
+    }
 
     private void setupMenu(String permisosUsuario) {
         if (!"SUPERADMIN".equals(permisosUsuario)) {

@@ -1,7 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Bitacora" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/naranjita</item>
     </style>
+
+    <style name="Base.Theme.BitacoraAdmin" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/vino</item>
+    </style>
+
+
+    <style name="Theme.Bitacora" parent="Base.Theme.Bitacora" />
+
+    <style name="Theme.BitacoraAdmin" parent="Base.Theme.BitacoraAdmin" />
 </resources>

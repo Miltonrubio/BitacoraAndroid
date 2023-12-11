@@ -226,4 +226,29 @@
     </LinearLayout>
 
 
+    <LinearLayout
+        android:id="@+id/LayoutAsignarActividad"
+        android:layout_width="match_parent"
+        android:background="@drawable/contorno_amarillo"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:padding="12dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/baseline_workspace_premium_24"
+            app:tint="@color/amarillo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Asignar Actividad"
+            android:textSize="30dp" />
+    </LinearLayout>
+
 </LinearLayout>
