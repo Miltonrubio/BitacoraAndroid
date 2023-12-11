@@ -302,7 +302,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                             RadioButton radioButtonGeneral = customView.findViewById(R.id.radioButtonGeneral);
                             RadioButton radioButtonOficinistas = customView.findViewById(R.id.radioButtonOficinistas);
                             EditText TextViewNombreActividad = customView.findViewById(R.id.TextViewNombreActividad);
-
+                            TextViewNombreActividad.setHint("Describe la actividad que va a realizar " + nombre);
                             radioButtonGeneral.setVisibility(View.GONE);
                             radioButtonOficinistas.setVisibility(View.GONE);
 

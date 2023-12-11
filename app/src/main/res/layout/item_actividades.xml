@@ -76,7 +76,7 @@
                     android:gravity="center"
                     android:text="Actividad Realizada"
                     android:textColor="@color/naranjita"
-                    android:textSize="20sp"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -87,7 +87,7 @@
                     android:hint="Detalles de actividad"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:textSize="17sp" />
+                    android:textSize="19sp" />
 
 
             </LinearLayout>

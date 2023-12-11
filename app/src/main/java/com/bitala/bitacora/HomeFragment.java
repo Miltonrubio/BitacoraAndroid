@@ -3,7 +3,6 @@ package com.bitala.bitacora;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -19,13 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,8 +32,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorActividades;
 import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
-import com.bitala.bitacora.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,18 +119,24 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         nombreSesionIniciada = sharedPreferences.getString("nombre", "");
         int colorRes;
         Drawable drawable;
+        Drawable botonRedondo;
+
         if (permisos.equalsIgnoreCase("OFICINISTA")) {
 
             drawable = ContextCompat.getDrawable(context, R.color.vino);
             colorRes = ContextCompat.getColor(context, R.color.vino);
+            botonRedondo= ContextCompat.getDrawable(context, R.drawable.botonredondorojo);
         } else {
 
             drawable = ContextCompat.getDrawable(context, R.color.naranjita);
+            botonRedondo= ContextCompat.getDrawable(context, R.drawable.botonredonndonaranja);
+
+
             colorRes = ContextCompat.getColor(context, R.color.naranjita);
         }
 
         ContenedorCompleto.setBackground(drawable);
-        botonAgregarActividad.setBackgroundTintList(ColorStateList.valueOf(colorRes));
+      botonAgregarActividad.setBackground(botonRedondo);
 
 
         ActividadesPorUsuario(ID_usuario);

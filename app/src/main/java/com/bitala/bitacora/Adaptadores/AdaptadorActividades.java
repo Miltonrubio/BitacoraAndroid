@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -110,6 +111,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             String correo = jsonObject2.optString("correo", "");
             String telefono = jsonObject2.optString("telefono", "");
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
+            String tipo_actividad = jsonObject2.optString("tipo_actividad", "");
+
+
+
 
             Bundle bundle = new Bundle();
             bundle.putString("ID_actividad", ID_actividad);
@@ -130,7 +135,25 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 holder.textIdActividad.setVisibility(View.GONE);
             }
 
-            setTextViewText(holder.textActividad, nombre_actividad, "Actividad no disponible");
+
+            int colorRes;
+            Drawable drawable;
+
+            if (tipo_actividad.equalsIgnoreCase("OFICINAS")  || tipo_actividad.equalsIgnoreCase("OCULTA") ) {
+                drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+                colorRes = R.color.vino;
+            } else {
+
+                drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+                colorRes = R.color.naranjita;
+            }
+
+            holder.FrameActividades.setBackground(drawable);
+            int color = ContextCompat.getColor(context, colorRes);
+            holder.textActividad.setTextColor(color);
+
+
+            setTextViewText(holder.textActividad, nombre_actividad.toUpperCase(), "Actividad no disponible");
 
             if (!estadoActividad.equalsIgnoreCase("Pendiente")) {
 

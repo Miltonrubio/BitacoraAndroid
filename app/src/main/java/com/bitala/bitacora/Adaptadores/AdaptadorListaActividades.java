@@ -7,16 +7,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bitala.bitacora.Utils;
@@ -55,8 +58,28 @@ public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorLis
             JSONObject jsonObject2 = filteredData.get(position);
             String ID_nombre_actividad = jsonObject2.optString("ID_nombre_actividad", "");
             String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
+            String tipo_actividad = jsonObject2.optString("tipo_actividad", "");
 
             setTextViewText(holder.TextNombreDeActividad, nombre_actividad.toUpperCase(), "No se encontro esta actividad");
+
+
+
+            int colorRes;
+            Drawable drawable;
+
+            if (tipo_actividad.equalsIgnoreCase("OFICINAS")  || tipo_actividad.equalsIgnoreCase("OCULTA") ) {
+                drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+                colorRes = R.color.vino;
+            } else {
+
+                drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+                colorRes = R.color.naranjita;
+            }
+
+            holder.FrameActividades.setBackground(drawable);
+            int color = ContextCompat.getColor(context, colorRes);
+            holder.TextNombreDeActividad.setTextColor(color);
+
 
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -118,9 +141,12 @@ public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorLis
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView TextNombreDeActividad;
 
+        FrameLayout FrameActividades;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             TextNombreDeActividad = itemView.findViewById(R.id.TextNombreDeActividad);
+            FrameActividades= itemView.findViewById(R.id.FrameActividades);
         }
     }
 
