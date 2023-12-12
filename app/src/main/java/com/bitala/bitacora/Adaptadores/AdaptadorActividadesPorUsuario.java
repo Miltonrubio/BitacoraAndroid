@@ -41,7 +41,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
-    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context) {
         this.data = data;
@@ -159,7 +158,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
 
                 if (estadoActividad.equalsIgnoreCase("Iniciado")) {
-                    holder.FrameActividades.setBackgroundResource(R.drawable.rounded_verdecito);
+                    holder.FrameActividades.setBackgroundResource(R.drawable.rounded_grisesito);
                     colorIcono = ContextCompat.getColor(context, R.color.black);
                     drawableResId = R.drawable.baseline_checklist_24;
                 }
