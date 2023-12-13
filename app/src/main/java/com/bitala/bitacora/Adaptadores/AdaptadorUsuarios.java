@@ -138,11 +138,90 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     dialogOpcionesUsuarios.show();
 
 
+                    LinearLayout LayoutConsultarSaldo = customView.findViewById(R.id.LayoutConsultarSaldo);
+
                     LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                     LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
                     LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
                     LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
                     LinearLayout LayoutAsignarActividad = customView.findViewById(R.id.LayoutAsignarActividad);
+
+
+                    LayoutConsultarSaldo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_saldo, null);
+                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                            AlertDialog dialogConsultarSaldo = builder.create();
+                            ColorDrawable back = new ColorDrawable(Color.BLACK);
+                            back.setAlpha(150);
+                            dialogConsultarSaldo.getWindow().setBackgroundDrawable(back);
+                            dialogConsultarSaldo.getWindow().setDimAmount(0.8f);
+                            dialogConsultarSaldo.show();
+
+
+                            Button btnAsignarSaldo = customView.findViewById(R.id.btnAsignarSaldo);
+                            TextView titulo = customView.findViewById(R.id.titulo);
+                            EditText monto = customView.findViewById(R.id.monto);
+
+                            titulo.setText("Asigna un saldo a "+ nombre);
+
+                            btnAsignarSaldo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
+                                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                                    AlertDialog dialogConfirmacion = builder.create();
+                                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                                    back.setAlpha(150);
+                                    dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                                    dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                                    dialogConfirmacion.show();
+
+
+                                    EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            dialogConfirmacion.dismiss();
+                                        }
+                                    });
+
+
+                                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            dialogConfirmacion.dismiss();
+                                            dialogConsultarSaldo.dismiss();
+
+                                            String montoTotal= monto.getText().toString();
+                                            String claveIngresada= editTextClaveUsuario.getText().toString();
+
+
+                                            Utils.crearToastPersonalizado(context,"Clave: " + claveIngresada +" Monto: "+ montoTotal );
+
+
+
+                                        }
+                                    });
+
+                                }
+                            });
+
+
+
+                        }
+                    });
+
 
                     LayoutActualizarFoto.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -161,9 +240,13 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                             View customView = LayoutInflater.from(context).inflate(R.layout.insertar_nuevo_usuario, null);
+
                             builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
                             AlertDialog dialogEditar = builder.create();
-                            dialogEditar.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            ColorDrawable back = new ColorDrawable(Color.BLACK);
+                            back.setAlpha(150);
+                            dialogEditar.getWindow().setBackgroundDrawable(back);
+                            dialogEditar.getWindow().setDimAmount(0.8f);
                             dialogEditar.show();
 
 
@@ -226,14 +309,24 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
                             View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+
+
+                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            ColorDrawable back = new ColorDrawable(Color.BLACK);
+                            back.setAlpha(150);
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                            dialogConfirmacion.show();
+
+
+
                             TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
                             Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
                             Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
                             textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar a " + nombre + " ?");
-                            builder.setView(Utils.ModalRedondeado(context, customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                            dialogConfirmacion.show();
+
+
 
                             buttonAceptar.setOnClickListener(new View.OnClickListener() {
                                 @Override

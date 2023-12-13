@@ -22,7 +22,8 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Editar"
@@ -159,8 +160,9 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
             android:gravity="center"
             android:text="Eliminar"
             android:textSize="30dp" />
@@ -183,7 +185,8 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Actualizar Foto"
@@ -218,7 +221,8 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Ver Actividades"
@@ -244,11 +248,39 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Asignar Actividad"
+            android:layout_marginHorizontal="5dp"
             android:textSize="30dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LayoutConsultarSaldo"
+        android:layout_width="match_parent"
+        android:background="@drawable/contorno_amarillo"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:padding="12dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="47dp"
+            android:layout_height="47dp"
+            android:src="@drawable/circle_dollar_to_slot_solid"
+            app:tint="@color/amarillo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Consultar Saldo"
+            android:layout_marginHorizontal="5dp"
+            android:textSize="30dp" />
+    </LinearLayout>
+
 
 </LinearLayout>
