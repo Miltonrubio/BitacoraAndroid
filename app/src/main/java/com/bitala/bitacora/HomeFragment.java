@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     private ImageView botonAgregarActividad;
     ConstraintLayout SinInternet;
-    RelativeLayout LayoutContenido;
+    ConstraintLayout LayoutContenido;
     ConstraintLayout SinActividades;
     TextView textViewBienvenida;
     String nombreSesionIniciada;
@@ -78,6 +78,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
 
     RelativeLayout ContenedorCompleto;
+    TextView saldoActual;
+    String ID_saldo;
+    TextView saldoActualSinCont;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,6 +93,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         builderCargando = new AlertDialog.Builder(view.getContext());
         builderCargando.setCancelable(false);
 
+        saldoActual = view.findViewById(R.id.saldoActual);
+
 
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         textViewBienvenida = view.findViewById(R.id.textViewBienvenida);
@@ -99,6 +104,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         SinActividades = view.findViewById(R.id.SinActividades);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         ContenedorCompleto = view.findViewById(R.id.ContenedorCompleto);
+        saldoActualSinCont = view.findViewById(R.id.saldoActualSinCont);
         return view;
     }
 
@@ -106,17 +112,22 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //Adaptadores
-        adaptadorActividades = new AdaptadorActividades(dataList, context, this);
-        adaptadorListaActividades = new AdaptadorListaActividades(nombresActividades, context, this);
-        recyclerViewActividades.setLayoutManager(new LinearLayoutManager(context));
-        recyclerViewActividades.setAdapter(adaptadorActividades);
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         ID_usuario = sharedPreferences.getString("ID_usuario", "");
         permisos = sharedPreferences.getString("permisos", "");
         nombreSesionIniciada = sharedPreferences.getString("nombre", "");
+
+
+        ActividadesPorUsuario(ID_usuario);
+
+        //Adaptadores
+        adaptadorActividades = new AdaptadorActividades(dataList, context, this);
+        adaptadorListaActividades = new AdaptadorListaActividades(nombresActividades, context, this);
+        recyclerViewActividades.setLayoutManager(new LinearLayoutManager(context));
+        recyclerViewActividades.setAdapter(adaptadorActividades);
+
         int colorRes;
         Drawable drawable;
         Drawable botonRedondo;
@@ -125,21 +136,20 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
             drawable = ContextCompat.getDrawable(context, R.color.vino);
             colorRes = ContextCompat.getColor(context, R.color.vino);
-            botonRedondo= ContextCompat.getDrawable(context, R.drawable.botonredondorojo);
+            botonRedondo = ContextCompat.getDrawable(context, R.drawable.botonredondorojo);
         } else {
 
             drawable = ContextCompat.getDrawable(context, R.color.naranjita);
-            botonRedondo= ContextCompat.getDrawable(context, R.drawable.botonredonndonaranja);
+            botonRedondo = ContextCompat.getDrawable(context, R.drawable.botonredonndonaranja);
 
 
             colorRes = ContextCompat.getColor(context, R.color.naranjita);
         }
 
         ContenedorCompleto.setBackground(drawable);
-      botonAgregarActividad.setBackground(botonRedondo);
+        botonAgregarActividad.setBackground(botonRedondo);
 
 
-        ActividadesPorUsuario(ID_usuario);
 
         /*
         editTextBusqueda.addTextChangedListener(new TextWatcher() {
@@ -205,6 +215,58 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
+    private void MostrarSaldoActivo(String ID_usuario) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                if (response.equals("sin saldo activo")) {
+                    saldoActual.setText("No tienes saldo asignado");
+                    saldoActualSinCont.setText("No tienes saldo asignado");
+                } else {
+
+                    try {
+                        JSONArray jsonArray = new JSONArray(response);
+                        // Obtén el primer elemento del array (asumiendo que solo hay uno)
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+                        ID_saldo = jsonObject.getString("ID_saldo");
+                        String saldo_actualizado = jsonObject.getString("saldo_actualizado");
+
+                        saldoActual.setText("Saldo actual: " + saldo_actualizado + "$");
+                        saldoActualSinCont.setText("Saldo actual: " + saldo_actualizado + "$");
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        saldoActual.setText("Hubo un error al cargar el saldo, recarga los datos");
+
+                        saldoActualSinCont.setText("Hubo un error al cargar el saldo, recarga los datos");
+                    }
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                saldoActual.setText("Hubo un error al cargar el saldo, recarga los datos");
+                saldoActualSinCont.setText("Hubo un error al cargar el saldo, recarga los datos");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "52");
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
     private void VerNombresActividades(Context contextModal) {
         nombresActividades.clear();
         mostrarItemsNombreActividades("sinVista");
@@ -219,17 +281,17 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                         String tipo_actividad = jsonObject.getString("tipo_actividad");
 
 
-                        if(!tipo_actividad.equals("OCULTA")){
+                        if (!tipo_actividad.equals("OCULTA")) {
 
-                        if (permisos.equalsIgnoreCase("OFICINISTA")) {
-                            nombresActividades.add(jsonObject);
-                        } else {
-                            if (!tipo_actividad.equalsIgnoreCase("OFICINAS")) {
-
+                            if (permisos.equalsIgnoreCase("OFICINISTA")) {
                                 nombresActividades.add(jsonObject);
-                            }
+                            } else {
+                                if (!tipo_actividad.equalsIgnoreCase("OFICINAS")) {
 
-                        }
+                                    nombresActividades.add(jsonObject);
+                                }
+
+                            }
 
                         }
                     }
@@ -293,6 +355,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     private void ActividadesPorUsuario(String ID_usuario) {
 
+        MostrarSaldoActivo(ID_usuario);
         dataList.clear();
         modalCargando = Utils.ModalCargando(context, builderCargando);
         SinInternet.setVisibility(View.GONE);
@@ -323,6 +386,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
                         mostrarItemsActividades("sinDatos");
                     }
+
 
                 } catch (JSONException e) {
 
@@ -396,7 +460,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         CancelarActividades(ID_actividad, nuevoEstado, motivoCancelacion);
     }
 
-
     @Override
     public void onAgregarActividad(String idNombreActividad, String descripcion) {
 
@@ -405,6 +468,37 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     }
 
+
+    @Override
+    public void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //        dialogActividades.dismiss();
+                ActividadesPorUsuario(ID_usuario);
+                Utils.crearToastPersonalizado(context, "Finalizada Correctamente");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudo finalizar la actividad, revisa tu conexión");
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "53");
+                params.put("total_gastado", total_gastado);
+                params.put("ID_saldo", ID_saldo);
+                params.put("ID_actividad", ID_actividad);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+
+
+    }
 
     private void AgregarActividad(String ID_nombre_actividad, String descripcionActividad, String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {

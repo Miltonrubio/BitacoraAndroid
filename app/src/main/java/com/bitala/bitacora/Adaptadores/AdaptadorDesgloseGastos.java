@@ -5,18 +5,22 @@ import static android.app.PendingIntent.getActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bitala.bitacora.Utils;
@@ -28,17 +32,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicaciones.ViewHolder> {
+public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgloseGastos.ViewHolder> {
 
     private Context context;
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
+    AlertDialog.Builder builder;
+
     String url;
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ubicaciones, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_desglose_gastos, parent, false);
         return new ViewHolder(view);
 
     }
@@ -53,18 +59,19 @@ public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicacio
 
         try {
             JSONObject jsonObject2 = filteredData.get(position);
-            String longitud_actividad = jsonObject2.optString("longitud_actividad", "");
-            String latitud_actividad = jsonObject2.optString("latitud_actividad", "");
+            String dinero_gastado = jsonObject2.optString("dinero_gastado", "");
+            String fecha = jsonObject2.optString("fecha", "");
+            String ID_gastos = jsonObject2.optString("ID_gastos", "");
+            String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
+            String descripcionActividad = jsonObject2.optString("descripcionActividad", "");
 
-            setTextViewText(holder.direccionUbicacion, "La ubicacion es: " + longitud_actividad + " " + latitud_actividad, "No se encontro esta actividad");
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            holder.fecha.setText("Fecha: " + fecha);
+            holder.dinero_gastado.setText("Total de saldo: -" + dinero_gastado + "$");
 
-                    actionListener.onTomarCoordenadas(latitud_actividad, longitud_actividad);
-                }
-            });
+            holder.nombreActividad.setText(nombre_actividad);
+
+            holder.descripcionActividad.setText(descripcionActividad);
 
 
         } finally {
@@ -80,13 +87,23 @@ public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicacio
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView direccionUbicacion;
+        TextView dinero_gastado;
+
+        TextView fecha;
+
+        TextView nombreActividad;
+        TextView descripcionActividad;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            direccionUbicacion = itemView.findViewById(R.id.direccionUbicacion);
+
+            dinero_gastado = itemView.findViewById(R.id.dinero_gastado);
+            fecha = itemView.findViewById(R.id.fecha);
+            nombreActividad = itemView.findViewById(R.id.nombreActividad);
+            descripcionActividad = itemView.findViewById(R.id.descripcionActividad);
         }
     }
+
 
     public void filter(String query) {
         filteredData.clear();
@@ -126,19 +143,13 @@ public class AdaptadorUbicaciones extends RecyclerView.Adapter<AdaptadorUbicacio
     }
 
 
-    public interface OnActivityActionListener {
-        void onTomarCoordenadas(String latitud, String longitud);
+    public AdaptadorDesgloseGastos(List<JSONObject> data, Context context) {
 
-    }
-
-    private OnActivityActionListener actionListener;
-
-    public AdaptadorUbicaciones(List<JSONObject> data, Context context, AdaptadorUbicaciones.OnActivityActionListener actionListener) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
-        this.actionListener = actionListener; // Asigna el listener
         url = context.getResources().getString(R.string.urlApi);
+
     }
 
 

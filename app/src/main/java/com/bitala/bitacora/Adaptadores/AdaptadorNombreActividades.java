@@ -42,6 +42,8 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
 
     String valorTipoActividad;
 
+    String url;
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -305,6 +307,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
         this.context = context;
         this.filteredData = new ArrayList<>(data);
         this.actionListener = actionListener;
+        url = context.getResources().getString(R.string.urlApi);
     }
 
 

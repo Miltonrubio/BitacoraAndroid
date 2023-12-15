@@ -3,74 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:paddingHorizontal="12dp"
+    android:paddingHorizontal="6dp"
     android:paddingVertical="26dp"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/SinSaldoActivo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="35dp"
-        android:paddingHorizontal="7dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints">
 
 
-        <TextView
-            android:id="@+id/titulo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Asigna un saldo a este empleado"
-            android:textSize="22dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:padding="8dp"
-            app:endIconDrawable="@drawable/dollar_sign_solid"
-            app:endIconMode="custom"
-            app:endIconTint="@color/verdefuerte"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titulo">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/monto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Ingresa el monto"
-                android:phoneNumber="true"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btnAsignarSaldo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:backgroundTint="@color/verdefuerte"
-            android:text="Asignar saldo"
-            android:textSize="22dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,7 +25,7 @@
         tools:ignore="MissingConstraints">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/fecha_asign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -108,9 +47,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3">
+            app:layout_constraintTop_toBottomOf="@+id/fecha_asign">
 
             <TextView
+                android:id="@+id/SaldoAsignado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -119,12 +59,13 @@
                 android:gravity="center"
                 android:text="SALDO ASIGNADO:"
                 android:textColor="@color/verdefuerte"
-                android:textSize="26dp"
+                android:textSize="23dp"
                 android:textStyle="bold" />
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:id="@+id/buttonEditarSaldo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/baseline_edit_24"
                 app:tint="@color/verdefuerte" />
 
@@ -134,17 +75,17 @@
             android:id="@+id/textViewSaldoRestante"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:gravity="center"
             android:text="Saldo restante: "
-            android:textSize="24dp"
+            android:textSize="21dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/LayoutSaldoAsignado" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/buttonFinalizarSaldo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"

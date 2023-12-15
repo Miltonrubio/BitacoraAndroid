@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -50,6 +51,7 @@ import com.bitala.bitacora.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,7 +70,10 @@ import android.Manifest;
 
 public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActividades.ViewHolder> {
     private ArrayList<String> nombresActividades = new ArrayList<>();
-    String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+    // String url = "http://hidalgo.no-ip.info:5610/bitacora/mostrar.php";
+
+    String url;
+
 
     private Context context;
     String IDSesionIniciada;
@@ -87,7 +92,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        Context context = holder.itemView.getContext();
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String permisosUsuario = sharedPreferences.getString("permisos", "");
@@ -114,8 +118,6 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             String tipo_actividad = jsonObject2.optString("tipo_actividad", "");
 
 
-
-
             Bundle bundle = new Bundle();
             bundle.putString("ID_actividad", ID_actividad);
             bundle.putString("ID_usuario", ID_usuario);
@@ -139,7 +141,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             int colorRes;
             Drawable drawable;
 
-            if (tipo_actividad.equalsIgnoreCase("OFICINAS")  || tipo_actividad.equalsIgnoreCase("OCULTA") ) {
+            if (tipo_actividad.equalsIgnoreCase("OFICINAS") || tipo_actividad.equalsIgnoreCase("OCULTA")) {
                 drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
                 colorRes = R.color.vino;
             } else {
@@ -303,17 +305,33 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             @Override
                             public void onClick(View v) {
 
-                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                                consultarSaldoActivo(ID_usuario, ID_actividad, dialogOpcionesDeActividad);
 
-                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                                TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
-                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-                                textViewTituloConfirmacion.setText("¿ESTAS SEGURO DE QUE DESEAS FINALIZAR ESTA ACTIVIDAD?");
+/*
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_con_clave, null);
                                 builder.setView(ModalRedondeado(context, customView));
                                 AlertDialog dialogConfirmacion = builder.create();
                                 dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                 dialogConfirmacion.show();
+
+
+                                TextView nuevomonto = customView.findViewById(R.id.nuevomonto);
+                                TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
+                                EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+                                EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+                                TextView textView4= customView.findViewById(R.id.textView4);
+                                textView4.setText("Para finalizar esta actividad debes ingresar el monto");
+
+                                editTextClaveUsuario.setVisibility(View.GONE);
+                                textInputLayout.setVisibility(View.VISIBLE);
+
+
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
 
                                 buttonAceptar.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -334,9 +352,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         dialogConfirmacion.dismiss();
                                     }
                                 });
+
+*/
                             }
                         });
-
 
                         LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -349,7 +368,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 Button buttonAceptar = dialogView.findViewById(R.id.buttonAceptar);
 
                                 TextView tituloCancelacion = dialogView.findViewById(R.id.tituloCancelacion);
-                                tituloCancelacion.setText("Agrega el motivo para cancelar la actividad "+ nombre_actividad+ ":");
+                                tituloCancelacion.setText("Agrega el motivo para cancelar la actividad " + nombre_actividad + ":");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                                 builder.setView(ModalRedondeado(view.getContext(), dialogView));
                                 AlertDialog dialogCancelacion = builder.create();
@@ -1508,6 +1527,205 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         Volley.newRequestQueue(context).add(postrequest);
     }
 
+
+    AlertDialog dialogCargando;
+
+    AlertDialog.Builder builderCargando;
+
+    private void consultarSaldoActivo(String ID_usuario, String ID_actividad, AlertDialog dialogOpcionesDeActividad) {
+
+
+        dialogCargando = Utils.ModalCargando(context, builderCargando);
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                if (response.equals("sin saldo activo")) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                    builder.setView(ModalRedondeado(context, customView));
+                    AlertDialog dialogConfirmacion = builder.create();
+                    dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogConfirmacion.show();
+
+                    TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                    textViewTituloConfirmacion.setText("¿Seguro deseas finalizar esta actividad? \nrecuerda que una vez hecho esto ya no podras mandar evidencias");
+                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String selectedEstado = "Finalizado";
+                            //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+                            actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                            dialogConfirmacion.dismiss();
+                            dialogOpcionesDeActividad.dismiss();
+                        }
+                    });
+
+                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            dialogConfirmacion.dismiss();
+                        }
+                    });
+
+
+                } else {
+
+
+                    try {
+                        JSONArray jsonArray = new JSONArray(response);
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+                        String ID_saldo = jsonObject.getString("ID_saldo");
+                        String saldo_actualizado = jsonObject.getString("saldo_actualizado");
+
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_con_clave, null);
+                        builder.setView(ModalRedondeado(context, customView));
+                        AlertDialog dialogConfirmacion = builder.create();
+                        dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialogConfirmacion.show();
+
+
+                        CheckBox checkSinGastos = customView.findViewById(R.id.checkSinGastos);
+
+                        TextView nuevomonto = customView.findViewById(R.id.nuevomonto);
+                        nuevomonto.setVisibility(View.VISIBLE);
+                        nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado);
+
+                        TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
+                        EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+                        EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+                        TextView textView4 = customView.findViewById(R.id.textView4);
+                        textView4.setText("Para finalizar esta actividad debes ingresar el monto");
+
+                        editTextClaveUsuario.setVisibility(View.GONE);
+                        textInputLayout.setVisibility(View.VISIBLE);
+
+
+                        Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                        Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                        checkSinGastos.setVisibility(View.VISIBLE);
+
+                        checkSinGastos.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                if (checkSinGastos.isChecked()) {
+
+                                    textView4.setText("Vas a finalizar esta actividad sin agregar un monto");
+                                    textInputLayout.setVisibility(View.GONE);
+                                    nuevomonto.setVisibility(View.GONE);
+                                } else {
+
+                                    textView4.setText("Para finalizar esta actividad debes ingresar el monto");
+                                    textInputLayout.setVisibility(View.VISIBLE);
+                                    nuevomonto.setVisibility(View.VISIBLE);
+                                }
+
+                            }
+                        });
+
+
+                        buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                if (checkSinGastos.isChecked()) {
+
+                                    String selectedEstado = "Finalizado";
+                                    //  ActualizarEstado(ID_actividad, selectedEstado, view.getContext(), holder, dialog);
+
+                                    dialogConfirmacion.dismiss();
+                                    dialogOpcionesDeActividad.dismiss();
+                                    actionListener.onActualizarEstadoActivity(ID_actividad, selectedEstado);
+
+                                } else {
+                                    String total_gastado = nuevoMonto.getText().toString();
+                                    if (total_gastado.isEmpty() || total_gastado.equals("0")) {
+                                        Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
+
+                                    } else {
+
+
+                                        try {
+                                            double totalGastadoDob = Double.parseDouble(total_gastado);
+                                            double saldoActualizadoDob = Double.parseDouble(saldo_actualizado);
+
+                                            if (totalGastadoDob > saldoActualizadoDob) {
+
+                                                Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+
+                                            } else {
+
+                                                dialogConfirmacion.dismiss();
+                                                dialogOpcionesDeActividad.dismiss();
+                                                actionListener.onAsignarMontoAActividad(total_gastado, ID_saldo, ID_actividad);
+                                            }
+
+
+                                        } catch (NumberFormatException e) {
+
+                                        }
+
+                                    }
+                                }
+
+                            }
+                        });
+
+                        buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                dialogConfirmacion.dismiss();
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Utils.crearToastPersonalizado(context, "Hubo un error al cargar los datos");
+                    }
+
+                    CerrarModalCargando();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                crearToastPersonalizado(context, "No se pudieron obtener los datos. Revisa la conexión");
+                CerrarModalCargando();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "52");
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+    private void CerrarModalCargando() {
+        if (dialogCargando.isShowing() || dialogCargando != null) {
+            dialogCargando.dismiss();
+        }
+    }
+
+
     private String obtenerIDDesdeNombre(String nombreSeleccionado) {
         for (String actividad : nombresActividades) {
             if (actividad.equals(nombreSeleccionado)) {
@@ -1534,8 +1752,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
 
+        void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad);
     }
-
 
     private AdaptadorActividades.OnActivityActionListener actionListener;
 
@@ -1545,6 +1763,11 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         this.context = context;
         this.filteredData = new ArrayList<>(data);
         this.actionListener = actionListener;
+        url = context.getResources().getString(R.string.urlApi);
+
+
+        builderCargando = new AlertDialog.Builder(context);
+        builderCargando.setCancelable(false);
     }
 
 

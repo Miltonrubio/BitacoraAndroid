@@ -38,6 +38,8 @@ public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorLis
     private List<JSONObject> data;
     AlertDialog.Builder builder;
 
+    String url;
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -200,6 +202,8 @@ public class AdaptadorListaActividades extends RecyclerView.Adapter<AdaptadorLis
         this.context = context;
         this.filteredData = new ArrayList<>(data);
         this.actionListener = actionListener; // Asigna el listener
+
+        url = context.getResources().getString(R.string.urlApi);
     }
 
 

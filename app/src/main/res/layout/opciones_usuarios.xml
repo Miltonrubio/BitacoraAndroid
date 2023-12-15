@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Primer LinearLayout -->
     <LinearLayout
         android:id="@+id/LayoutEditar"
         android:layout_width="match_parent"
@@ -23,8 +22,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
             android:gravity="center"
             android:text="Editar"
             android:textSize="30dp" />
@@ -36,17 +35,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
 
         <EditText
             android:id="@+id/editTextNombreUsuario"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
             android:layout_weight="1"
             android:hint="Ingrese Nombre de Usuario"
-            android:layout_marginVertical="5dp"
             android:padding="6dp"
             android:textSize="22sp"
             android:visibility="gone" />
@@ -64,9 +62,9 @@
             android:id="@+id/editTextCorreoUsuario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
             android:layout_weight="1"
             android:hint="Ingrese Correo de Usuario"
-            android:layout_marginVertical="5dp"
             android:padding="6dp"
             android:textSize="22sp"
             android:visibility="gone" />
@@ -93,9 +91,9 @@
             android:id="@+id/editTextClaveUsuario"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
             android:layout_weight="1"
             android:hint="Ingrese Clave de Usuario"
-            android:layout_marginVertical="5dp"
             android:padding="6dp"
             android:textSize="22sp"
             android:visibility="gone" />
@@ -114,9 +112,9 @@
             android:id="@+id/editTextTelefonoUsuario"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
             android:layout_weight="1"
             android:hint="Ingrese Telefono de Usuario"
-            android:layout_marginVertical="5dp"
             android:padding="6dp"
             android:phoneNumber="true"
             android:textSize="22sp"
@@ -186,8 +184,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
             android:gravity="center"
             android:text="Actualizar Foto"
             android:textSize="30dp" />
@@ -222,8 +220,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
             android:gravity="center"
             android:text="Ver Actividades"
             android:textSize="30dp" />
@@ -233,12 +231,12 @@
     <LinearLayout
         android:id="@+id/LayoutAsignarActividad"
         android:layout_width="match_parent"
-        android:background="@drawable/contorno_amarillo"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
+        android:background="@drawable/contorno_amarillo"
         android:clickable="true"
-        android:padding="12dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <ImageView
             android:layout_width="50dp"
@@ -250,21 +248,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
             android:gravity="center"
             android:text="Asignar Actividad"
-            android:layout_marginHorizontal="5dp"
             android:textSize="30dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/LayoutConsultarSaldo"
         android:layout_width="match_parent"
-        android:background="@drawable/contorno_amarillo"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
+        android:background="@drawable/contorno_amarillo"
         android:clickable="true"
-        android:padding="12dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <ImageView
             android:layout_width="47dp"
@@ -276,9 +274,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Consultar Saldo"
             android:layout_marginHorizontal="5dp"
+            android:gravity="center"
+            android:text="Ver Saldo"
+            android:textSize="30dp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/LayoutConsultarMovimiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/contorno_amarillo"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:layout_width="47dp"
+            android:layout_height="47dp"
+            android:src="@drawable/dollar_sign_solid"
+            app:tint="@color/verdefuerte" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
+            android:gravity="center"
+            android:text="Consultar Gastos"
+            android:textColor="@color/verdefuerte"
             android:textSize="30dp" />
     </LinearLayout>
 

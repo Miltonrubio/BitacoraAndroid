@@ -9,7 +9,7 @@ import android.os.Handler;
 import com.bitala.bitacora.R;
 public class MainActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DURATION = 1500; //
+    private static final int SPLASH_DURATION = 1300; //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

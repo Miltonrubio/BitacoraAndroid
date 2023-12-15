@@ -6,10 +6,12 @@ import static android.app.PendingIntent.getActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,12 +40,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.ActividadesPorUsuarioFragment;
+import com.bitala.bitacora.GastosFragment;
 import com.bitala.bitacora.SubirFotoUsuarioActivity;
 import com.bitala.bitacora.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
 import com.bitala.bitacora.R;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.itextpdf.text.pdf.parser.Line;
 
 import org.json.JSONArray;
@@ -79,11 +84,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     ConstraintLayout LayoutConInternet;
     ConstraintLayout LayoutSinInternet;
 
+    String clave;
 
     @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        url = context.getResources().getString(R.string.urlApi);
         try {
             JSONObject jsonObject2 = filteredData.get(position);
             String ID_usuario = jsonObject2.optString("ID_usuario", "");
@@ -94,6 +99,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             String clave = jsonObject2.optString("clave", "");
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
             String token = jsonObject2.optString("token", "");
+            String ID_saldo = jsonObject2.optString("ID_saldo", "");
+            String saldo_restante = jsonObject2.optString("saldo_restante", "");
+
 
             Bundle bundle = new Bundle();
             bundle.putString("ID_usuario", ID_usuario);
@@ -108,6 +116,16 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             setTextViewText(holder.textRol, permisos, "Permisos no disponible");
             setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
             setTextViewText(holder.textNombreUsuario, nombre.toUpperCase(), "Nombre no disponible");
+
+            // setTextViewText(holder.saldo_restante, "Saldo actual: " + saldo_restante + "$", "No tiene saldo asignado");
+
+            if (saldo_restante.isEmpty() || saldo_restante.equals(null) || saldo_restante.equals("null") || saldo_restante.equals("")) {
+
+                holder.saldo_restante.setText("No tiene saldo activo");
+            } else {
+                holder.saldo_restante.setText("Saldo actual: " + saldo_restante + "$");
+            }
+
 
             String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 
@@ -145,11 +163,36 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     LinearLayout LayoutActualizarFoto = customView.findViewById(R.id.LayoutActualizarFoto);
                     LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
                     LinearLayout LayoutAsignarActividad = customView.findViewById(R.id.LayoutAsignarActividad);
+                    LinearLayout LayoutConsultarMovimiento = customView.findViewById(R.id.LayoutConsultarMovimiento);
+
+
+                    LayoutConsultarMovimiento.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            GastosFragment gastosFragment = new GastosFragment();
+                            gastosFragment.setArguments(bundle);
+
+                            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_layouts_fragments, gastosFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+
+                            dialogOpcionesUsuarios.dismiss();
+                        }
+                    });
 
 
                     LayoutConsultarSaldo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
+                            //     dialogCargando = Utils.ModalCargando(context, builderCargando);
+                            actionListener.onConsultarSaldoActivo(ID_saldo, view, nombre, ID_usuario, dialogOpcionesUsuarios);
+
+
+                            /*
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                             View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_saldo, null);
@@ -166,12 +209,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                             TextView titulo = customView.findViewById(R.id.titulo);
                             EditText monto = customView.findViewById(R.id.monto);
 
-                            titulo.setText("Asigna un saldo a "+ nombre);
+                            titulo.setText("Asigna un saldo a " + nombre);
 
                             btnAsignarSaldo.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-
 
                                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                                     View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
@@ -203,12 +245,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                             dialogConfirmacion.dismiss();
                                             dialogConsultarSaldo.dismiss();
 
-                                            String montoTotal= monto.getText().toString();
-                                            String claveIngresada= editTextClaveUsuario.getText().toString();
+                                            String montoTotal = monto.getText().toString();
+                                            String claveIngresada = editTextClaveUsuario.getText().toString();
 
 
-                                            Utils.crearToastPersonalizado(context,"Clave: " + claveIngresada +" Monto: "+ montoTotal );
-
+                                            Utils.crearToastPersonalizado(context, "Clave: " + claveIngresada + " Monto: " + montoTotal);
 
 
                                         }
@@ -217,9 +258,10 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                 }
                             });
 
-
-
+    */
                         }
+
+
                     });
 
 
@@ -320,12 +362,10 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                             dialogConfirmacion.show();
 
 
-
                             TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
                             Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
                             Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
                             textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar a " + nombre + " ?");
-
 
 
                             buttonAceptar.setOnClickListener(new View.OnClickListener() {
@@ -423,7 +463,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                                     } else {
                                         dialogAsignarActividad.dismiss();
 
-                                      //  Utils.crearToastPersonalizado(context, "Asi se mandaria: " + descripcionActividad);
+                                        //  Utils.crearToastPersonalizado(context, "Asi se mandaria: " + descripcionActividad);
 
                                         actionListener.onAsignarActividadAUsuario("45", descripcionActividad, ID_usuario, nombre, token);
 
@@ -458,6 +498,404 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
         }
     }
+
+
+    private void mostrarItemsNombreActividades(String estado) {
+
+        if (estado.equalsIgnoreCase("sinDatos")) {
+
+            LayoutSinInternet.setVisibility(View.VISIBLE);
+            LayoutConInternet.setVisibility(View.GONE);
+
+        } else if (estado.equalsIgnoreCase("sinVista")) {
+
+            LayoutSinInternet.setVisibility(View.GONE);
+            LayoutConInternet.setVisibility(View.INVISIBLE);
+        } else {
+
+            LayoutSinInternet.setVisibility(View.GONE);
+            LayoutConInternet.setVisibility(View.VISIBLE);
+
+        }
+
+    }
+
+
+
+
+
+/*
+
+
+   private void CerrarModalCargando() {
+        if (dialogCargando.isShowing() || dialogCargando != null) {
+            dialogCargando.dismiss();
+        }
+    }
+
+
+    private void ConsultarSaldoActivo(String ID_saldo, View view, String nombre) {
+
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+
+                if (response.equals("No se encontraron resultados")) {
+
+                    //EN CASO DE QUE NO TENGA SALDO:
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_asignar_saldo, null);
+                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                    AlertDialog dialogAsignarSaldo = builder.create();
+                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                    back.setAlpha(150);
+                    dialogAsignarSaldo.getWindow().setBackgroundDrawable(back);
+                    dialogAsignarSaldo.getWindow().setDimAmount(0.8f);
+                    dialogAsignarSaldo.show();
+
+
+                    Button btnAsignarSaldo = customView.findViewById(R.id.btnAsignarSaldo);
+                    TextView titulo = customView.findViewById(R.id.titulo);
+                    EditText monto = customView.findViewById(R.id.monto);
+
+                    titulo.setText("Asigna un saldo a " + nombre);
+
+                    btnAsignarSaldo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
+                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            ColorDrawable back = new ColorDrawable(Color.BLACK);
+                            back.setAlpha(150);
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                            dialogConfirmacion.show();
+
+
+                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogConfirmacion.dismiss();
+                                    dialogAsignarSaldo.dismiss();
+
+                                    String montoTotal = monto.getText().toString();
+                                    String claveIngresada = editTextClaveUsuario.getText().toString();
+
+
+                                    Utils.crearToastPersonalizado(context, "Clave: " + claveIngresada + " Monto: " + montoTotal);
+
+
+                                }
+                            });
+
+                        }
+                    });
+
+                } else {
+                    //EN CASO DE QUE TENGA UN SALDO ACTIVO:
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_saldo, null);
+                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                    AlertDialog dialogConsultarSaldo = builder.create();
+                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                    back.setAlpha(150);
+                    dialogConsultarSaldo.getWindow().setBackgroundDrawable(back);
+                    dialogConsultarSaldo.getWindow().setDimAmount(0.8f);
+                    dialogConsultarSaldo.show();
+
+                    TextView textViewSaldoRestante = customView.findViewById(R.id.textViewSaldoRestante);
+                    TextView SaldoAsignado = customView.findViewById(R.id.SaldoAsignado);
+                    ImageView buttonEditarSaldo = customView.findViewById(R.id.buttonEditarSaldo);
+                    TextView textView3 = customView.findViewById(R.id.textView3);
+                    Button buttonFinalizarSaldo = customView.findViewById(R.id.buttonFinalizarSaldo);
+
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        saldo_inicial = jsonObject.getString("saldo_inicial");
+                        nuevo_saldo = jsonObject.getString("nuevo_saldo");
+
+                        SaldoAsignado.setText("SALDO ASIGNADO: " + saldo_inicial + " $");
+                        textViewSaldoRestante.setText("Saldo restante: " + nuevo_saldo + "$");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    buttonEditarSaldo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View vistaEditar) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(vistaEditar.getContext());
+                            View customView = LayoutInflater.from(vistaEditar.getContext()).inflate(R.layout.confirmacion_con_clave, null);
+                            builder.setView(Utils.ModalRedondeado(vistaEditar.getContext(), customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            ColorDrawable back = new ColorDrawable(Color.BLACK);
+                            back.setAlpha(150);
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                            dialogConfirmacion.show();
+
+                            TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
+                            textInputLayout.setVisibility(View.VISIBLE);
+                            TextView nuevomonto = customView.findViewById(R.id.nuevomonto);
+                            nuevomonto.setVisibility(View.VISIBLE);
+                            EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+                            nuevoMonto.setText(saldo_inicial);
+
+                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View vistaModal) {
+
+                                    String correccionSaldo = nuevoMonto.getText().toString();
+                                    String claveIngresada = editTextClaveUsuario.getText().toString();
+
+                                    if (correccionSaldo.isEmpty() || correccionSaldo.equals("0")) {
+                                        Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
+                                    } else {
+
+                                        if (!clave.equals(claveIngresada)){
+                                            Utils.crearToastPersonalizado(context,"La contraseña ingresada es incorrecta");
+                                        }else {
+
+                                            dialogConfirmacion.dismiss();
+
+                                            dialogConsultarSaldo.dismiss();
+
+                                            actionListener.onCorregirSaldo( ID_saldo,  correccionSaldo,  view,  nombre);
+
+
+                                        }
+
+                                    }
+
+                                }
+                            });
+
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+                        }
+                    });
+
+
+                }
+                CerrarModalCargando();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudo obtener la informacion, revisa la conexión");
+                CerrarModalCargando();
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "54");
+                params.put("ID_saldo", ID_saldo);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+*/
+
+
+/*
+
+        private void CorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Utils.crearToastPersonalizado(context, "Se actualizó el saldo para " + nombre);
+
+                ConsultarSaldoActivo(ID_saldo, view, nombre);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudo actualizar, revisa la conexión");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "55");
+                params.put("nuevoSaldo", nuevoSaldo);
+                params.put("ID_saldo", ID_saldo);
+                return params;
+            }
+        };
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+    */
+
+
+    @Override
+    public int getItemCount() {
+        return filteredData.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView textNombreUsuario, textCorreoUsuario, textRol, textTelefonoUsuario;
+
+        TextView saldo_restante;
+        ImageView fotoDeUsuario;
+
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
+            //  textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
+            textRol = itemView.findViewById(R.id.textRol);
+            fotoDeUsuario = itemView.findViewById(R.id.fotoDeUsuario);
+            saldo_restante = itemView.findViewById(R.id.saldo_restante);
+            textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
+
+
+        }
+    }
+
+
+    public void filter(String query) {
+        filteredData.clear();
+
+        if (TextUtils.isEmpty(query)) {
+            filteredData.addAll(data);
+        } else {
+            String[] keywords = query.toLowerCase().split(" ");
+
+            for (JSONObject item : data) {
+
+                String ID_usuario = item.optString("ID_usuario", "").toLowerCase();
+                String correo = item.optString("correo", "").toLowerCase();
+                String nombre = item.optString("nombre", "").toLowerCase();
+                String permisos = item.optString("permisos", "").toLowerCase();
+                String telefono = item.optString("telefono", "").toLowerCase();
+
+                boolean matchesAllKeywords = true;
+
+                for (String keyword : keywords) {
+                    if (!(ID_usuario.contains(keyword) || correo.contains(keyword) || nombre.contains(keyword) || permisos.contains(keyword) ||
+                            telefono.contains(keyword))) {
+                        matchesAllKeywords = false;
+                        break;
+                    }
+                }
+
+                if (matchesAllKeywords) {
+                    filteredData.add(item);
+                }
+            }
+        }
+
+        if (filteredData.isEmpty()) {
+            actionListener.onFilterData(false); // Indica que no hay resultados
+        } else {
+            actionListener.onFilterData(true); // Indica que hay resultados
+        }
+
+
+        notifyDataSetChanged();
+    }
+
+
+    public void setFilteredData(List<JSONObject> filteredData) {
+        this.filteredData = new ArrayList<>(filteredData);
+        notifyDataSetChanged();
+    }
+
+
+    private void setTextViewText(TextView textView, String text, String defaultText) {
+        if (text.equals(null) || text.equals("") || text.equals(":null") || text.equals("null") || text.isEmpty()) {
+            textView.setText(defaultText);
+        } else {
+            textView.setText(text);
+        }
+    }
+
+    public interface OnActivityActionListener {
+        void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario);
+
+        void onEliminarUsuarioActivity(String ID_usuario, String nombre);
+
+        void onFilterData(Boolean estado);
+
+        void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token);
+
+        //    void onCorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre);
+
+        void onConsultarSaldoActivo(String ID_saldo, View view, String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios);
+
+
+    }
+
+    private AdaptadorUsuarios.OnActivityActionListener actionListener;
+
+
+    public AdaptadorUsuarios(List<JSONObject> data, Context context, AdaptadorUsuarios.OnActivityActionListener actionListener) {
+        this.data = data;
+        this.context = context;
+        this.filteredData = new ArrayList<>(data);
+        this.actionListener = actionListener;
+
+        url = context.getResources().getString(R.string.urlApi);
+        //     builderCargando = new AlertDialog.Builder(context);
+        //   builderCargando.setCancelable(false);
+
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+        clave = sharedPreferences.getString("clave", "");
+
+    }
+
+
+
+
+    /*
 
 
     List<JSONObject> nombresActividades = new ArrayList<>();
@@ -508,130 +946,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         Volley.newRequestQueue(context).add(postrequest);
     }
 
-
-    private void mostrarItemsNombreActividades(String estado) {
-
-        if (estado.equalsIgnoreCase("sinDatos")) {
-
-            LayoutSinInternet.setVisibility(View.VISIBLE);
-            LayoutConInternet.setVisibility(View.GONE);
-
-        } else if (estado.equalsIgnoreCase("sinVista")) {
-
-            LayoutSinInternet.setVisibility(View.GONE);
-            LayoutConInternet.setVisibility(View.INVISIBLE);
-        } else {
-
-            LayoutSinInternet.setVisibility(View.GONE);
-            LayoutConInternet.setVisibility(View.VISIBLE);
-
-        }
-
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return filteredData.size();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textNombreUsuario, textCorreoUsuario, textRol, textTelefonoUsuario;
-        ImageView fotoDeUsuario;
-
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
-            //  textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
-            textRol = itemView.findViewById(R.id.textRol);
-            fotoDeUsuario = itemView.findViewById(R.id.fotoDeUsuario);
-
-            textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
-
-
-        }
-    }
-
-    public void filter(String query) {
-        filteredData.clear();
-
-        if (TextUtils.isEmpty(query)) {
-            filteredData.addAll(data);
-        } else {
-            String[] keywords = query.toLowerCase().split(" ");
-
-            for (JSONObject item : data) {
-
-                String ID_usuario = item.optString("ID_usuario", "").toLowerCase();
-                String correo = item.optString("correo", "").toLowerCase();
-                String nombre = item.optString("nombre", "").toLowerCase();
-                String permisos = item.optString("permisos", "").toLowerCase();
-                String telefono = item.optString("telefono", "").toLowerCase();
-
-                boolean matchesAllKeywords = true;
-
-                for (String keyword : keywords) {
-                    if (!(ID_usuario.contains(keyword) || correo.contains(keyword) || nombre.contains(keyword) || permisos.contains(keyword) ||
-                            telefono.contains(keyword))) {
-                        matchesAllKeywords = false;
-                        break;
-                    }
-                }
-
-                if (matchesAllKeywords) {
-                    filteredData.add(item);
-                }
-            }
-        }
-
-        if (filteredData.isEmpty()) {
-            actionListener.onFilterData(false); // Indica que no hay resultados
-        } else {
-            actionListener.onFilterData(true); // Indica que hay resultados
-        }
-
-
-        notifyDataSetChanged();
-    }
-
-    public void setFilteredData(List<JSONObject> filteredData) {
-        this.filteredData = new ArrayList<>(filteredData);
-        notifyDataSetChanged();
-    }
-
-
-    private void setTextViewText(TextView textView, String text, String defaultText) {
-        if (text.equals(null) || text.equals("") || text.equals(":null") || text.equals("null") || text.isEmpty()) {
-            textView.setText(defaultText);
-        } else {
-            textView.setText(text);
-        }
-    }
-
-    public interface OnActivityActionListener {
-        void onEditarUsuarioActivity(String ID_usuario, String nombreUsuario, String correoUsuario, String claveUsuario, String telefonoUsuario, String rolUsuario);
-
-        void onEliminarUsuarioActivity(String ID_usuario, String nombre);
-
-        void onFilterData(Boolean estado);
-
-        void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token);
-
-    }
-
-    private AdaptadorUsuarios.OnActivityActionListener actionListener;
-
-
-    public AdaptadorUsuarios(List<JSONObject> data, Context context, AdaptadorUsuarios.OnActivityActionListener actionListener) {
-        this.data = data;
-        this.context = context;
-        this.filteredData = new ArrayList<>(data);
-        this.actionListener = actionListener;
-
-
-    }
-
+     */
 }
 

@@ -35,17 +35,20 @@ import java.util.Locale;
 
 public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<AdaptadorActividadesPorUsuario.ViewHolder> {
 
-    private ArrayList<String> nombresActividades = new ArrayList<>();
 
     private Context context;
 
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
 
+    String url;
+
     public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
+
+        url = context.getResources().getString(R.string.urlApi);
     }
 
     @NonNull
@@ -61,7 +64,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        Context context = holder.itemView.getContext();
 
         int drawableResId = 0;
         int colorIcono = 0;
