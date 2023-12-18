@@ -33,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        style="@style/NavigationViewComun"
+        style="@style/NavigationViewOficina"
         app:itemIconTint="@drawable/icon_selector"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/menus_combinados"

@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorGastos;
 import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
+import com.bitala.bitacora.Adaptadores.DownloadFileTask;
 import com.bitala.bitacora.R;
 
 import org.json.JSONArray;
@@ -77,6 +79,8 @@ public class GastosFragment extends Fragment {
     String fechaFinalSeleccionada = "";
     String fechaInicialSeleccionada = "";
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,6 +90,7 @@ public class GastosFragment extends Fragment {
 
         ContenedorSinContenido = view.findViewById(R.id.ContenedorSinContenido);
         ContenedorSinInternet = view.findViewById(R.id.ContenedorSinInternet);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         ContenedorContenido = view.findViewById(R.id.ContenedorContenido);
 
         Button buttonFiltrarPorFecha2 = view.findViewById(R.id.buttonFiltrarPorFecha2);
@@ -293,6 +298,7 @@ public class GastosFragment extends Fragment {
                 dialogSeleccionarFecha.show();
 
                 TextView fechaInicial = customView.findViewById(R.id.fechaInicial);
+
                 TextView fechaFinal = customView.findViewById(R.id.fechaFinal);
                 Button btnBuscar = customView.findViewById(R.id.btnBuscar);
 
@@ -430,6 +436,48 @@ public class GastosFragment extends Fragment {
             }
         });
 
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                if ((!fechaInicialSeleccionada.equals("") || !fechaInicialSeleccionada.isEmpty()) && (!fechaFinalSeleccionada.isEmpty() || !fechaFinalSeleccionada.equals(""))) {
+                    VerGastosPorFecha(ID_usuario, fechaInicialSeleccionada, fechaFinalSeleccionada);
+                } else {
+
+                    VerTodosLosGastos(ID_usuario);
+                }
+
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Map<String, String> postData = new HashMap<>();
+                if ((!fechaInicialSeleccionada.equals("") || !fechaInicialSeleccionada.isEmpty()) && (!fechaFinalSeleccionada.isEmpty() || !fechaFinalSeleccionada.equals(""))) {
+
+                    postData.put("opcion", "59");
+                    postData.put("ID_usuario", ID_usuario);
+                    postData.put("fechaInicio", fechaInicialSeleccionada);
+                    postData.put("fechaFin", fechaFinalSeleccionada);
+                } else {
+
+                    postData.put("opcion", "59");
+                    postData.put("ID_usuario", ID_usuario);
+                    postData.put("fechaInicio", "");
+                    postData.put("fechaFin", "");
+                }
+
+
+                new DownloadFileTask(context, postData).execute(url);
+
+            }
+        });
+
+
         return view;
 
     }
@@ -489,6 +537,8 @@ public class GastosFragment extends Fragment {
 
     private void VerTodosLosGastos(String ID_usuario) {
         listaGastos.clear();
+        fechaInicialSeleccionada = "";
+        fechaFinalSeleccionada = "";
         modalCargando = Utils.ModalCargando(context, builder);
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override

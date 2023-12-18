@@ -135,7 +135,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Button btnFiltrarDeLaSemana = view.findViewById(R.id.btnFiltrarDeLaSemana);
         Button btnFiltrarPorMes = view.findViewById(R.id.btnFiltrarPorMes);
         Button btnFiltrarDelAnio = view.findViewById(R.id.btnFiltrarDelAnio);
-        FloatingActionButton fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
+        ImageView fabBotonFlotante = view.findViewById(R.id.fabBotonFlotante);
         rvActividadesUsuario = view.findViewById(R.id.rvActividadesUsuario);
         ImageView IVFotoDeUsuario = view.findViewById(R.id.IVFotoDeUsuario);
         textSinActividades = view.findViewById(R.id.textSinActividades);

@@ -6,7 +6,7 @@
     android:layout_marginStart="16dp"
     android:layout_marginTop="10dp"
     android:layout_marginEnd="16dp"
-    android:background="@drawable/borde_naranja"
+    android:background="@drawable/borde_vino"
     android:orientation="horizontal"
     android:padding="8dp">
 

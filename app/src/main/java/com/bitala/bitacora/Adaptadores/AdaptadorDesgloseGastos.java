@@ -28,8 +28,12 @@ import com.bitala.bitacora.R;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgloseGastos.ViewHolder> {
@@ -64,9 +68,32 @@ public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgl
             String ID_gastos = jsonObject2.optString("ID_gastos", "");
             String nombre_actividad = jsonObject2.optString("nombre_actividad", "");
             String descripcionActividad = jsonObject2.optString("descripcionActividad", "");
+            String hora = jsonObject2.optString("hora", "");
 
 
-            holder.fecha.setText("Fecha: " + fecha);
+            //   holder.fecha.setText("Fecha: " + fecha);
+
+            try {
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                Date date = inputFormat.parse(fecha);
+                SimpleDateFormat outputDayOfWeek = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
+                String dayOfWeek = outputDayOfWeek.format(date);
+                SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+                String formattedDate = outputFormat.format(date);
+
+               // holder.fecha.setText(dayOfWeek.toLowerCase() + " " + formattedDate.toLowerCase());
+
+
+                String horaFormateada = formatearHora(hora);
+
+
+                holder.fecha.setText(formattedDate.toLowerCase() + " a las " + horaFormateada);
+
+            } catch (ParseException e) {
+                holder.fecha.setText("No se encontro la fecha");
+            }
+
+
             holder.dinero_gastado.setText("Total de saldo: -" + dinero_gastado + "$");
 
             holder.nombreActividad.setText(nombre_actividad);
@@ -78,6 +105,25 @@ public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgl
         }
     }
 
+    private String formatearHora(String horaDesdeAPI) {
+        // Define el formato de entrada
+        SimpleDateFormat formatoEntrada = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+        // Define el formato de salida
+        SimpleDateFormat formatoSalida = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+        try {
+            // Parsea la hora desde la cadena de texto de la API
+            Date hora = formatoEntrada.parse(horaDesdeAPI);
+
+            // Formatea la hora al nuevo formato
+            return formatoSalida.format(hora);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            // Maneja la excepción si ocurre un error al parsear la hora
+            return horaDesdeAPI; // O podrías devolver un valor por defecto
+        }
+    }
 
     @Override
     public int getItemCount() {

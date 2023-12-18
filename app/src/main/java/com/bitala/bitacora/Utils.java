@@ -41,7 +41,7 @@ public class Utils {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
 
-        cardView.setBackgroundResource(R.drawable.roundedbackground_nombre_actividad);
+        cardView.setBackgroundResource(R.drawable.redondeadoconbordevino);
         cardView.addView(viewModal);
         return cardView;
     }

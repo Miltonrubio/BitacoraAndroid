@@ -43,9 +43,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
@@ -682,7 +686,22 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                         SaldoAsignado.setText("SALDO ASIGNADO: " + saldo_inicial + " $");
                         textViewSaldoRestante.setText("Saldo restante: " + nuevo_saldo + "$");
-                        fecha_asign.setText("Saldo asignado el: " +fecha_asignacion);
+                        //          fecha_asign.setText("Saldo asignado el: " +fecha_asignacion);
+
+
+                        try {
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                            Date date = inputFormat.parse(fecha_asignacion);
+                            SimpleDateFormat outputDayOfWeek = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
+                            String dayOfWeek = outputDayOfWeek.format(date);
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+                            String formattedDate = outputFormat.format(date);
+
+                            fecha_asign.setText("Saldo asignado el: " + dayOfWeek.toLowerCase() + " " + formattedDate.toLowerCase());
+
+                        } catch (ParseException e) {
+                            fecha_asign.setText("No se encontro la fecha");
+                        }
 
 
                     } catch (JSONException e) {

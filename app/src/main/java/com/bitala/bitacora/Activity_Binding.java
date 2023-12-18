@@ -26,8 +26,8 @@ public class Activity_Binding extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         permisosUsuario = sharedPreferences.getString("permisos", "");
-        int theme = getThemeByUserType(permisosUsuario);
-        setTheme(theme);
+    //    int theme = getThemeByUserType(permisosUsuario);
+      //  setTheme(theme);
 
         super.onCreate(savedInstanceState);
 
@@ -73,13 +73,15 @@ public class Activity_Binding extends AppCompatActivity {
 
         else {
             binding.bottomNavigationView.setSelectedItemId(R.id.menu_home);
-            binding.bottomNavigationView.setBackgroundResource(R.color.naranjita);
+      //      binding.bottomNavigationView.setBackgroundResource(R.color.naranjita);
 
 
         }
 
     }
 
+
+    /*
     public int getThemeByUserType(String userType) {
         int themeResId;
 
@@ -97,6 +99,8 @@ public class Activity_Binding extends AppCompatActivity {
 
         return themeResId;
     }
+
+    */
 
     private void setupMenu(String permisosUsuario) {
         if (!"SUPERADMIN".equals(permisosUsuario)) {

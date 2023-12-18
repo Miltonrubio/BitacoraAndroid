@@ -141,14 +141,10 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             holder.ContenedorSaldo.setBackground(drawable);
 
             if (total_gastos.isEmpty() || total_gastos.equals("0")) {
-
                 holder.totalGastado.setVisibility(View.GONE);
-
             } else {
-
                 holder.totalGastado.setVisibility(View.VISIBLE);
-                holder.totalGastado.setText("Saldo gastado: " + total_gastos);
-
+                holder.totalGastado.setText("Saldo gastado: -" + total_gastos + "$");
             }
 
 
@@ -156,6 +152,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             holder.recyclerViewDesgloseGastos.setLayoutManager(new LinearLayoutManager(context));
             holder.recyclerViewDesgloseGastos.setAdapter(adaptadorDesgloseGastos);
 
+            listaDesgloseGastos.clear();
             try {
                 JSONArray jsonArray = new JSONArray(gastos);
                 for (int i = 0; i < jsonArray.length(); i++) {

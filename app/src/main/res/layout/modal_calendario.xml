@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="34dp"
         android:layout_marginEnd="53dp"
-        android:backgroundTint="@color/rojo"
+        android:backgroundTint="@color/grisMuyOscuro"
         android:text="Cancelar"
         app:layout_constraintEnd_toStartOf="@+id/buttonAceptar"
         app:layout_constraintStart_toStartOf="parent"

@@ -82,7 +82,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="18dp"
         android:layout_marginBottom="25dp"
-        android:backgroundTint="@color/naranjita"
+        android:backgroundTint="@color/vino"
         android:paddingHorizontal="35dp"
         android:paddingVertical="8dp"
         android:text="Editar"

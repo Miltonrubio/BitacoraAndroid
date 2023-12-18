@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:id="@+id/ContenedorCompleto"
     android:layout_height="match_parent"
-    android:background="@color/naranjita">
+    android:background="@color/vino">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="360dp"
@@ -33,8 +33,10 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="15dp"
+            android:paddingHorizontal="42dp"
             android:layout_marginTop="144dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.509"
@@ -47,7 +49,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="72dp"
                 android:text="Nombre del usuario"
-                android:textSize="18sp"
+                android:textColor="@color/vino"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.505"
                 app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Telelfono del usuario"
-                android:textSize="18sp"
+                android:textSize="19sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textNombreUsuario" />
@@ -80,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
-                android:backgroundTint="@color/naranja"
+                android:backgroundTint="@color/vino"
                 android:gravity="center"
                 android:text="Cerrar sesión"
                 android:textSize="17sp"

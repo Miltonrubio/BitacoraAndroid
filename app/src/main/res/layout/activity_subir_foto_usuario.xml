@@ -20,7 +20,7 @@
             android:layout_marginBottom="25dp"
             android:gravity="center"
             android:text="MODIFICANDO:"
-            android:textColor="@color/naranjita"
+            android:textColor="@color/vino"
             android:textSize="24dp"
             android:textStyle="bold" />
 
@@ -45,18 +45,28 @@
 
             <Button
                 android:id="@+id/guardarFoto"
-                android:layout_width="170dp"
-                android:layout_height="60dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="35dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:backgroundTint="@color/naranjita"
                 android:text="Tomar foto"
                 android:layout_margin="15dp"/>
 
             <Button
                 android:id="@+id/fotoDesdeGaleria"
-                android:layout_width="170dp"
-                android:layout_height="60dp"
-                android:backgroundTint="@color/naranja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="35dp"
+                android:backgroundTint="@color/vino"
                 android:text="Abrir galeria"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:layout_margin="15dp"/>
 
         </LinearLayout>

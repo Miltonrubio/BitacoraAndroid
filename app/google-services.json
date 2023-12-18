@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "839116487760",
+    "project_id": "bitacora-hidalgo",
+    "storage_bucket": "bitacora-hidalgo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839116487760:android:5cf8bed13513a3a4f7a555",
+        "android_client_info": {
+          "package_name": "com.bitala.bitacora"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATvRDRAAYUpsn9nepEE-R9VsfyG9_zXxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

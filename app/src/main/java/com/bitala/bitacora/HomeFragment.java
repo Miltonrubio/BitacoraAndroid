@@ -90,7 +90,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
 
-        builderCargando = new AlertDialog.Builder(view.getContext());
+        builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);
 
         saldoActual = view.findViewById(R.id.saldoActual);
@@ -132,6 +132,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         Drawable drawable;
         Drawable botonRedondo;
 
+/*
         if (permisos.equalsIgnoreCase("OFICINISTA")) {
 
             drawable = ContextCompat.getDrawable(context, R.color.vino);
@@ -176,14 +177,26 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 View customView = LayoutInflater.from(context).inflate(R.layout.opciones_titulo_actividad, null);
                 builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
 
+                //     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                //   builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                dialogActividades = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogActividades.getWindow().setBackgroundDrawable(back);
+                dialogActividades.getWindow().setDimAmount(0.8f);
+                dialogActividades.show();
+
 
                 RecyclerViewTituloActividades = customView.findViewById(R.id.RecyclerViewTituloActividades);
                 LayoutSinInternet = customView.findViewById(R.id.LayoutSinInternet);
                 LayoutConInternet = customView.findViewById(R.id.LayoutConInternet);
 
+                /*
                 dialogActividades = builder.create();
                 dialogActividades.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogActividades.show();
+
+                */
 
                 VerNombresActividades(customView.getContext());
 
@@ -235,7 +248,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
                         saldoActual.setText("Saldo actual: " + saldo_actualizado + "$");
                         saldoActualSinCont.setText("Saldo actual: " + saldo_actualizado + "$");
-
 
 
                     } catch (JSONException e) {

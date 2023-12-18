@@ -142,15 +142,16 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             Drawable drawable;
 
             if (tipo_actividad.equalsIgnoreCase("OFICINAS") || tipo_actividad.equalsIgnoreCase("OCULTA")) {
-                drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+               // drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
                 colorRes = R.color.vino;
             } else {
 
-                drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+             //   drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
                 colorRes = R.color.naranjita;
             }
 
-            holder.FrameActividades.setBackground(drawable);
+
+          //  holder.FrameActividades.setBackground(drawable);
             int color = ContextCompat.getColor(context, colorRes);
             holder.textActividad.setTextColor(color);
 

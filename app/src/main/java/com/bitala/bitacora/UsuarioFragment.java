@@ -34,7 +34,8 @@ public class UsuarioFragment extends Fragment {
 
 
     }
-Context context;
+
+    Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,12 +43,12 @@ Context context;
         View view = inflater.inflate(R.layout.fragment_usuario, container, false);
 
 
-        ConstraintLayout ContenedorCompleto= view.findViewById(R.id.ContenedorCompleto);
+        ConstraintLayout ContenedorCompleto = view.findViewById(R.id.ContenedorCompleto);
         TextView textNombreUsuario = view.findViewById(R.id.textNombreUsuario);
         TextView textRol = view.findViewById(R.id.textRol);
         TextView textTelefonoUsuario = view.findViewById(R.id.textTelefonoUsuario);
         ImageView ImagenSesionIniciada = view.findViewById(R.id.iconImageView);
-context=requireContext();
+        context = requireContext();
 
         Button customButton = view.findViewById(R.id.cerrarSesion);
 
@@ -73,6 +74,7 @@ context=requireContext();
                 .error(R.drawable.imagendefault)
                 .into(ImagenSesionIniciada);
 
+        /*
 
         int colorRes;
         Drawable drawable;
@@ -89,11 +91,11 @@ context=requireContext();
         ContenedorCompleto.setBackground(drawable);
        // int color = ContextCompat.getColor(context, colorRes);
         //TextNombreDeActividad.setTextColor(color);
+*/
 
-
-        textRol.setText(permisos);
-        textTelefonoUsuario.setText("Telefono: " + telefono);
-        textNombreUsuario.setText(nombre);
+        textRol.setText(permisos.toLowerCase());
+        textTelefonoUsuario.setText(telefono);
+        textNombreUsuario.setText(nombre.toUpperCase());
 
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override

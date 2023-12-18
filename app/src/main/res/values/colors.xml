@@ -13,6 +13,9 @@
 
     <color name="rojo">#FF5722</color>
 
+    <color name="cafesito">#8C5A18</color>
+
+
     <color name="amarillo">#FFC107</color>
     <color name="naranjita">#ffab92</color>
     <color name="grisnaranjita">#ffd5cb</color>
@@ -41,4 +44,8 @@
     <color name="naranjitapastel">#FFDFC8</color>
     <color name="moradito">#D3C8FF</color>
     <color name="azulcielo">#C8E2FF</color>
+
+    <color name="grisMuyOscuro">#54514D</color>
+
+
 </resources>

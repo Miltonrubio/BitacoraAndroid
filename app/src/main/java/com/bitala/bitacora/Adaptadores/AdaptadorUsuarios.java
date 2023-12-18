@@ -113,7 +113,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
 
             //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
-            setTextViewText(holder.textRol, permisos, "Permisos no disponible");
+            setTextViewText(holder.textRol, permisos.toLowerCase(), "Permisos no disponible");
             setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
             setTextViewText(holder.textNombreUsuario, nombre.toUpperCase(), "Nombre no disponible");
 

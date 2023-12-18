@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:textColor="@color/vino"
             android:gravity="center"
             android:text="SELECCIONA TU ACTIVIDAD"
             android:textSize="26dp"

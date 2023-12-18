@@ -100,7 +100,7 @@
         android:text="Actualizar Actividad"
         android:visibility="gone"
         android:textSize="22sp"
-        android:backgroundTint="@color/naranjita"
+        android:backgroundTint="@color/vino"
         android:layout_marginBottom="25dp"
         />
 

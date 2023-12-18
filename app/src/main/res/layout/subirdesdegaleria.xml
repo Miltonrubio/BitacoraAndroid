@@ -39,7 +39,7 @@
                 android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="@color/naranjita"
+                android:backgroundTint="@color/vino"
                 android:text="Subir desde galeria" />
 
             <ImageView
