@@ -79,7 +79,7 @@ public class GastosFragment extends Fragment {
     String fechaFinalSeleccionada = "";
     String fechaInicialSeleccionada = "";
     String nombre;
-    //  SwipeRefreshLayout swipeRefreshLayout;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,7 +90,7 @@ public class GastosFragment extends Fragment {
 
         ContenedorSinContenido = view.findViewById(R.id.ContenedorSinContenido);
         ContenedorSinInternet = view.findViewById(R.id.ContenedorSinInternet);
-        //  swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         ContenedorContenido = view.findViewById(R.id.ContenedorContenido);
 
         Button buttonFiltrarPorFecha2 = view.findViewById(R.id.buttonFiltrarPorFecha2);
@@ -437,7 +437,6 @@ public class GastosFragment extends Fragment {
             }
         });
 
-/*
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -445,14 +444,13 @@ public class GastosFragment extends Fragment {
                 if ((!fechaInicialSeleccionada.equals("") || !fechaInicialSeleccionada.isEmpty()) && (!fechaFinalSeleccionada.isEmpty() || !fechaFinalSeleccionada.equals(""))) {
                     VerGastosPorFecha(ID_usuario, fechaInicialSeleccionada, fechaFinalSeleccionada);
                 } else {
-
                     VerTodosLosGastos(ID_usuario);
                 }
-
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-*/
+
+
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
