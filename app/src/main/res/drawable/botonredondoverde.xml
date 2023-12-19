@@ -1,0 +1,5 @@
+<!-- background_rounded.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/verdefuerte" />
+    <corners android:radius="25dp" /> <!-- Ajusta el radio según sea necesario -->
+</shape>

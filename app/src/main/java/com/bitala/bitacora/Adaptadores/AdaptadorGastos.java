@@ -79,6 +79,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             String gastos = jsonObject2.optString("gastos", "");
             String fecha_asignacion = jsonObject2.optString("fecha_asignacion", "");
             String status_saldo = jsonObject2.optString("status_saldo", "");
+            String total_depositos = jsonObject2.optString("total_depositos", "");
 
 
             //      holder.fecha.setText("Asignado el: " + fecha_asignacion);
@@ -101,7 +102,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
 
             holder.saldo_Asign.setText("Saldo Asignado: " + saldo_inicial + "$");
 
-            holder.saldo_restante.setText("Saldo restante : " + nuevo_saldo + "$");
+            holder.saldo_restante.setText("Saldo actual: " + nuevo_saldo + "$");
 
             // holder.status_saldo.setText("Estatus de saldo: " + status_saldo);
 
@@ -145,6 +146,13 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             } else {
                 holder.totalGastado.setVisibility(View.VISIBLE);
                 holder.totalGastado.setText("Saldo gastado: -" + total_gastos + "$");
+            }
+
+            if (total_depositos.isEmpty() || total_depositos.equals("0")) {
+                holder.depositos.setVisibility(View.GONE);
+            }else{
+                holder.depositos.setVisibility(View.VISIBLE);
+                holder.depositos.setText("Total depositos: +" + total_depositos + "$");
             }
 
 
@@ -195,6 +203,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
                 }
             });
 
+
         } finally {
         }
     }
@@ -227,6 +236,8 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
 
         LinearLayout LayoutGastos;
 
+        TextView depositos;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -241,6 +252,8 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             ContenedorSaldo = itemView.findViewById(R.id.ContenedorSaldo);
             IconoOcultarMostrar = itemView.findViewById(R.id.IconoOcultarMostrar);
             LayoutGastos = itemView.findViewById(R.id.LayoutGastos);
+
+            depositos = itemView.findViewById(R.id.depositos);
         }
     }
 

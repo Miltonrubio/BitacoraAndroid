@@ -78,8 +78,8 @@ public class GastosFragment extends Fragment {
     AdaptadorGastos adaptadorGastos;
     String fechaFinalSeleccionada = "";
     String fechaInicialSeleccionada = "";
-
-    SwipeRefreshLayout swipeRefreshLayout;
+    String nombre;
+    //  SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,7 +90,7 @@ public class GastosFragment extends Fragment {
 
         ContenedorSinContenido = view.findViewById(R.id.ContenedorSinContenido);
         ContenedorSinInternet = view.findViewById(R.id.ContenedorSinInternet);
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        //  swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         ContenedorContenido = view.findViewById(R.id.ContenedorContenido);
 
         Button buttonFiltrarPorFecha2 = view.findViewById(R.id.buttonFiltrarPorFecha2);
@@ -100,7 +100,7 @@ public class GastosFragment extends Fragment {
         buttonFiltrarPorFecha = view.findViewById(R.id.buttonFiltrarPorFecha);
         ImageView botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         RecyclerView recyclerViewGastos = view.findViewById(R.id.recyclerViewGastos);
-
+        TextView textView3 = view.findViewById(R.id.textView3);
 
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
@@ -118,8 +118,9 @@ public class GastosFragment extends Fragment {
 
 
             ID_usuario = bundle.getString("ID_usuario", "");
+            nombre = bundle.getString("nombre", "");
             VerTodosLosGastos(ID_usuario);
-
+            textView3.setText("CONTROL DE GASTOS DE " + nombre.toUpperCase());
         }
 
 
@@ -436,7 +437,7 @@ public class GastosFragment extends Fragment {
             }
         });
 
-
+/*
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -451,7 +452,7 @@ public class GastosFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
+*/
         botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

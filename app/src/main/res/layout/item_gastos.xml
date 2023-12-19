@@ -13,6 +13,21 @@
 
 
     <TextView
+        android:id="@+id/depositos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="SALDOS DEPOSITADOS:"
+        android:textColor="@color/verde"
+        android:textSize="19dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/totalGastado" />
+
+    <TextView
         android:id="@+id/status_saldo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,14 +46,15 @@
         android:id="@+id/saldo_restante"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:gravity="center"
-        android:text="SALDO RESTANTE:"
-        android:textSize="17dp"
+        android:text="SALDO ACTUAL:"
+        android:textSize="19dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/totalGastado" />
+        app:layout_constraintTop_toBottomOf="@+id/depositos" />
 
     <TextView
         android:id="@+id/totalGastado"
@@ -48,8 +64,8 @@
         android:gravity="center"
         android:text="SALDO GASTADO:"
         android:textColor="@color/rojo"
-
-        android:textSize="17dp"
+        android:textSize="19dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,10 +104,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/saldo_restante"
-        tools:layout_editor_absoluteX="30dp">
+        tools:layout_editor_absoluteX="9dp">
 
 
         <LinearLayout

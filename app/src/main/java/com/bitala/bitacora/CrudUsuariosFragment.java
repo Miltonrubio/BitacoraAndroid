@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -676,6 +677,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                     ImageView buttonEditarSaldo = customView.findViewById(R.id.buttonEditarSaldo);
                     TextView fecha_asign = customView.findViewById(R.id.fecha_asign);
                     Button buttonFinalizarSaldo = customView.findViewById(R.id.buttonFinalizarSaldo);
+                    ImageView botonAgregarActividad = customView.findViewById(R.id.botonAgregarActividad);
 
 
                     try {
@@ -685,7 +687,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                         String fecha_asignacion = jsonObject.getString("fecha_asignacion");
 
                         SaldoAsignado.setText("SALDO ASIGNADO: " + saldo_inicial + " $");
-                        textViewSaldoRestante.setText("Saldo restante: " + nuevo_saldo + "$");
+                        textViewSaldoRestante.setText("Saldo activo: " + nuevo_saldo + " $");
                         //          fecha_asign.setText("Saldo asignado el: " +fecha_asignacion);
 
 
@@ -708,11 +710,80 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                         e.printStackTrace();
                     }
 
+                    botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
+                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            ColorDrawable back = new ColorDrawable(Color.BLACK);
+                            back.setAlpha(150);
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                            dialogConfirmacion.show();
+
+
+                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                            EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+                            TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
+                            TextView textView4 = customView.findViewById(R.id.textView4);
+                            editTextClaveUsuario.setVisibility(View.VISIBLE);
+                            textInputLayout.setVisibility(View.VISIBLE);
+                            textView4.setText("Para agregarle saldo a " + nombre + " debes ingresar tu clave");
+
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View vistaModal) {
+
+                                    String deposito = nuevoMonto.getText().toString();
+                                    String claveIngresada = editTextClaveUsuario.getText().toString();
+
+                                    if (deposito.isEmpty() || deposito.equals("0")) {
+                                        Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
+                                    } else {
+
+                                        if (!clave.equals(claveIngresada)) {
+                                            Utils.crearToastPersonalizado(context, "La contraseña ingresada es incorrecta");
+                                        } else {
+
+                                            dialogConfirmacion.dismiss();
+
+                                            dialogConsultarSaldo.dismiss();
+
+                                            //          onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario);
+
+                                            DepositarMasSaldo(ID_saldo, deposito, nombre);
+
+
+                                        }
+
+                                    }
+
+                                }
+                            });
+
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+
+                        }
+                    });
+
 
                     buttonFinalizarSaldo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View vistaModal) {
-
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                             View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
@@ -921,4 +992,39 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         Volley.newRequestQueue(context).add(postrequest);
 
     }
+
+
+    private void DepositarMasSaldo(String ID_saldo, String deposito, String nombre) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Utils.crearToastPersonalizado(context, "Aumento el saldo de " + nombre);
+
+                dialogOpcionesUsuarios.dismiss();
+                MostrarUsuarios();
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudó actualizar, revisa la conexión");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "60");
+                params.put("ID_saldo", ID_saldo);
+                params.put("deposito", deposito);
+                return params;
+            }
+        };
+        Volley.newRequestQueue(context).add(postrequest);
+
+    }
+
+
 }

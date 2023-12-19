@@ -204,6 +204,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 RecyclerViewTituloActividades.setAdapter(adaptadorListaActividades);
 
 
+
                 dialogActividades.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {

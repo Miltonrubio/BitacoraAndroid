@@ -1607,7 +1607,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
 
                         TextView textView4 = customView.findViewById(R.id.textView4);
-                        textView4.setText("Para finalizar esta actividad debes ingresar el monto");
+                        textView4.setText("Para finalizar esta actividad debes ingresar el monto  \n \nNo olvides subir tu comprobante");
 
                         editTextClaveUsuario.setVisibility(View.GONE);
                         textInputLayout.setVisibility(View.VISIBLE);
@@ -1629,7 +1629,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                     nuevomonto.setVisibility(View.GONE);
                                 } else {
 
-                                    textView4.setText("Para finalizar esta actividad debes ingresar el monto");
+                                    textView4.setText("Para finalizar esta actividad debes ingresar el monto  \n \nNo olvides subir tu comprobante");
                                     textInputLayout.setVisibility(View.VISIBLE);
                                     nuevomonto.setVisibility(View.VISIBLE);
                                 }
