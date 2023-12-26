@@ -155,6 +155,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     holder.FrameActividades.setBackgroundResource(R.drawable.rounded_amarillo);
                     colorIcono = ContextCompat.getColor(context, R.color.amarillo);
                     drawableResId = R.drawable.baseline_access_time_24;
+                   holder.FrameActividades.setVisibility(View.VISIBLE);
 
                 }
 

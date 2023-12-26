@@ -195,7 +195,6 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             ActividadesPorUsuario(ID_usuario);
 
 
-
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -294,39 +293,37 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
         for (JSONObject jsonObject : dataList) {
             try {
-                String fechaInicio = jsonObject.getString("fecha_inicio");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date fecha = sdf.parse(fechaInicio);
-
-                Calendar actividadCalendar = Calendar.getInstance();
-                actividadCalendar.setTime(fecha);
-                int actividadYear = actividadCalendar.get(Calendar.YEAR);
-                int actividadMonth = actividadCalendar.get(Calendar.MONTH) + 1;
-                int actividadDay = actividadCalendar.get(Calendar.DAY_OF_MONTH);
-
-                if (year == actividadYear && month == actividadMonth && day == actividadDay) {
+                String fechaInicio = jsonObject.optString("fecha_inicio", "");
+                if (fechaInicio.isEmpty() || fechaInicio.equals("null") || fechaInicio.equals(null)) {
                     datosDependiendoDeFecha.add(jsonObject);
+                } else {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date fecha = sdf.parse(fechaInicio);
+
+                    Calendar actividadCalendar = Calendar.getInstance();
+                    actividadCalendar.setTime(fecha);
+                    int actividadYear = actividadCalendar.get(Calendar.YEAR);
+                    int actividadMonth = actividadCalendar.get(Calendar.MONTH) + 1;
+                    int actividadDay = actividadCalendar.get(Calendar.DAY_OF_MONTH);
+
+                    if (year == actividadYear && month == actividadMonth && day == actividadDay) {
+                        datosDependiendoDeFecha.add(jsonObject);
+                    }
                 }
-            } catch (JSONException | ParseException e) {
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
         if (datosDependiendoDeFecha.size() > 0) {
-
             MostrarAnimaciones("Actividades");
         } else {
-
             MostrarAnimaciones("SinActividades");
         }
 
-
         adaptadorActividades.setFilteredData(datosDependiendoDeFecha);
         adaptadorActividades.notifyDataSetChanged();
-
-
     }
-
 
     private void mostrarDatosDelMesActual() {
 
@@ -340,16 +337,20 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Date fechaHace30Dias = calendar.getTime();
 
         for (JSONObject jsonObject : dataList) {
-            try {
-                String fechaInicio = jsonObject.getString("fecha_inicio");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date fecha = sdf.parse(fechaInicio);
+            String fechaInicio = jsonObject.optString("fecha_inicio", "");
+            if (fechaInicio.isEmpty() || fechaInicio.equals("null") || fechaInicio.equals(null)) {
+                datosDependiendoDeFecha.add(jsonObject);
+            } else {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date fecha = sdf.parse(fechaInicio);
 
-                if (fecha.after(fechaHace30Dias) || fecha.equals(fechaHace30Dias)) {
-                    datosDependiendoDeFecha.add(jsonObject);
+                    if (fecha.after(fechaHace30Dias) || fecha.equals(fechaHace30Dias)) {
+                        datosDependiendoDeFecha.add(jsonObject);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException | ParseException e) {
-                e.printStackTrace();
             }
         }
 
@@ -378,16 +379,20 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         Date fechaHace7Dias = calendar.getTime();
 
         for (JSONObject jsonObject : dataList) {
-            try {
-                String fechaInicio = jsonObject.getString("fecha_inicio");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date fecha = sdf.parse(fechaInicio);
+            String fechaInicio = jsonObject.optString("fecha_inicio", "");
+            if (fechaInicio.isEmpty() || fechaInicio.equals("null") || fechaInicio.equals(null)) {
+                datosDependiendoDeFecha.add(jsonObject);
+            } else {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date fecha = sdf.parse(fechaInicio);
 
-                if (fecha.after(fechaHace7Dias) || fecha.equals(fechaHace7Dias)) {
-                    datosDependiendoDeFecha.add(jsonObject);
+                    if (fecha.after(fechaHace7Dias) || fecha.equals(fechaHace7Dias)) {
+                        datosDependiendoDeFecha.add(jsonObject);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException | ParseException e) {
-                e.printStackTrace();
             }
         }
 
@@ -409,20 +414,24 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         int year = calendar.get(Calendar.YEAR);
 
         for (JSONObject jsonObject : dataList) {
-            try {
-                String fechaInicio = jsonObject.getString("fecha_inicio");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date fecha = sdf.parse(fechaInicio);
+            String fechaInicio = jsonObject.optString("fecha_inicio", "");
+            if (fechaInicio.isEmpty() || fechaInicio.equals("null") || fechaInicio.equals(null)) {
+                datosDependiendoDeFecha.add(jsonObject);
+            } else {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date fecha = sdf.parse(fechaInicio);
 
-                Calendar actividadCalendar = Calendar.getInstance();
-                actividadCalendar.setTime(fecha);
-                int actividadYear = actividadCalendar.get(Calendar.YEAR);
+                    Calendar actividadCalendar = Calendar.getInstance();
+                    actividadCalendar.setTime(fecha);
+                    int actividadYear = actividadCalendar.get(Calendar.YEAR);
 
-                if (year == actividadYear) {
-                    datosDependiendoDeFecha.add(jsonObject);
+                    if (year == actividadYear) {
+                        datosDependiendoDeFecha.add(jsonObject);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException | ParseException e) {
-                e.printStackTrace();
             }
         }
 
@@ -718,13 +727,12 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-
                         dataList.add(jsonObject);
                     }
                     adaptadorActividades.notifyDataSetChanged();
                     adaptadorActividades.setFilteredData(dataList);
                     adaptadorActividades.filter("");
+                    Log.d("Respuesta de api: ", response);
 
                 } catch (JSONException e) {
 
