@@ -19,7 +19,7 @@
             android:layout_marginHorizontal="9dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/modal_redondeado"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/saldoActual"
@@ -60,7 +60,9 @@
             android:id="@+id/SinInternet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginHorizontal="9dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/modal_redondeado"
@@ -94,19 +96,23 @@
             android:layout_marginHorizontal="9dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/modal_redondeado"
-            android:visibility="gone">
+            android:visibility="visible">
+
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieNoActividades"
-                android:layout_width="322dp"
-                android:layout_height="322dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.515"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textViewBienvenida"
+                app:layout_constraintVertical_bias="0.056"
                 app:lottie_autoPlay="true"
                 app:lottie_fileName="SinContenidoOficinas.json"
                 app:lottie_imageAssetsFolder="assets"
@@ -117,17 +123,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="84dp"
+                android:layout_marginTop="24dp"
                 android:gravity="center"
                 android:text=" ¡BIENVENIDO !"
                 android:textColor="@color/vino"
                 android:textSize="25dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.708"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <TextView
                 android:id="@+id/textView5"
@@ -139,10 +144,11 @@
                 android:text="Por hoy no tienes actividades pendientes"
                 android:textSize="22dp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.666"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lottieNoActividades" />
+                app:layout_constraintTop_toBottomOf="@+id/lottieNoActividades"
+                app:layout_constraintVertical_bias="0.043" />
 
             <TextView
                 android:id="@+id/saldoActualSinCont"
@@ -150,13 +156,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="19dp"
                 android:gravity="center"
-android:textColor="@color/verdefuerte"
                 android:text="Saldo actual: "
+                android:textColor="@color/verdefuerte"
                 android:textSize="19dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                app:layout_constraintTop_toBottomOf="@+id/textView5"
+                app:layout_constraintVertical_bias="0.038" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

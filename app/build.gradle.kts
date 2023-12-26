@@ -11,8 +11,8 @@ android {
         applicationId = "com.bitala.bitacora"
         minSdk = 24
         targetSdk = 33
-        versionCode = 5
-        versionName = "5.1"
+        versionCode = 7
+        versionName = "7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -142,16 +142,16 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             Drawable drawable;
 
             if (tipo_actividad.equalsIgnoreCase("OFICINAS") || tipo_actividad.equalsIgnoreCase("OCULTA")) {
-               // drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
+                // drawable = ContextCompat.getDrawable(context, R.drawable.redondeadoconbordevino);
                 colorRes = R.color.vino;
             } else {
 
-             //   drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
+                //   drawable = ContextCompat.getDrawable(context, R.drawable.roundedbackground_nombre_actividad);
                 colorRes = R.color.naranjita;
             }
 
 
-          //  holder.FrameActividades.setBackground(drawable);
+            //  holder.FrameActividades.setBackground(drawable);
             int color = ContextCompat.getColor(context, colorRes);
             holder.textActividad.setTextColor(color);
 
@@ -1660,24 +1660,20 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
                                         try {
-                                            double totalGastadoDob = Double.parseDouble(total_gastado);
+                                            double totalGastadoDob = Math.abs(Double.parseDouble(total_gastado));
                                             double saldoActualizadoDob = Double.parseDouble(saldo_actualizado);
 
                                             if (totalGastadoDob > saldoActualizadoDob) {
-
                                                 Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
-
                                             } else {
-
                                                 dialogConfirmacion.dismiss();
                                                 dialogOpcionesDeActividad.dismiss();
-                                                actionListener.onAsignarMontoAActividad(total_gastado, ID_saldo, ID_actividad);
+                                                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad);
                                             }
-
-
                                         } catch (NumberFormatException e) {
-
+                                            Utils.crearToastPersonalizado(context, "Debes ingresar un valor numérico válido");
                                         }
+
 
                                     }
                                 }
@@ -1694,13 +1690,13 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         });
 
                     } catch (JSONException e) {
-                        e.printStackTrace();
                         Utils.crearToastPersonalizado(context, "Hubo un error al cargar los datos");
                     }
-
-                    CerrarModalCargando();
                 }
+
+                CerrarModalCargando();
             }
+
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {

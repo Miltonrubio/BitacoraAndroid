@@ -7,12 +7,10 @@
 
     <string name="urlApi">http://192.168.16.162/bitacoraPHP/BitacoraPHP/mostrar.php</string>
 
-
-
     EN PRODUCCION :
     <string name="urlApi">http://hidalgo.no-ip.info:5610/bitacora/mostrar.php</string>
       -->
 
-    <string name="urlApi">http://192.168.16.162/bitacoraPHP/BitacoraPHP/mostrar.php</string>
+    <string name="urlApi">http://hidalgo.no-ip.info:5610/bitacora/mostrar.php</string>
 
 </resources>

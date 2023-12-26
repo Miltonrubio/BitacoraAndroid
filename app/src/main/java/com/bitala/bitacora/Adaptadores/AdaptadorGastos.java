@@ -152,7 +152,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
                 holder.depositos.setVisibility(View.GONE);
             }else{
                 holder.depositos.setVisibility(View.VISIBLE);
-                holder.depositos.setText("Total depositos: +" + total_depositos + "$");
+                holder.depositos.setText("Saldo agregado: +" + total_depositos + "$");
             }
 
 
@@ -161,6 +161,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             holder.recyclerViewDesgloseGastos.setAdapter(adaptadorDesgloseGastos);
 
             listaDesgloseGastos.clear();
+
             try {
                 JSONArray jsonArray = new JSONArray(gastos);
                 for (int i = 0; i < jsonArray.length(); i++) {

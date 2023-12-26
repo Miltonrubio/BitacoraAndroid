@@ -99,7 +99,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             String clave = jsonObject2.optString("clave", "");
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
             String token = jsonObject2.optString("token", "");
-            String ID_saldo = jsonObject2.optString("ID_saldo", "");
+            String  ID_saldo= jsonObject2.optString("ID_saldo", "");
             String saldo_restante = jsonObject2.optString("saldo_restante", "");
 
 
@@ -110,6 +110,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             bundle.putString("correo", correo);
             bundle.putString("telefono", telefono);
             bundle.putString("foto_usuario", foto_usuario);
+            bundle.putString("ID_saldo", ID_saldo);
+            bundle.putString("saldo_restante", saldo_restante);
+
 
 
             //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");

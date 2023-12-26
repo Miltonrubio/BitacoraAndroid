@@ -145,6 +145,7 @@ public class ActividadesFragment extends Fragment implements AdaptadorNombreActi
                 RadioButton radioButtonOficinistas= dialogView.findViewById(R.id.radioButtonOficinistas);
                 radioButtonGeneral.setChecked(true);
 
+                tipo_actividad="GENERAL";
                 radioButtonOficinistas.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

@@ -125,7 +125,7 @@ public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgl
             if (tipo.equals("deposito")) {
                 holder.ContenedorDesglose.setBackgroundResource(R.drawable.rounded_verdecito);
                 holder.dinero_gastado.setTextColor(ContextCompat.getColor(context, R.color.verdefuerte));
-                holder.dinero_gastado.setText("Deposito de: +" + dinero_gastado + "$");
+                holder.dinero_gastado.setText("Saldo agregado: +" + dinero_gastado + "$");
                 holder.nombreActividad.setVisibility(View.GONE);
                 holder.descripcionActividad.setVisibility(View.GONE);
             } else {

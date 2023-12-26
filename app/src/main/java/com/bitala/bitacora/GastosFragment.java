@@ -81,6 +81,10 @@ public class GastosFragment extends Fragment {
     String nombre;
     SwipeRefreshLayout swipeRefreshLayout;
 
+    String mostrarTodos = "No";
+
+    String ID_saldo;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -104,7 +108,7 @@ public class GastosFragment extends Fragment {
 
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
-        builder = new AlertDialog.Builder(view.getContext());
+        builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
 
@@ -119,7 +123,10 @@ public class GastosFragment extends Fragment {
 
             ID_usuario = bundle.getString("ID_usuario", "");
             nombre = bundle.getString("nombre", "");
+            ID_saldo = bundle.getString("ID_saldo", "");
             VerTodosLosGastos(ID_usuario);
+
+
             textView3.setText("CONTROL DE GASTOS DE " + nombre.toUpperCase());
         }
 
@@ -127,6 +134,18 @@ public class GastosFragment extends Fragment {
         buttonTodos2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (mostrarTodos.equalsIgnoreCase("No")) {
+
+                    mostrarTodos = "Si";
+                    buttonTodos2.setText("Activo");
+
+                } else {
+                    mostrarTodos = "No";
+                    buttonTodos2.setText("Todos");
+                }
+
+
                 VerTodosLosGastos(ID_usuario);
             }
         });
@@ -134,6 +153,18 @@ public class GastosFragment extends Fragment {
         buttonTodos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mostrarTodos.equalsIgnoreCase("No")) {
+
+                    mostrarTodos = "Si";
+                    buttonTodos2.setText("Activo");
+
+                } else {
+                    mostrarTodos = "No";
+                    buttonTodos2.setText("Todos");
+                }
+
+
+
                 VerTodosLosGastos(ID_usuario);
             }
         });
@@ -546,7 +577,30 @@ public class GastosFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String ID_saldoactivo = jsonObject.getString("ID_saldo");
+
                         listaGastos.add(jsonObject);
+                        /*
+
+                        if (mostrarTodos.equalsIgnoreCase("Si")) {
+
+                            listaGastos.add(jsonObject);
+                        } else {
+
+                            if (ID_saldo.equalsIgnoreCase(ID_saldoactivo)) {
+
+                                listaGastos.add(jsonObject);
+
+                            } else {
+                                mostrarLayouts("SinDatos");
+                            }
+
+                        }
+
+                         */
+
+
                     }
 
                     if (listaGastos.size() > 0) {

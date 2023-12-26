@@ -113,7 +113,7 @@ public class SubirFotoActivity extends AppCompatActivity {
             String nombre_actividad = receivedBundle.getString("nombre_actividad");
             descripcionActividad = receivedBundle.getString("descripcionActividad");
 
-            txtId.setText("Estas actualizando la actividad: " + nombre_actividad);
+            txtId.setText("Evidencias de actividad: \n" + nombre_actividad);
             txtDesc.setText(descripcionActividad);
 
             CargarImagenes();
