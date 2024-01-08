@@ -8,6 +8,30 @@
     android:paddingVertical="22dp">
 
 
+    <RadioButton
+        android:id="@+id/radioGastos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="88dp"
+        android:text="Gastos"
+        android:textSize="14dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkSinGastos" />
+
+    <RadioButton
+        android:id="@+id/radioCapital"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="36dp"
+        android:text="Capital"
+        android:textSize="14dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkSinGastos" />
+
     <TextView
         android:id="@+id/nuevomonto"
         android:layout_width="match_parent"
@@ -84,38 +108,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
         android:backgroundTint="@color/grisMuyOscuro"
         android:text="Cancelar"
         android:textSize="17dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkSinGastos" />
-
+        app:layout_constraintTop_toBottomOf="@+id/radioCapital" />
 
     <Button
         android:id="@+id/buttonAceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="36dp"
         android:backgroundTint="@color/verdefuerte"
         android:text="Aceptar"
         android:textSize="17dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkSinGastos" />
-
+        app:layout_constraintTop_toBottomOf="@+id/radioCapital" />
 
     <CheckBox
         android:id="@+id/checkSinGastos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
         android:layout_marginTop="28dp"
         android:text="Actividad sin gastos"
-        android:visibility="gone"
-        android:layout_marginHorizontal="12dp"
         android:textSize="15dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

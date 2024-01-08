@@ -99,7 +99,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             String clave = jsonObject2.optString("clave", "");
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
             String token = jsonObject2.optString("token", "");
-            String  ID_saldo= jsonObject2.optString("ID_saldo", "");
+            String ID_saldo = jsonObject2.optString("ID_saldo", "");
             String saldo_restante = jsonObject2.optString("saldo_restante", "");
 
 
@@ -112,7 +112,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             bundle.putString("foto_usuario", foto_usuario);
             bundle.putString("ID_saldo", ID_saldo);
             bundle.putString("saldo_restante", saldo_restante);
-
 
 
             //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
@@ -167,6 +166,30 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     LinearLayout LayoutVerActividades = customView.findViewById(R.id.LayoutVerActividades);
                     LinearLayout LayoutAsignarActividad = customView.findViewById(R.id.LayoutAsignarActividad);
                     LinearLayout LayoutConsultarMovimiento = customView.findViewById(R.id.LayoutConsultarMovimiento);
+                    TextView textSaldo = customView.findViewById(R.id.textSaldo);
+
+
+                    if (permisos.equalsIgnoreCase("SUPERADMIN")) {
+                        LayoutVerActividades.setVisibility(View.GONE);
+                        LayoutAsignarActividad.setVisibility(View.GONE);
+                        LayoutConsultarSaldo.setVisibility(View.GONE);
+                        LayoutConsultarMovimiento.setVisibility(View.GONE);
+                        LayoutEliminar.setVisibility(View.GONE);
+                    } else {
+
+                        LayoutVerActividades.setVisibility(View.VISIBLE);
+                        LayoutAsignarActividad.setVisibility(View.VISIBLE);
+                        LayoutConsultarSaldo.setVisibility(View.VISIBLE);
+                        LayoutConsultarMovimiento.setVisibility(View.VISIBLE);
+                        LayoutEliminar.setVisibility(View.VISIBLE);
+                    }
+
+
+                    if (ID_saldo.equalsIgnoreCase("null") || ID_saldo.equalsIgnoreCase("") || ID_saldo.isEmpty() || ID_saldo.equalsIgnoreCase("0")) {
+                        textSaldo.setText("Asignar Salgo");
+                    } else {
+                        textSaldo.setText("Consultar Saldo");
+                    }
 
 
                     LayoutConsultarMovimiento.setOnClickListener(new View.OnClickListener() {

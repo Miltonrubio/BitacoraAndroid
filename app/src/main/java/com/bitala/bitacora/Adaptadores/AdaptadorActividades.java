@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -437,6 +438,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                     } else if (estadoActividad.equalsIgnoreCase("Pendiente")) {
 
+
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         View customView = LayoutInflater.from(context).inflate(R.layout.opciones_actividades, null);
                         builder.setView(ModalRedondeado(context, customView));
@@ -451,6 +453,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
                         Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
 
+                        if (ID_nombre_actividad.equalsIgnoreCase("45")) {
+                            LayoutEliminar.setVisibility(View.GONE);
+                        } else {
+
+                            LayoutEliminar.setVisibility(View.VISIBLE);
+                        }
                         //Spinner de titulo de actividades
 
                         Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
@@ -1533,6 +1541,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     AlertDialog.Builder builderCargando;
 
+    String valorCheck = "Gastos";
+
     private void consultarSaldoActivo(String ID_usuario, String ID_actividad, AlertDialog dialogOpcionesDeActividad) {
 
 
@@ -1597,10 +1607,39 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
 
                         CheckBox checkSinGastos = customView.findViewById(R.id.checkSinGastos);
+                        RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
+                        RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
+                        radioCapital.setVisibility(View.VISIBLE);
+                        radioGastos.setVisibility(View.VISIBLE);
+
+                        radioGastos.setChecked(true);
+                        radioGastos.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                radioGastos.setChecked(true);
+                                radioCapital.setChecked(false);
+
+                                valorCheck = "Gastos";
+
+                            }
+                        });
+
+
+                        radioCapital.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                radioCapital.setChecked(true);
+                                radioGastos.setChecked(false);
+
+                                valorCheck = "Capital";
+
+                            }
+                        });
+
 
                         TextView nuevomonto = customView.findViewById(R.id.nuevomonto);
                         nuevomonto.setVisibility(View.VISIBLE);
-                        nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado);
+                        nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado + " $");
 
                         TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
                         EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
@@ -1668,7 +1707,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             } else {
                                                 dialogConfirmacion.dismiss();
                                                 dialogOpcionesDeActividad.dismiss();
-                                                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad);
+                                                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
                                             }
                                         } catch (NumberFormatException e) {
                                             Utils.crearToastPersonalizado(context, "Debes ingresar un valor numérico válido");
@@ -1706,7 +1745,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "52");
+                params.put("opcion", "65");
                 params.put("ID_usuario", ID_usuario);
                 return params;
             }
@@ -1749,7 +1788,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
 
-        void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad);
+        void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad, String  valorCheck);
     }
 
     private AdaptadorActividades.OnActivityActionListener actionListener;

@@ -270,7 +270,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "52");
+                params.put("opcion", "65");
                 params.put("ID_usuario", ID_usuario);
                 return params;
             }
@@ -483,7 +483,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
 
     @Override
-    public void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad) {
+    public void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad, String valorCheck) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -500,10 +500,11 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "53");
+                params.put("opcion", "63");
                 params.put("total_gastado", total_gastado);
                 params.put("ID_saldo", ID_saldo);
                 params.put("ID_actividad", ID_actividad);
+                params.put("tipo_caja", valorCheck);
                 return params;
             }
         };

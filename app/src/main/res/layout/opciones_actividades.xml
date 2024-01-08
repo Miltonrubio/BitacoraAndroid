@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="15dp"
     android:orientation="vertical"
     android:padding="20dp">
@@ -11,9 +11,9 @@
         android:id="@+id/LayoutVerDetalles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-
         android:layout_marginTop="25dp"
+
+        android:layout_marginBottom="25dp"
         android:clickable="true"
         android:orientation="horizontal">
 
@@ -22,8 +22,7 @@
             android:layout_height="50dp"
             android:src="@drawable/baseline_remove_red_eye_24"
 
-            app:tint="@color/verde"
-            />
+            app:tint="@color/verde" />
 
         <TextView
             android:layout_width="match_parent"
@@ -39,15 +38,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:padding="5dp"
             android:src="@drawable/baseline_edit_24"
-            app:tint="@color/amarillo"
-            />
+            app:tint="@color/amarillo" />
 
         <TextView
             android:layout_width="match_parent"
@@ -55,70 +53,67 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Editar"
-            android:textSize="30dp"
-            />
+            android:textSize="30dp" />
 
     </LinearLayout>
 
     <Spinner
         android:id="@+id/SpinnerNombreActividad"
-        android:layout_marginTop="12dp"
+        style="@style/editTexts"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:visibility="gone"
+        android:layout_marginTop="12dp"
         android:textSize="30dp"
-        style="@style/editTexts"
-        />
+        android:visibility="gone" />
 
     <LinearLayout
-        android:layout_marginTop="22dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
         android:clickable="true"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/editextDescripcionActividad"
+            style="@style/EditTextNoBorder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="gone"
             android:hint="Ingrese Descripcion de Actividad"
-            android:textSize="22sp"
             android:padding="6dp"
-            style="@style/EditTextNoBorder"
-            />
+            android:textSize="22sp"
+            android:visibility="gone" />
     </LinearLayout>
 
 
-
     <Button
-        android:layout_marginTop="12dp"
         android:id="@+id/BotonActualizarActividad"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Actualizar Actividad"
-        android:visibility="gone"
-        android:textSize="22sp"
-        android:backgroundTint="@color/vino"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="25dp"
-        />
+        android:backgroundTint="@color/vino"
+        android:text="Actualizar Actividad"
+        android:textSize="22sp"
+        android:visibility="gone" />
 
     <!-- Segundo LinearLayout -->
     <LinearLayout
         android:id="@+id/LayoutEliminar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-
         android:layout_marginTop="25dp"
+
+        android:layout_marginBottom="25dp"
         android:clickable="true"
         android:orientation="horizontal">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/baseline_delete_forever_24" />
+            android:src="@drawable/trash_can_regular"
+            app:tint="@color/rojo"
+            android:padding="3dp"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -134,9 +129,9 @@
         android:id="@+id/LayoutActualizarEstado"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-
         android:layout_marginTop="25dp"
+
+        android:layout_marginBottom="25dp"
         android:clickable="true"
         android:orientation="horizontal">
 
@@ -145,8 +140,7 @@
             android:layout_height="50dp"
             android:src="@drawable/baseline_update_24"
 
-            app:tint="@color/azulito"
-            />
+            app:tint="@color/azulito" />
 
         <TextView
             android:layout_width="match_parent"
@@ -158,14 +152,14 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_marginTop="12dp"
         android:id="@+id/LayoutPendiente"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="25dp"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="45dp"
@@ -187,8 +181,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
         android:clickable="true"
-        android:visibility="gone"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="45dp"
@@ -207,10 +201,10 @@
     <LinearLayout
         android:id="@+id/LayoutFinalizado"
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="45dp"

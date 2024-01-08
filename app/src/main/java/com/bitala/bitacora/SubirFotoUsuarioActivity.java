@@ -80,7 +80,7 @@ public class SubirFotoUsuarioActivity extends AppCompatActivity {
             ID_usuario = receivedBundle.getString("ID_usuario");
             nombre = receivedBundle.getString("nombre");
 
-            txtId.setText("Actualizando a " + ID_usuario + " " + nombre);
+            txtId.setText("Actualizando a " + nombre);
 
             String imageUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
 

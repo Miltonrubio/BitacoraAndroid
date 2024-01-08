@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -97,7 +98,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         url = context.getResources().getString(R.string.urlApi);
 
 
-        builderCargando = new AlertDialog.Builder(view.getContext());
+        builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);
         return view;
 
@@ -564,6 +565,9 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
     AlertDialog dialogOpcionesUsuarios;
 
+    String tipocaja = "Gastos";
+
+
     public void onConsultarSaldoActivo(String ID_saldo, View view, String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios) {
 
         this.dialogOpcionesUsuarios = dialogOpcionesUsuarios;
@@ -590,6 +594,35 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                     Button btnAsignarSaldo = customView.findViewById(R.id.btnAsignarSaldo);
                     TextView titulo = customView.findViewById(R.id.titulo);
                     EditText monto = customView.findViewById(R.id.monto);
+
+                    RadioButton capital = customView.findViewById(R.id.capital);
+                    RadioButton gastos = customView.findViewById(R.id.gastos);
+
+                    gastos.setChecked(true);
+
+                    gastos.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+                            capital.setChecked(false);
+                            gastos.setChecked(true);
+
+                            tipocaja = "Gastos";
+                        }
+                    });
+
+                    capital.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            capital.setChecked(true);
+                            gastos.setChecked(false);
+
+                            tipocaja = "Capital";
+                        }
+                    });
+
 
                     titulo.setText("Asigna un saldo a " + nombre);
 
@@ -643,7 +676,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                                             //AsignarSaldo(ID_usuario,  montoTotal, nombre);
 
-                                            AsignarSaldo(ID_usuario, montoTotal, nombre);
+                                            AsignarSaldo(ID_usuario, montoTotal, nombre, tipocaja);
                                         }
 
                                         //    Utils.crearToastPersonalizado(context, montoTotal + " " +ID_usuario + " " + nombre );
@@ -672,8 +705,9 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                     dialogConsultarSaldo.getWindow().setDimAmount(0.8f);
                     dialogConsultarSaldo.show();
 
+                    TextView tipo_caja = customView.findViewById(R.id.tipo_caja);
+                    TextView tvsaldo_inicial = customView.findViewById(R.id.tvsaldo_inicial);
                     TextView textViewSaldoRestante = customView.findViewById(R.id.textViewSaldoRestante);
-                    TextView SaldoAsignado = customView.findViewById(R.id.SaldoAsignado);
                     ImageView buttonEditarSaldo = customView.findViewById(R.id.buttonEditarSaldo);
                     TextView fecha_asign = customView.findViewById(R.id.fecha_asign);
                     Button buttonFinalizarSaldo = customView.findViewById(R.id.buttonFinalizarSaldo);
@@ -685,9 +719,11 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                         saldo_inicial = jsonObject.getString("saldo_inicial");
                         nuevo_saldo = jsonObject.getString("nuevo_saldo");
                         String fecha_asignacion = jsonObject.getString("fecha_asignacion");
+                        String caja = jsonObject.getString("caja");
 
-                        SaldoAsignado.setText("SALDO ASIGNADO: " + saldo_inicial + " $");
-                        textViewSaldoRestante.setText("Saldo activo: " + nuevo_saldo + " $");
+                        tvsaldo_inicial.setText("Saldo inicial: " + saldo_inicial + " $");
+                        textViewSaldoRestante.setText("SALDO ACTIVO: " + nuevo_saldo + " $");
+                        tipo_caja.setText("Caja: " + caja);
                         //          fecha_asign.setText("Saldo asignado el: " +fecha_asignacion);
 
 
@@ -735,6 +771,42 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                             Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
                             Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
 
+
+                            RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
+                            RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
+
+                            radioCapital.setVisibility(View.VISIBLE);
+                            radioGastos.setVisibility(View.VISIBLE);
+
+                            radioGastos.setChecked(true);
+
+
+                            radioGastos.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    radioGastos.setChecked(true);
+                                    radioCapital.setChecked(false);
+
+                                    tipocaja = "Gastos";
+
+                                }
+                            });
+
+
+                            radioCapital.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    radioGastos.setChecked(false);
+                                    radioCapital.setChecked(true);
+
+                                    tipocaja = "Capital";
+
+                                }
+                            });
+
+
                             buttonAceptar.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View vistaModal) {
@@ -756,7 +828,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                                             //          onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario);
 
-                                            DepositarMasSaldo(ID_saldo, deposito, nombre);
+                                            DepositarMasSaldo(ID_saldo, deposito, nombre, tipocaja);
 
 
                                         }
@@ -958,7 +1030,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    private void AsignarSaldo(String ID_usuario, String saldo_asignado, String nombre) {
+    private void AsignarSaldo(String ID_usuario, String saldo_asignado, String nombre, String tipo_caja) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -983,9 +1055,10 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "51");
+                params.put("opcion", "62");
                 params.put("ID_usuario", ID_usuario);
                 params.put("saldo_asignado", saldo_asignado);
+                params.put("tipo_caja", tipo_caja);
                 return params;
             }
         };
@@ -994,7 +1067,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    private void DepositarMasSaldo(String ID_saldo, String deposito, String nombre) {
+    private void DepositarMasSaldo(String ID_saldo, String deposito, String nombre, String tipo_caja) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -1016,9 +1089,10 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "60");
+                params.put("opcion", "64");
                 params.put("ID_saldo", ID_saldo);
                 params.put("deposito", deposito);
+                params.put("tipo_caja", tipo_caja);
                 return params;
             }
         };

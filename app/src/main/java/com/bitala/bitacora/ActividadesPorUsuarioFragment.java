@@ -43,6 +43,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorActividadesPorUsuario;
+import com.bitala.bitacora.Adaptadores.DownloadFileTask;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bitala.bitacora.R;
@@ -116,6 +117,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     int month = calendar.get(Calendar.MONTH) + 1;
     int day = calendar.get(Calendar.DAY_OF_MONTH);
     String fechaActual = String.format("%04d-%02d-%02d", year, month, day);
+    String rangoFecha = "hoy";
 
 
     TextView textSinActividades;
@@ -217,7 +219,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
                         Utils.crearToastPersonalizado(context, "No hay actividades para generar el reporte");
 
                     } else {
-                        generarPDF(datosDependiendoDeFecha);
+                        generarPDF(rangoFecha);
                     }
 
                 } else {
@@ -226,7 +228,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
                             Utils.crearToastPersonalizado(context, "No hay actividades para generar el reporte");
                         } else {
-                            generarPDF(datosDependiendoDeFecha);
+                            generarPDF(rangoFecha);
                         }
                     } else {
                         requestPermissions();
@@ -270,6 +272,17 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
 
+    private void generarPDF(String rango) {
+
+        Map<String, String> postData = new HashMap<>();
+        postData.put("opcion", "61");
+        postData.put("ID_usuario", ID_usuario);
+        postData.put("rango", rango);
+        new DownloadFileTask(context, postData).execute(url);
+
+    }
+
+
     private boolean checkPermission() {
         int writePermission = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int readPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -284,8 +297,8 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     }
 
     private void mostrarDatosDelDiaDeHoy() {
-        reiniciarDatosDependiendoDeFecha(); // Reiniciar la lista
-        // Obtiene la fecha actual
+        reiniciarDatosDependiendoDeFecha();
+        rangoFecha = "hoy";
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1; // Los meses en Calendar van de 0 a 11
@@ -328,7 +341,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     private void mostrarDatosDelMesActual() {
 
         reiniciarDatosDependiendoDeFecha();
-        // Obtiene la fecha actual
+        rangoFecha = "mes";
         Calendar calendar = Calendar.getInstance();
 
         // Resta 30 días a la fecha actual
@@ -368,8 +381,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     private void MostrarDatosPorSemana() {
         reiniciarDatosDependiendoDeFecha();
-
-        // Obtiene la fecha actual
+        rangoFecha = "semana";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date()); // Establece la fecha actual
 
@@ -410,6 +422,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
     private void mostrarDatosDelAnioActual() {
         reiniciarDatosDependiendoDeFecha();
+        rangoFecha = "anio";
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
 
@@ -450,6 +463,10 @@ public class ActividadesPorUsuarioFragment extends Fragment {
     private void reiniciarDatosDependiendoDeFecha() {
         datosDependiendoDeFecha.clear();
     }
+
+
+/*
+
 
 
     public void generarPDF(List<JSONObject> responseData) {
@@ -716,6 +733,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(Intent.createChooser(intent, "Compartir PDF"));
     }
+*/
 
     private void ActividadesPorUsuario(String ID_usuario) {
         dataList.clear();
