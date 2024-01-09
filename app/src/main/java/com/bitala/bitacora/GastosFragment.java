@@ -81,7 +81,6 @@ public class GastosFragment extends Fragment {
     String nombre;
     SwipeRefreshLayout swipeRefreshLayout;
 
-    String mostrarTodos = "No";
 
     String ID_saldo;
 
@@ -135,15 +134,18 @@ public class GastosFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (mostrarTodos.equalsIgnoreCase("No")) {
 
-                    mostrarTodos = "Si";
-                    buttonTodos2.setText("Activo");
+                View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_filtrado_caja, null);
 
-                } else {
-                    mostrarTodos = "No";
-                    buttonTodos2.setText("Todos");
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                AlertDialog dialogOpcionesUsuarios = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogOpcionesUsuarios.getWindow().setBackgroundDrawable(back);
+                dialogOpcionesUsuarios.getWindow().setDimAmount(0.8f);
+                dialogOpcionesUsuarios.show();
+
 
 
                 VerTodosLosGastos(ID_usuario);
@@ -153,16 +155,18 @@ public class GastosFragment extends Fragment {
         buttonTodos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mostrarTodos.equalsIgnoreCase("No")) {
 
-                    mostrarTodos = "Si";
-                    buttonTodos2.setText("Activo");
 
-                } else {
-                    mostrarTodos = "No";
-                    buttonTodos2.setText("Todos");
-                }
+                View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_filtrado_caja, null);
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                AlertDialog dialogOpcionesUsuarios = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogOpcionesUsuarios.getWindow().setBackgroundDrawable(back);
+                dialogOpcionesUsuarios.getWindow().setDimAmount(0.8f);
+                dialogOpcionesUsuarios.show();
 
 
                 VerTodosLosGastos(ID_usuario);

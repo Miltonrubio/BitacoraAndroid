@@ -51,7 +51,7 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_desglose_gastos, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_desglose_depositos, parent, false);
         return new ViewHolder(view);
 
     }
@@ -95,8 +95,9 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
                 holder.fecha.setText("No se encontro la fecha");
             }
 
+            holder.tipoCaja.setText("Caja: " + tipo_caja);
 
-            holder.saldo_agregado.setText("+ " + dinero_agregado + " $");
+            holder.saldo_agregado.setText("Se agregó: + " + dinero_agregado + " $ de saldo");
 
 
         } finally {

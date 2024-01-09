@@ -53,6 +53,8 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
     String url;
     List<JSONObject> listaDesgloseGastos = new ArrayList<>();
     AdaptadorDesgloseGastos adaptadorDesgloseGastos;
+    List<JSONObject> listaDepositos = new ArrayList<>();
+    AdaptadorDepositos adaptadorDepositos;
 
     @NonNull
     @Override
@@ -72,15 +74,23 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
 
         try {
             JSONObject jsonObject2 = filteredData.get(position);
-            String saldo_inicial = jsonObject2.optString("saldo_inicial", "");
+            Double saldo_inicial = jsonObject2.optDouble("saldo_inicial", 0);
             String ID_saldo = jsonObject2.optString("ID_saldo", "");
-            String total_dinero_gastado = jsonObject2.optString("total_dinero_gastado", "");
-            String nuevo_saldo = jsonObject2.optString("nuevo_saldo", "");
+            Double total_dinero_gastado = jsonObject2.optDouble("total_dinero_gastado", 0);
+            Double nuevo_saldo = jsonObject2.optDouble("nuevo_saldo", 0);
             String gastos = jsonObject2.optString("gastos", "");
             String fecha_asignacion = jsonObject2.optString("fecha_asignacion", "");
             String status_saldo = jsonObject2.optString("status_saldo", "");
-            String total_dinero_agregado = jsonObject2.optString("total_dinero_agregado", "");
+            Double total_dinero_agregado = jsonObject2.optDouble("total_dinero_agregado", 0);
             String caja = jsonObject2.optString("caja", "");
+            String depositos = jsonObject2.optString("depositos", "");
+
+
+            Double depositos_Cajagastos = jsonObject2.optDouble("depositos_Cajagastos", 0);
+            Double depositos_CajaCapital = jsonObject2.optDouble("depositos_CajaCapital", 0);
+            Double gastos_Cajagastos = jsonObject2.optDouble("gastos_Cajagastos", 0);
+            Double gastos_CajaCapital = jsonObject2.optDouble("gastos_CajaCapital", 0);
+
 
             //      holder.fecha.setText("Asignado el: " + fecha_asignacion);
 
@@ -100,9 +110,9 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             }
 
 
-            holder.saldo_Asign.setText("Saldo Inicial: " + saldo_inicial + "$");
+            holder.saldo_Asign.setText("Saldo Inicial: " + saldo_inicial + " $");
 
-            holder.saldo_restante.setText("Saldo restante: " + nuevo_saldo + "$");
+            holder.saldo_restante.setText("Saldo restante: " + nuevo_saldo + " $");
 
             holder.tvCaja.setText("Caja: " + caja);
 
@@ -143,18 +153,18 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             holder.status_saldo.setTextColor(colorIcono);
             holder.ContenedorSaldo.setBackground(drawable);
 
-            if (total_dinero_gastado.isEmpty() || total_dinero_gastado.equals("0")) {
+            if ( /* total_dinero_gastado.isEmpty() || */ total_dinero_gastado.equals("0")) {
                 holder.totalGastado.setVisibility(View.GONE);
             } else {
                 holder.totalGastado.setVisibility(View.VISIBLE);
-                holder.totalGastado.setText("Saldo gastado: -" + total_dinero_gastado + "$");
+                holder.totalGastado.setText("Saldo gastado: -" + total_dinero_gastado + " $");
             }
 
-            if (total_dinero_agregado.isEmpty() || total_dinero_agregado.equals("0")) {
+            if (/* total_dinero_agregado.isEmpty() ||*/ total_dinero_agregado.equals("0")) {
                 holder.depositos.setVisibility(View.GONE);
             } else {
                 holder.depositos.setVisibility(View.VISIBLE);
-                holder.depositos.setText("Saldo agregado: +" + total_dinero_agregado + "$");
+                holder.depositos.setText("Saldo agregado: +" + total_dinero_agregado + " $");
             }
 
 
@@ -195,6 +205,38 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             // Aqui ira la logica pa los depositos
 
 
+            adaptadorDesgloseGastos = new AdaptadorDesgloseGastos(listaDesgloseGastos, context);
+            holder.recyclerViewDesgloseGastos.setLayoutManager(new LinearLayoutManager(context));
+            holder.recyclerViewDesgloseGastos.setAdapter(adaptadorDesgloseGastos);
+
+            listaDesgloseGastos.clear();
+
+            try {
+                JSONArray jsonArray = new JSONArray(gastos);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listaDesgloseGastos.add(jsonObject);
+                }
+
+                adaptadorDesgloseGastos.notifyDataSetChanged();
+                adaptadorDesgloseGastos.setFilteredData(listaDesgloseGastos);
+                adaptadorDesgloseGastos.filter("");
+
+                if (listaDesgloseGastos.size() > 0) {
+
+                    holder.SaldosGastados.setVisibility(View.VISIBLE);
+                    holder.LayoutGastos.setVisibility(View.VISIBLE);
+                } else {
+                    holder.LayoutGastos.setVisibility(View.GONE);
+                    holder.SaldosGastados.setVisibility(View.GONE);
+
+                }
+
+            } catch (JSONException e) {
+                holder.LayoutGastos.setVisibility(View.GONE);
+                holder.SaldosGastados.setVisibility(View.GONE);
+
+            }
 
 
             holder.IconoOcultarMostrar.setOnClickListener(new View.OnClickListener() {
@@ -211,6 +253,43 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             });
 
 
+            adaptadorDepositos = new AdaptadorDepositos(listaDepositos, context);
+
+            holder.recyclerViewDesgloseDepositos.setLayoutManager(new LinearLayoutManager(context));
+            holder.recyclerViewDesgloseDepositos.setAdapter(adaptadorDepositos);
+
+            listaDepositos.clear();
+
+            try {
+                JSONArray jsonArray = new JSONArray(depositos);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listaDepositos.add(jsonObject);
+                }
+
+                adaptadorDepositos.notifyDataSetChanged();
+                adaptadorDepositos.setFilteredData(listaDepositos);
+                adaptadorDepositos.filter("");
+
+
+                if (listaDepositos.size() > 0) {
+
+                    holder.linearLayoutDepositos.setVisibility(View.VISIBLE);
+                    holder.LayoutDepositos.setVisibility(View.VISIBLE);
+                } else {
+                    holder.linearLayoutDepositos.setVisibility(View.GONE);
+                    holder.LayoutDepositos.setVisibility(View.GONE);
+
+                }
+
+            } catch (JSONException e) {
+
+                holder.linearLayoutDepositos.setVisibility(View.GONE);
+                holder.LayoutDepositos.setVisibility(View.GONE);
+
+            }
+
+
             holder.IconoOcultarMostrarDepositos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -221,6 +300,79 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
                         holder.recyclerViewDesgloseDepositos.setVisibility(View.VISIBLE);
                         holder.IconoOcultarMostrarDepositos.setImageResource(R.drawable.ocultar);
                     }
+                }
+            });
+
+
+            holder.ContenedorSaldo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_desglose_cajas, null);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                    AlertDialog dialogOpcionesUsuarios = builder.create();
+                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                    back.setAlpha(150);
+                    dialogOpcionesUsuarios.getWindow().setBackgroundDrawable(back);
+                    dialogOpcionesUsuarios.getWindow().setDimAmount(0.8f);
+                    dialogOpcionesUsuarios.show();
+
+
+                    TextView saldo_asignado = customView.findViewById(R.id.saldo_asignado);
+                    TextView saldoAgregado = customView.findViewById(R.id.saldoAgregado);
+                    TextView saldoGastadoCapital = customView.findViewById(R.id.saldoGastadoCapital);
+                    TextView saldototalCapital = customView.findViewById(R.id.saldototalCapital);
+
+
+                    TextView saldo_asignado_Gastos = customView.findViewById(R.id.saldo_asignado_Gastos);
+                    TextView saldoAgregadoGastos = customView.findViewById(R.id.saldoAgregadoGastos);
+                    TextView saldoGastadoGastos = customView.findViewById(R.id.saldoGastadoGastos);
+                    TextView saldototalGastos = customView.findViewById(R.id.saldototalGastos);
+
+                    TextView saldo_restanteCapital = customView.findViewById(R.id.saldo_restanteCapital);
+                    TextView saldo_restanteGastos = customView.findViewById(R.id.saldo_restanteGastos);
+
+
+                    Double sumaCapital = 0.0;
+                    Double sumaGastos = 0.0;
+
+                    if (caja.equalsIgnoreCase("Gastos")) {
+
+                        saldo_asignado.setVisibility(View.GONE);
+                        saldo_asignado_Gastos.setVisibility(View.VISIBLE);
+                        sumaGastos = depositos_Cajagastos + saldo_inicial;
+                        sumaCapital = depositos_CajaCapital;
+
+                    } else {
+                        saldo_asignado.setVisibility(View.VISIBLE);
+                        saldo_asignado_Gastos.setVisibility(View.GONE);
+                        sumaGastos = depositos_Cajagastos;
+                        sumaCapital = depositos_CajaCapital + saldo_inicial;
+                    }
+
+
+                    saldo_asignado.setText("Saldo inicial: " + saldo_inicial + " $");
+                    saldoAgregado.setText("Saldo agregado: +" + depositos_CajaCapital + " $");
+                    saldoGastadoCapital.setText("Saldo gastado: -" + gastos_CajaCapital + " $");
+
+
+                    saldototalCapital.setText("Total asignado Capital: " + sumaCapital + " $");
+
+                    saldototalGastos.setText("Total asignado Gastos: " + sumaGastos + " $");
+                    saldo_asignado_Gastos.setText("Saldo inicial: " + saldo_inicial + " $");
+                    saldoAgregadoGastos.setText("Saldo agregado: +" + depositos_Cajagastos + " $");
+                    saldoGastadoGastos.setText("Saldo gastado: -" + gastos_Cajagastos + " $");
+
+
+                    Double restanteGastos = sumaGastos - gastos_Cajagastos;
+
+
+                    Double restanteCapital = sumaCapital - gastos_CajaCapital;
+
+                    saldo_restanteGastos.setText("Saldo restante: "+ restanteGastos +" $");
+                    saldo_restanteCapital.setText("Saldo restante: "+ restanteCapital+" $");
                 }
             });
 
@@ -285,7 +437,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             ContenedorSaldo = itemView.findViewById(R.id.ContenedorSaldo);
             IconoOcultarMostrar = itemView.findViewById(R.id.IconoOcultarMostrar);
             LayoutGastos = itemView.findViewById(R.id.LayoutGastos);
-
+            linearLayoutDepositos = itemView.findViewById(R.id.linearLayoutDepositos);
             depositos = itemView.findViewById(R.id.depositos);
 
 
@@ -324,15 +476,6 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             }
         }
         notifyDataSetChanged();
-    }
-
-
-    private void setTextViewText(TextView textView, String text, String defaultText) {
-        if (text.equals(null) || text.equals("") || text.equals(":null") || text.equals("null") || text.isEmpty()) {
-            textView.setText(defaultText);
-        } else {
-            textView.setText(text);
-        }
     }
 
 
