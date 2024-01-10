@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -13,7 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,16 +34,24 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorGastos;
 import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorSeleccionarSaldos;
 import com.bitala.bitacora.Adaptadores.DownloadFileTask;
 import com.bitala.bitacora.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +96,9 @@ public class GastosFragment extends Fragment {
 
 
     String ID_saldo;
+    AdaptadorSeleccionarSaldos adaptadorSeleccionarSaldos;
+
+    ArrayList<String> idSeleccionados = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,7 +117,7 @@ public class GastosFragment extends Fragment {
 
         buttonTodos = view.findViewById(R.id.buttonTodos);
         buttonFiltrarPorFecha = view.findViewById(R.id.buttonFiltrarPorFecha);
-        ImageView botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
+        ImageView botonPDFGastos = view.findViewById(R.id.botonPDFGastos);
         RecyclerView recyclerViewGastos = view.findViewById(R.id.recyclerViewGastos);
         TextView textView3 = view.findViewById(R.id.textView3);
 
@@ -145,7 +161,6 @@ public class GastosFragment extends Fragment {
                 dialogOpcionesUsuarios.getWindow().setBackgroundDrawable(back);
                 dialogOpcionesUsuarios.getWindow().setDimAmount(0.8f);
                 dialogOpcionesUsuarios.show();
-
 
 
                 VerTodosLosGastos(ID_usuario);
@@ -486,10 +501,98 @@ public class GastosFragment extends Fragment {
         });
 
 
-        botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
+        botonPDFGastos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                View customView = LayoutInflater.from(context).inflate(R.layout.modal_selector_de_saldos, null);
+                builder.setView(Utils.ModalRedondeado(context, customView));
+                AlertDialog dialogSelectorSaldos = builder.create();
+                dialogSelectorSaldos.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialogSelectorSaldos.show();
+
+
+                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                Button butonImprimirPDF = customView.findViewById(R.id.butonImprimirPDF);
+                RecyclerView recyclerViewSelectorSaldos = customView.findViewById(R.id.recyclerViewSelectorSaldos);
+                TextView searchEditTextSelector = customView.findViewById(R.id.searchEditTextSelector);
+
+
+                searchEditTextSelector.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        adaptadorSeleccionarSaldos.filter(s.toString().toLowerCase());
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+
+                adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos, context);
+                recyclerViewSelectorSaldos.setLayoutManager(new LinearLayoutManager(context));
+                recyclerViewSelectorSaldos.setAdapter(adaptadorSeleccionarSaldos);
+                adaptadorSeleccionarSaldos.setFilteredData(listaGastos);
+                adaptadorSeleccionarSaldos.filter("");
+                adaptadorSeleccionarSaldos.notifyDataSetChanged();
+
+                adaptadorSeleccionarSaldos.setOnItemClickListener(new AdaptadorSeleccionarSaldos.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(String id) {
+
+                        if (idSeleccionados.contains(id)) {
+                            // Si ya está en la lista, quitarlo
+                            idSeleccionados.remove(id);
+
+                            // Aquí puedes ajustar la visibilidad del icono según sea necesario
+                            // Por ejemplo, si el iconoMarcado es una ImageView, puedes hacer algo como:
+                            // iconoMarcado.setVisibility(View.GONE);
+                        } else {
+                            // Si no está en la lista, agregarlo
+                            idSeleccionados.add(id);
+
+                            // Aquí puedes ajustar la visibilidad del icono según sea necesario
+                            // Por ejemplo, si el iconoMarcado es una ImageView, puedes hacer algo como:
+                            // iconoMarcado.setVisibility(View.VISIBLE);
+                        }
+
+                        // Actualizar la interfaz de usuario según sea necesario
+                        adaptadorSeleccionarSaldos.notifyDataSetChanged();
+                    }
+                });
+
+
+                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogSelectorSaldos.dismiss();
+                    }
+                });
+
+
+                butonImprimirPDF.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //   Utils.crearToastPersonalizado(context, idSeleccionados.toString());
+
+                        if (idSeleccionados.size() > 0) {
+
+                            enviarDatosPorPost();
+                        } else {
+                            Utils.crearToastPersonalizado(context, "No hay elementos seleccionados");
+                        }
+
+                    }
+                });
+
+                /*
                 Map<String, String> postData = new HashMap<>();
                 if ((!fechaInicialSeleccionada.equals("") || !fechaInicialSeleccionada.isEmpty()) && (!fechaFinalSeleccionada.isEmpty() || !fechaFinalSeleccionada.equals(""))) {
 
@@ -508,6 +611,8 @@ public class GastosFragment extends Fragment {
 
                 new DownloadFileTask(context, postData).execute(url);
 
+                 */
+
             }
         });
 
@@ -516,6 +621,26 @@ public class GastosFragment extends Fragment {
 
     }
 
+    private String convertirArrayListAJson(ArrayList<String> arrayList) {
+        JSONArray jsonArray = new JSONArray(arrayList);
+        return jsonArray.toString();
+    }
+
+    private void enviarDatosPorPost() {
+        String urlPDF = "http://192.168.16.162/bitacoraphp/BitacoraPHP/disenioPDF2.php";
+
+        String lista = convertirArrayListAJson(idSeleccionados);
+
+        Utils.crearToastPersonalizado(context, lista);
+        Log.d("Lista: ", lista);
+
+        Map<String, String> postData = new HashMap<>();
+        postData.put("ID_usuario", ID_usuario);
+
+        // Convertir el ArrayList a JSON
+        postData.put("listaSeleccion", lista);
+        new DownloadFileTask(context, postData).execute(urlPDF);
+    }
 
     private void VerGastosPorFecha(String ID_usuario, String fechaInicio, String fechaFin) {
         listaGastos.clear();
