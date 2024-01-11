@@ -23,4 +23,9 @@
     <external-path
         name="external_files"
         path="Download/" />
+
+    <files-path
+        name="temp"
+        path="temp/" />
+
 </paths>

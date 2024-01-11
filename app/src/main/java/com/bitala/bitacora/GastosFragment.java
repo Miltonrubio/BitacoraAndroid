@@ -128,6 +128,11 @@ public class GastosFragment extends Fragment {
 
 
         adaptadorGastos = new AdaptadorGastos(listaGastos, context);
+
+        adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos,context);
+
+
+
         recyclerViewGastos.setLayoutManager(new LinearLayoutManager(context));
         recyclerViewGastos.setAdapter(adaptadorGastos);
 
@@ -505,13 +510,14 @@ public class GastosFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 View customView = LayoutInflater.from(context).inflate(R.layout.modal_selector_de_saldos, null);
+
                 builder.setView(Utils.ModalRedondeado(context, customView));
                 AlertDialog dialogSelectorSaldos = builder.create();
                 dialogSelectorSaldos.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogSelectorSaldos.show();
+
 
 
                 Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
@@ -519,6 +525,16 @@ public class GastosFragment extends Fragment {
                 RecyclerView recyclerViewSelectorSaldos = customView.findViewById(R.id.recyclerViewSelectorSaldos);
                 TextView searchEditTextSelector = customView.findViewById(R.id.searchEditTextSelector);
 
+
+
+
+
+                recyclerViewSelectorSaldos.setLayoutManager(new LinearLayoutManager(context));
+                recyclerViewSelectorSaldos.setAdapter(adaptadorSeleccionarSaldos);
+
+                adaptadorSeleccionarSaldos.setFilteredData(listaGastos);
+                adaptadorSeleccionarSaldos.filter("");
+                adaptadorSeleccionarSaldos.notifyDataSetChanged();
 
                 searchEditTextSelector.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -536,12 +552,8 @@ public class GastosFragment extends Fragment {
                 });
 
 
-                adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos, context);
-                recyclerViewSelectorSaldos.setLayoutManager(new LinearLayoutManager(context));
-                recyclerViewSelectorSaldos.setAdapter(adaptadorSeleccionarSaldos);
-                adaptadorSeleccionarSaldos.setFilteredData(listaGastos);
-                adaptadorSeleccionarSaldos.filter("");
-                adaptadorSeleccionarSaldos.notifyDataSetChanged();
+
+
 
                 adaptadorSeleccionarSaldos.setOnItemClickListener(new AdaptadorSeleccionarSaldos.OnItemClickListener() {
                     @Override
@@ -614,6 +626,7 @@ public class GastosFragment extends Fragment {
                  */
 
             }
+
         });
 
 

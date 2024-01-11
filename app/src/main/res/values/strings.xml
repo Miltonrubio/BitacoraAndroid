@@ -9,7 +9,24 @@
 
     EN PRODUCCION :
     <string name="urlApi">http://hidalgo.no-ip.info:5610/bitacora/mostrar.php</string>
+    <string name="fotoUrl">http://hidalgo.no-ip.info:5610/bitacora/fotos/</string>
+    <string name="pdfUrl">http://hidalgo.no-ip.info:5610/bitacora/archivos/</string>
+
+
+    LUIS HOST:
+
+    <string name="urlApi">http://192.168.16.114/bitacoraPHP/mostrar.php</string>
+    <string name="fotoUrl">http://192.168.16.114/bitacoraPHP/fotos/</string>
+    <string name="pdfUrl">http://192.168.16.114/bitacoraPHP/archivos/</string>
+
       -->
 
-    <string name="urlApi">http://192.168.16.162/bitacoraPHP/BitacoraPHP/mostrar.php</string>
+
+    <string name="urlApi">http://192.168.16.114/bitacoraPHP/mostrar.php</string>
+    <string name="fotoUrl">http://192.168.16.114/bitacoraPHP/fotos/</string>
+    <string name="pdfUrl">http://192.168.16.114/bitacoraPHP/archivos/</string>
+
+
+
+
 </resources>

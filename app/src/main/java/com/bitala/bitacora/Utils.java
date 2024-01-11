@@ -76,4 +76,20 @@ public class Utils {
     }
 
 
+    public static CardView ModalSinFondo(Context contextDialog, View viewModal) {
+
+        CardView cardView = new CardView(contextDialog);
+        cardView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+
+        cardView.setBackgroundResource(R.drawable.modal_transparente);
+        cardView.addView(viewModal);
+        return cardView;
+    }
+
+
+
+
 }

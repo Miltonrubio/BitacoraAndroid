@@ -91,6 +91,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     String ID_actividad;
     RecyclerView RecyclerViewUbicaciones;
 
+    String fotoUrl;
     public DetallesActividadesFragment() {
         // Required empty public constructor
     }
@@ -109,6 +110,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
+        fotoUrl = context.getResources().getString(R.string.fotoUrl);
 
         TextView tvNombreActividad = view.findViewById(R.id.tvNombreActividad);
         TextView tvDetallesActividad = view.findViewById(R.id.tvDetallesActividad);
@@ -226,7 +228,6 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
                                     String nombreFoto = fotoObj.getString("nombreFoto");
-                                    String fotoUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/";
                                     slideItems.add(new SlideItem(fotoUrl + nombreFoto));
                                 }
 

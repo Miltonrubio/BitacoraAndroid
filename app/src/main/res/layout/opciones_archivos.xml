@@ -1,0 +1,109 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+
+    <LinearLayout
+        android:id="@+id/LayoutEditar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="5dp"
+            android:src="@drawable/baseline_edit_24"
+            app:tint="@color/amarillo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="Cambiar Nombre del archivo"
+            android:textSize="22dp" />
+
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/SpinnerNombreActividad"
+        style="@style/editTexts"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="12dp"
+        android:textSize="30dp"
+        android:visibility="gone" />
+
+
+    <Button
+        android:id="@+id/BotonActualizarActividad"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="25dp"
+        android:backgroundTint="@color/vino"
+        android:text="Actualizar Actividad"
+        android:textSize="22sp"
+        android:visibility="gone" />
+
+    <!-- Segundo LinearLayout -->
+    <LinearLayout
+        android:id="@+id/LayoutEliminar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/trash_can_regular"
+            app:tint="@color/rojo"
+            android:padding="3dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Eliminar"
+            android:textStyle="bold"
+            android:textSize="22dp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/LayoutVerArchivo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            app:tint="@color/verdefuerte"
+            android:src="@drawable/eye_regular" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="Visualizar archivo"
+            android:textSize="22dp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -159,32 +160,34 @@ public class AdaptadorSeleccionarSaldos extends RecyclerView.Adapter<AdaptadorSe
 
             int estadoIconoActual = estadoIcono.containsKey(ID_saldo) ? estadoIcono.get(ID_saldo) : 0;
 
-            // Establecer la etiqueta en función del estadoIcono actual del iconoMarcado
             if (estadoIconoActual == 1) {
                 holder.iconoMarcado.setImageResource(R.drawable.check_solid);
+                holder.iconoMarcado.setColorFilter(ContextCompat.getColor(context, R.color.verde), PorterDuff.Mode.SRC_IN);
                 holder.iconoMarcado.setTag(1);
             } else {
-                holder.iconoMarcado.setImageResource(R.drawable.xmark_solid); // Establece el recurso correcto aquí
+                holder.iconoMarcado.setImageResource(R.drawable.xmark_solid);
+                holder.iconoMarcado.setColorFilter(ContextCompat.getColor(context, R.color.black), PorterDuff.Mode.SRC_IN);
                 holder.iconoMarcado.setTag(0);
             }
 
 
-            holder.iconoMarcado.setOnClickListener(new View.OnClickListener() {
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (onItemClickListener != null) {
                         int nuevoEstadoIcono = (estadoIconoActual == 0) ? 1 : 0;
 
-                        // Cambiar la imagen y la etiqueta en función del nuevo estadoIcono
                         if (nuevoEstadoIcono == 1) {
                             holder.iconoMarcado.setImageResource(R.drawable.check_solid);
+                            holder.iconoMarcado.setColorFilter(ContextCompat.getColor(context, R.color.verde), PorterDuff.Mode.SRC_IN);
                             holder.iconoMarcado.setTag(1);
                         } else {
                             holder.iconoMarcado.setImageResource(R.drawable.xmark_solid);
+                            holder.iconoMarcado.setColorFilter(ContextCompat.getColor(context, R.color.black), PorterDuff.Mode.SRC_IN);
                             holder.iconoMarcado.setTag(0);
                         }
 
-                        // Actualizar el estadoIcono en el mapa
                         estadoIcono.put(ID_saldo, nuevoEstadoIcono);
 
                         onItemClickListener.onItemClick(ID_saldo);

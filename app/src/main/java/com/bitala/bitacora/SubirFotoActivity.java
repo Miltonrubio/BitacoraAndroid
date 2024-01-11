@@ -1,6 +1,7 @@
 package com.bitala.bitacora;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -22,6 +23,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -34,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,12 +56,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.Adaptadores.AdaptadorArchivos;
+import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
 import com.bitala.bitacora.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SubirFotoActivity extends AppCompatActivity {
+public class SubirFotoActivity extends AppCompatActivity implements AdaptadorArchivos.OnActivityActionListener {
 
 
     private Handler sliderHandler = new Handler();
@@ -67,7 +74,7 @@ public class SubirFotoActivity extends AppCompatActivity {
     ViewPager2 viewPager2;
 
     String rutaImagen;
-    String idActividad, ID_usuario;
+    String ID_actividad, ID_usuario;
     Context context;
 
 /*
@@ -83,6 +90,15 @@ public class SubirFotoActivity extends AppCompatActivity {
     LottieAnimationView lottieSinEvidencias;
     TextView textSinEvidencias;
     String descripcionActividad;
+    RecyclerView RecyclerViewArchivos;
+    TextView archivosEvidencias;
+    AdaptadorArchivos adaptadorArchivos;
+    List<JSONObject> listaArchivos = new ArrayList<>();
+    AlertDialog modalCargando;
+    AlertDialog.Builder builderCargando;
+    String fotoUrl;
+
+    List<SlideItem> slideItems = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -93,7 +109,7 @@ public class SubirFotoActivity extends AppCompatActivity {
 
         context = this;
         url = context.getResources().getString(R.string.urlApi);
-
+        fotoUrl = context.getResources().getString(R.string.fotoUrl);
         Button btnGuardarFoto = findViewById(R.id.guardarFoto);
         TextView txtId = findViewById(R.id.txtId);
         TextView txtDesc = findViewById(R.id.txtDesc);
@@ -102,22 +118,73 @@ public class SubirFotoActivity extends AppCompatActivity {
         lottieSinEvidencias = findViewById(R.id.lottieSinEvidencias);
         textSinEvidencias = findViewById(R.id.textSinEvidencias);
 
+        RecyclerViewArchivos = findViewById(R.id.RecyclerViewArchivos);
+
+        archivosEvidencias = findViewById(R.id.archivosEvidencias);
+
+        Button btnDocumentos = findViewById(R.id.btnDocumentos);
+
+        builderCargando = new AlertDialog.Builder(context);
+        builderCargando.setCancelable(false);
 
         // Intent intent = getIntent();
 
         Bundle receivedBundle = getIntent().getExtras();
 
         if (receivedBundle != null) {
-            idActividad = receivedBundle.getString("ID_actividad");
+            ID_actividad = receivedBundle.getString("ID_actividad");
             ID_usuario = receivedBundle.getString("ID_usuario");
             String nombre_actividad = receivedBundle.getString("nombre_actividad");
             descripcionActividad = receivedBundle.getString("descripcionActividad");
 
-            txtId.setText("Evidencias de actividad: \n" + nombre_actividad);
+            txtId.setText("Evidencias de actividad: \n" + nombre_actividad.toUpperCase());
             txtDesc.setText(descripcionActividad);
 
             CargarImagenes();
+            MostrarArchivos();
+
+
+            adaptadorArchivos = new AdaptadorArchivos(listaArchivos, context, this);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+            RecyclerViewArchivos.setLayoutManager(gridLayoutManager);
+            RecyclerViewArchivos.setAdapter(adaptadorArchivos);
+
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    int totalItems = RecyclerViewArchivos.getAdapter().getItemCount();
+
+                    // Si hay un único elemento, ocupa todo el contenedor
+                    if (totalItems == 1) {
+                        return 2;
+                    } else {
+                        // Si el total de elementos es par, muestra 2 elementos por fila
+                        // Si es impar, el último elemento ocupa todo el contenedor
+                        return (totalItems % 2 == 0 || position != totalItems - 1) ? 1 : 2;
+                    }
+                }
+            });
+
+
+            /*
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    int totalItems = RecyclerViewArchivos.getAdapter().getItemCount();
+
+                    // Si hay un único elemento, ocupa todo el contenedor
+                    if (totalItems == 1) {
+                        return 2;
+                    } else {
+                        return (position % 3 == 2) ? 2 : 1;
+                    }
+                }
+            });
+*/
+
         }
+
+
         fotoDesdeGaleria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,13 +201,165 @@ public class SubirFotoActivity extends AppCompatActivity {
             }
         });
 
+
+        btnDocumentos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AbrirDocumentos();
+            }
+        });
+
+
     }
+
+
+    private void MostrarArchivos() {
+        modalCargando = Utils.ModalCargando(context, builderCargando);
+        listaArchivos.clear();
+        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject archivosObj = jsonArray.getJSONObject(i);
+
+                                listaArchivos.add(archivosObj);
+                            }
+
+                            if (listaArchivos.size() > 0) {
+                                archivosEvidencias.setVisibility(View.VISIBLE);
+                                RecyclerViewArchivos.setVisibility(View.VISIBLE);
+                            } else {
+
+                                archivosEvidencias.setVisibility(View.GONE);
+                                RecyclerViewArchivos.setVisibility(View.GONE);
+                            }
+
+
+                            adaptadorArchivos.notifyDataSetChanged();
+                            adaptadorArchivos.setFilteredData(listaArchivos);
+                            adaptadorArchivos.filter("");
+
+
+                        } catch (JSONException e) {
+
+                            archivosEvidencias.setVisibility(View.GONE);
+                            RecyclerViewArchivos.setVisibility(View.GONE);
+                        }
+                        modalCargando.dismiss();
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+
+                        Utils.crearToastPersonalizado(context, "No se pudieron cargar los archivos");
+                        modalCargando.dismiss();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("opcion", "67");
+                params.put("ID_actividad", ID_actividad);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue3 = Volley.newRequestQueue(context);
+        requestQueue3.add(stringRequest3);
+
+    }
+
+
+    private void AbrirDocumentos() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, 4);
+    }
+
+
+    private void MandarPDF(Uri pdfUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(pdfUri);
+            byte[] pdfBytes = new byte[inputStream.available()];
+            inputStream.read(pdfBytes);
+            new SendFileTask().execute(pdfBytes, "documento.pdf");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private class SendFileTask extends AsyncTask<Object, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Object... objects) {
+            byte[] fileBytes = (byte[]) objects[0];
+            String fileName = (String) objects[1];
+
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("opcion", "66")
+                    .addFormDataPart("ID_actividad", ID_actividad)
+                    .addFormDataPart("ID_usuario", ID_usuario)
+                    .addFormDataPart("archivo", fileName,
+                            RequestBody.create(MediaType.parse("multipart/form-data"), fileBytes))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    Log.d("Respuesta del servidor", responseData);
+                } else {
+                    Log.e("Error en la solicitud", String.valueOf(response.code()));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            modalCargando.dismiss();
+            Utils.crearToastPersonalizado(context, "Archivo enviado al servidor");
+
+            MostrarArchivos();
+
+            /*
+            Intent intent = new Intent(context, Activity_Binding.class);
+            startActivity(intent);
+
+             */
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         if (requestCode == 2 && resultCode == RESULT_OK && data != null) {
+
+            modalCargando = Utils.ModalCargando(context, builderCargando);
             Uri selectedImageUri = data.getData();
 
             try {
@@ -148,13 +367,57 @@ public class SubirFotoActivity extends AppCompatActivity {
                 MandarFoto2(selectedBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
+                modalCargando.dismiss();
             }
         }
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
+
+            modalCargando = Utils.ModalCargando(context, builderCargando);
             Bitmap imgBitmap = BitmapFactory.decodeFile(rutaImagen);
             MandarFoto2(imgBitmap);
         }
+
+/*
+        if (requestCode == 4 && resultCode == RESULT_OK && data != null) {
+            Uri selectedFileUri = data.getData();
+
+            String mimeType = getContentResolver().getType(selectedFileUri);
+
+            if (mimeType != null && mimeType.startsWith("image")) {
+
+                Utils.crearToastPersonalizado(context, "Solo puedes subir archivos pdf");
+            } else if (mimeType != null && mimeType.equals("application/pdf")) {
+
+                MandarPDF(selectedFileUri);
+            } else {
+                Utils.crearToastPersonalizado(context, "Solo puedes subir archivos pdf");
+            }
+        }
+        */
+
+        if (requestCode == 4 && resultCode == RESULT_OK && data != null) {
+
+            modalCargando = Utils.ModalCargando(context, builderCargando);
+            Uri selectedFileUri = data.getData();
+
+            String mimeType = getContentResolver().getType(selectedFileUri);
+
+            if (mimeType != null) {
+                // Verificar si el tipo MIME es de texto, Word o PDF
+                if (mimeType.startsWith("text") || mimeType.equals("application/msword") || mimeType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") || mimeType.equals("application/pdf")) {
+                    // Aquí puedes realizar acciones específicas para el tipo de archivo permitido
+                    MandarPDF(selectedFileUri);
+                } else {
+                    Utils.crearToastPersonalizado(context, "Solo puedes subir archivos de texto, Word o PDF");
+                    modalCargando.dismiss();
+                }
+            } else {
+                Utils.crearToastPersonalizado(context, "No se pudo determinar el tipo de archivo");
+                modalCargando.dismiss();
+            }
+        }
+
 
     }
 
@@ -227,7 +490,7 @@ public class SubirFotoActivity extends AppCompatActivity {
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("opcion", "9")
-                    .addFormDataPart("ID_actividad", idActividad)
+                    .addFormDataPart("ID_actividad", ID_actividad)
                     .addFormDataPart("ID_usuario", ID_usuario)
                     .addFormDataPart("imagen", nombreArchivo,
                             RequestBody.create(MediaType.parse("image/jpeg"), imageFile))
@@ -254,14 +517,16 @@ public class SubirFotoActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            modalCargando.dismiss();
             Utils.crearToastPersonalizado(context, "Evidencia de " + descripcionActividad + " Enviada al servidor");
+            /*
             Intent intent = new Intent(context, Activity_Binding.class);
             startActivity(intent);
+        */
+            CargarImagenes();
         }
+
     }
-
-
-    List<SlideItem> slideItems = new ArrayList<>();
 
     private void CargarImagenes() {
         slideItems.clear();
@@ -277,9 +542,9 @@ public class SubirFotoActivity extends AppCompatActivity {
                                     JSONObject fotoObj = jsonArray.getJSONObject(i);
                                     String nombreFoto = fotoObj.getString("nombreFoto");
 
-                                    String fotoUrl = "http://hidalgo.no-ip.info:5610/bitacora/fotos/";
+                                    String urlFotos = fotoUrl;
 
-                                    slideItems.add(new SlideItem(fotoUrl + nombreFoto));
+                                    slideItems.add(new SlideItem(urlFotos + nombreFoto));
                                 }
                                 viewPager2.setAdapter(new SlideAdapter(slideItems, viewPager2));
                                 viewPager2.setClipToPadding(false);
@@ -333,7 +598,7 @@ public class SubirFotoActivity extends AppCompatActivity {
             public Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("opcion", "10");
-                params.put("ID_actividad", idActividad);
+                params.put("ID_actividad", ID_actividad);
                 return params;
             }
         };
@@ -375,6 +640,73 @@ public class SubirFotoActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         sliderHandler.postDelayed(sliderRunnable, 3000);
+    }
+
+
+    @Override
+    public void onEliminarArchivo(String ID_archivo, String nombreArchivo) {
+        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Utils.crearToastPersonalizado(context, "Se eliminó el archivo " + nombreArchivo);
+                        MostrarArchivos();
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Utils.crearToastPersonalizado(context, "No se pudo eliminar el archivo, revisa la conexión");
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("opcion", "68");
+                params.put("ID_archivo", ID_archivo);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue3 = Volley.newRequestQueue(context);
+        requestQueue3.add(stringRequest3);
+    }
+
+
+    @Override
+    public void onEditarArchivo(String ID_archivo, String nuevoNombreArchivo) {
+
+        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Utils.crearToastPersonalizado(context, "Se actualizo el archivo " + nuevoNombreArchivo);
+                        MostrarArchivos();
+
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Utils.crearToastPersonalizado(context, "No se pudó editar el archivo, revisa la conexión");
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("opcion", "69");
+                params.put("ID_archivo", ID_archivo);
+                params.put("nuevoNombreArchivo", nuevoNombreArchivo);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue3 = Volley.newRequestQueue(context);
+        requestQueue3.add(stringRequest3);
     }
 
 }

@@ -4,10 +4,13 @@ package com.bitala.bitacora;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -39,7 +42,6 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fotos_actividades, parent, false);
         SlideViewHolder viewHolder = new SlideViewHolder(view);
 
-
         return viewHolder;
     }
 
@@ -48,9 +50,40 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
     public void onBindViewHolder(@NonNull SlideViewHolder holder, int position) {
         holder.setImage(slideItems.get(position));
 
+
         if (position == slideItems.size() - 2) {
             viewPager2.post(runnable);
         }
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String imageUrl = slideItems.get(position).getImage();
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_imagenes_completas, null);
+                builder.setView(Utils.ModalSinFondo(view.getContext(), customView));
+
+                //     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                //   builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                AlertDialog dialogOpcionesEvidencias = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogOpcionesEvidencias.getWindow().setBackgroundDrawable(back);
+                dialogOpcionesEvidencias.getWindow().setDimAmount(0.8f);
+                dialogOpcionesEvidencias.show();
+
+                ImageView evidenciasCompletas = customView.findViewById(R.id.evidenciasCompletas);
+
+                Glide.with(view.getContext())
+                        .load(imageUrl)
+                        .error(R.drawable.nointernet)
+                        .into(evidenciasCompletas);
+
+
+            }
+        });
+
     }
 
     @Override
