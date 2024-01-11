@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
-import com.bitala.bitacora.R;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.List;
@@ -73,12 +72,14 @@ public class SlideAdapter extends RecyclerView.Adapter<SlideAdapter.SlideViewHol
                 dialogOpcionesEvidencias.getWindow().setDimAmount(0.8f);
                 dialogOpcionesEvidencias.show();
 
+
                 ImageView evidenciasCompletas = customView.findViewById(R.id.evidenciasCompletas);
 
                 Glide.with(view.getContext())
                         .load(imageUrl)
                         .error(R.drawable.nointernet)
                         .into(evidenciasCompletas);
+
 
 
             }

@@ -4,16 +4,6 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.CompositePageTransformer;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,6 +13,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -31,9 +32,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorArchivos;
 import com.bitala.bitacora.Adaptadores.AdaptadorUbicaciones;
-import com.bitala.bitacora.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class DetallesActividadesFragment extends Fragment implements OnMapReadyCallback, AdaptadorUbicaciones.OnActivityActionListener {
+public class DetallesActividadesFragment extends Fragment implements OnMapReadyCallback, AdaptadorUbicaciones.OnActivityActionListener, AdaptadorArchivos.OnActivityActionListener {
 
     private MapView mapView;
     private GoogleMap googleMap;
@@ -92,6 +92,13 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     RecyclerView RecyclerViewUbicaciones;
 
     String fotoUrl;
+
+    List<JSONObject> listaArchivos = new ArrayList<>();
+    AdaptadorArchivos adaptadorArchivos;
+
+    AlertDialog modalCargando;
+    AlertDialog.Builder builderCargando;
+    LinearLayout ContenedorArchivos;
     public DetallesActividadesFragment() {
         // Required empty public constructor
     }
@@ -127,12 +134,39 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         EvidenciaMapa = view.findViewById(R.id.EvidenciaMapa);
         SinEvidenciasMapa = view.findViewById(R.id.SinEvidenciasMapa);
 
+        builderCargando = new AlertDialog.Builder(context);
+        builderCargando.setCancelable(false);
         RecyclerViewUbicaciones = view.findViewById(R.id.RecyclerViewUbicaciones);
+
+        RecyclerView recyclerViewArchivos = view.findViewById(R.id.recyclerViewArchivos);
+         ContenedorArchivos= view.findViewById(R.id.ContenedorArchivos);
 
 
         adaptadorUbicaciones = new AdaptadorUbicaciones(listaUbicaciones, context, this);
         RecyclerViewUbicaciones.setLayoutManager(new LinearLayoutManager(context));
         RecyclerViewUbicaciones.setAdapter(adaptadorUbicaciones);
+
+
+        adaptadorArchivos = new AdaptadorArchivos(listaArchivos, context, this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+        recyclerViewArchivos.setLayoutManager(gridLayoutManager);
+        recyclerViewArchivos.setAdapter(adaptadorArchivos);
+
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int totalItems = recyclerViewArchivos.getAdapter().getItemCount();
+
+                // Si hay un único elemento, ocupa todo el contenedor
+                if (totalItems == 1) {
+                    return 2;
+                } else {
+                    // Si el total de elementos es par, muestra 2 elementos por fila
+                    // Si es impar, el último elemento ocupa todo el contenedor
+                    return (totalItems % 2 == 0 || position != totalItems - 1) ? 1 : 2;
+                }
+            }
+        });
 
 
         colorBlanco = ContextCompat.getColor(context, R.color.white);
@@ -161,7 +195,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             String telefono = bundle.getString("telefono", "");
             String foto_usuario = bundle.getString("foto_usuario", "");
 
-
+            MostrarArchivos();
             CargarImagenes(ID_actividad);
             CargarUbicaciones(ID_actividad);
             mapView = view.findViewById(R.id.mapView);
@@ -186,8 +220,10 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                     tvFechaFinalizado.setText("Cancelada el :" + fechaFormateadafin);
                     tvFechaFinalizado.setTextColor(colorRojo);
+                    tvFechaFinalizado.setVisibility(View.VISIBLE);
                 } else if ((estadoActividad.equalsIgnoreCase("Finalizada"))) {
                     tvFechaFinalizado.setText("Finalizada el: " + fechaFormateadafin);
+                    tvFechaFinalizado.setVisibility(View.VISIBLE);
                 } else {
                     tvFechaFinalizado.setVisibility(View.GONE);
                 }
@@ -212,6 +248,68 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         }
 
         return view;
+    }
+
+
+    private void MostrarArchivos() {
+        modalCargando = Utils.ModalCargando(context, builderCargando);
+        listaArchivos.clear();
+        StringRequest stringRequest3 = new StringRequest(com.android.volley.Request.Method.POST, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject archivosObj = jsonArray.getJSONObject(i);
+
+                                listaArchivos.add(archivosObj);
+                            }
+
+                            if (listaArchivos.size() > 0) {
+                                ContenedorArchivos.setVisibility(View.VISIBLE);
+                            } else {
+
+                                ContenedorArchivos.setVisibility(View.GONE);
+                            }
+
+
+                            adaptadorArchivos.notifyDataSetChanged();
+                            adaptadorArchivos.setFilteredData(listaArchivos);
+                            adaptadorArchivos.filter("");
+
+
+                        } catch (JSONException e) {
+
+                            ContenedorArchivos.setVisibility(View.GONE);
+                        }
+                        modalCargando.dismiss();
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+
+                        ContenedorArchivos.setVisibility(View.GONE);
+                        Utils.crearToastPersonalizado(context, "No se pudieron cargar los archivos");
+                        modalCargando.dismiss();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("opcion", "67");
+                params.put("ID_actividad", ID_actividad);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue3 = Volley.newRequestQueue(context);
+        requestQueue3.add(stringRequest3);
+
     }
 
 
@@ -511,5 +609,14 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     }
 
 
+    @Override
+    public void onEliminarArchivo(String ID_archivo, String nombreArchivo) {
+
+    }
+
+    @Override
+    public void onEditarArchivo(String ID_archivo, String nuevoNombreArchivo) {
+
+    }
 }
 

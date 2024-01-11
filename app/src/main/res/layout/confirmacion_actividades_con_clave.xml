@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:paddingHorizontal="15dp"
+    android:layout_height="wrap_content"
+    android:paddingVertical="25dp">
+
+    <Button
+        android:id="@+id/buttonCancelar"
+        android:layout_width="120dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="16dp"
+        android:textSize="16dp"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="@color/grisMuyOscuro"
+        android:text="Cancelar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextClaveUsuario" />
+
+    <Button
+        android:id="@+id/buttonAceptar"
+        android:layout_width="120dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="16dp"
+        android:backgroundTint="@color/vino"
+        android:text="Aceptar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonCancelar" />
+
+    <TextView
+        android:id="@+id/textViewTituloConfirmacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Para realizar esta opción debes agregar tu contraseña"
+        android:textStyle="bold"
+        android:textColor="@color/naranja"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/labelClave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Escribe tu contraseña de ingreso"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextClaveUsuario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+    <EditText
+        android:id="@+id/editTextClaveUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Escribe la contraseña"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextMotivoCancelacion" />
+
+    <TextView
+        android:id="@+id/labelCancelacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginBottom="4dp"
+        android:text="Escribe el motivo de cancelación"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextMotivoCancelacion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+    <EditText
+        android:id="@+id/editTextMotivoCancelacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Motivo de cancelación"
+        android:visibility="gone"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTituloConfirmacion" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

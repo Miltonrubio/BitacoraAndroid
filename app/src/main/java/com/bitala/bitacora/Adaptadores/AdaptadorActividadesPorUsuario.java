@@ -1,11 +1,13 @@
 package com.bitala.bitacora.Adaptadores;
 
 
-import static android.app.PendingIntent.getActivity;
+import static com.bitala.bitacora.Utils.ModalRedondeado;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -155,7 +159,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     holder.FrameActividades.setBackgroundResource(R.drawable.rounded_amarillo);
                     colorIcono = ContextCompat.getColor(context, R.color.amarillo);
                     drawableResId = R.drawable.baseline_access_time_24;
-                   holder.FrameActividades.setVisibility(View.VISIBLE);
+                    holder.FrameActividades.setVisibility(View.VISIBLE);
 
                 }
 
@@ -203,6 +207,48 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
                 }
             });
+
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.opciones_actividades_administrativos, null);
+                    builder.setView(ModalRedondeado(context, customView));
+                    AlertDialog dialogOpcionesDeActividad = builder.create();
+                    dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogOpcionesDeActividad.show();
+
+
+                    LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
+                    LinearLayout LayoutEliminarActividad = customView.findViewById(R.id.LayoutEliminarActividad);
+
+
+                    LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+
+
+                        }
+                    });
+
+                    LayoutEliminarActividad.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+
+
+                    return false;
+                }
+            });
+
+
                 /*
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {

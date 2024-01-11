@@ -75,6 +75,7 @@ dependencies {
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("com.airbnb.android:lottie:6.1.0")
 
+
     /*
         implementation ("androidx.paging:paging-runtime:3.0.0")
         implementation ("androidx.lifecycle:lifecycle-viewmodel:2.5.1")

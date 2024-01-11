@@ -6,10 +6,9 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -23,14 +22,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bitala.bitacora.R;
 import com.bitala.bitacora.Utils;
-import com.itextpdf.text.pdf.parser.Line;
 
 import org.json.JSONObject;
 
@@ -40,14 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class AdaptadorArchivos extends RecyclerView.Adapter<AdaptadorArchivos.ViewHolder> {
 
@@ -88,128 +78,140 @@ public class AdaptadorArchivos extends RecyclerView.Adapter<AdaptadorArchivos.Vi
                 @Override
                 public void onClick(View view) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    View customView = LayoutInflater.from(context).inflate(R.layout.opciones_archivos, null);
-                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                    AlertDialog dialogOpcionesArchivos = builder.create();
-                    ColorDrawable back = new ColorDrawable(Color.BLACK);
-                    back.setAlpha(150);
-                    dialogOpcionesArchivos.getWindow().setBackgroundDrawable(back);
-                    dialogOpcionesArchivos.getWindow().setDimAmount(0.8f);
-                    dialogOpcionesArchivos.show();
+                    if (!permisosUsuario.equalsIgnoreCase("SUPERADMIN")) {
 
-                    LinearLayout LayoutVerArchivo = customView.findViewById(R.id.LayoutVerArchivo);
-                    LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
-                    LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        View customView = LayoutInflater.from(context).inflate(R.layout.opciones_archivos, null);
+                        builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                        AlertDialog dialogOpcionesArchivos = builder.create();
+                        ColorDrawable back = new ColorDrawable(Color.BLACK);
+                        back.setAlpha(150);
+                        dialogOpcionesArchivos.getWindow().setBackgroundDrawable(back);
+                        dialogOpcionesArchivos.getWindow().setDimAmount(0.8f);
+                        dialogOpcionesArchivos.show();
 
-
-                    LayoutVerArchivo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            modalCargando = Utils.ModalCargando(context, builderCargando);
-
-                            String urlPdf = pdfUrl + nombre_archivo;
-
-                            new DownloadPdfTask().execute(urlPdf);
+                        LinearLayout LayoutVerArchivo = customView.findViewById(R.id.LayoutVerArchivo);
+                        LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                        LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
 
 
-                        }
-                    });
+                        LayoutVerArchivo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                modalCargando = Utils.ModalCargando(context, builderCargando);
+
+                                String urlPdf = pdfUrl + nombre_archivo;
+
+                                new DownloadPdfTask().execute(urlPdf);
 
 
-                    LayoutEliminar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
-                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                            dialogConfirmacion.show();
+                            }
+                        });
 
 
-                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                        LayoutEliminar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                                AlertDialog dialogConfirmacion = builder.create();
+                                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                                back.setAlpha(150);
+                                dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                                dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                                dialogConfirmacion.show();
 
 
-                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialogConfirmacion.dismiss();
-                                    dialogOpcionesArchivos.dismiss();
-
-                                    actionListener.onEliminarArchivo(ID_archivo, nombre_archivo);
-                                }
-                            });
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
 
 
-                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialogConfirmacion.dismiss();
-                                }
-                            });
-
-                        }
-                    });
-
-
-                    LayoutEditar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            View customView = LayoutInflater.from(context).inflate(R.layout.opcion_cancelar, null);
-                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                            dialogConfirmacion.show();
-
-                            TextView tituloCancelacion = customView.findViewById(R.id.tituloCancelacion);
-                            TextView editText = customView.findViewById(R.id.editText);
-                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-
-                            tituloCancelacion.setText("Agrega el nuevo nombre del archivo");
-                            editText.setHint("Escribe el nuevo nombre");
-
-                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    String nuevoNombreArchivo = editText.getText().toString().trim();
-                                    if (nuevoNombreArchivo.isEmpty()) {
-                                        Utils.crearToastPersonalizado(context, "Debes ingresar un nombre para este archivo");
-                                    } else {
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
                                         dialogConfirmacion.dismiss();
                                         dialogOpcionesArchivos.dismiss();
 
-
-                                        actionListener.onEditarArchivo(ID_archivo, nuevoNombreArchivo);
+                                        actionListener.onEliminarArchivo(ID_archivo, nombre_archivo);
                                     }
-                                }
-                            });
+                                });
 
 
-                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialogConfirmacion.dismiss();
-                                }
-                            });
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialogConfirmacion.dismiss();
+                                    }
+                                });
+
+                            }
+                        });
 
 
-                        }
-                    });
+                        LayoutEditar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                                View customView = LayoutInflater.from(context).inflate(R.layout.opcion_cancelar, null);
+                                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                                AlertDialog dialogConfirmacion = builder.create();
+                                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                                back.setAlpha(150);
+                                dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                                dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                                dialogConfirmacion.show();
+
+                                TextView tituloCancelacion = customView.findViewById(R.id.tituloCancelacion);
+                                TextView editText = customView.findViewById(R.id.editText);
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                                tituloCancelacion.setText("Agrega el nuevo nombre del archivo");
+                                editText.setHint("Escribe el nuevo nombre");
+
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String nuevoNombreArchivo = editText.getText().toString().trim();
+                                        if (nuevoNombreArchivo.isEmpty()) {
+                                            Utils.crearToastPersonalizado(context, "Debes ingresar un nombre para este archivo");
+                                        } else {
+                                            dialogConfirmacion.dismiss();
+                                            dialogOpcionesArchivos.dismiss();
 
 
+                                            actionListener.onEditarArchivo(ID_archivo, nuevoNombreArchivo);
+                                        }
+                                    }
+                                });
+
+
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialogConfirmacion.dismiss();
+                                    }
+                                });
+
+
+                            }
+                        });
+
+                    } else {
+
+
+                        modalCargando = Utils.ModalCargando(context, builderCargando);
+
+                        String urlPdf = pdfUrl + nombre_archivo;
+
+                        new DownloadPdfTask().execute(urlPdf);
+
+
+                    }
                 }
             });
 
@@ -369,7 +371,15 @@ public class AdaptadorArchivos extends RecyclerView.Adapter<AdaptadorArchivos.Vi
 
         builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);
+
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+        this.permisosUsuario = sharedPreferences.getString("permisos", "");
+
+
     }
+
+    String permisosUsuario;
 
     String pdfUrl;
     AlertDialog modalCargando;
