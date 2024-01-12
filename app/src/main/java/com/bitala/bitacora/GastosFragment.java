@@ -99,7 +99,7 @@ public class GastosFragment extends Fragment {
     AdaptadorSeleccionarSaldos adaptadorSeleccionarSaldos;
 
     ArrayList<String> idSeleccionados = new ArrayList<>();
-
+    String pdfGastos;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -107,6 +107,7 @@ public class GastosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_gastos, container, false);
 
 
+         pdfGastos= context.getResources().getString(R.string.pdfGastos);
         ContenedorSinContenido = view.findViewById(R.id.ContenedorSinContenido);
         ContenedorSinInternet = view.findViewById(R.id.ContenedorSinInternet);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -639,8 +640,10 @@ public class GastosFragment extends Fragment {
         return jsonArray.toString();
     }
 
+
+
     private void enviarDatosPorPost() {
-        String urlPDF = "http://192.168.16.162/bitacoraphp/BitacoraPHP/disenioPDF2.php";
+
 
         String lista = convertirArrayListAJson(idSeleccionados);
 
@@ -652,7 +655,7 @@ public class GastosFragment extends Fragment {
 
         // Convertir el ArrayList a JSON
         postData.put("listaSeleccion", lista);
-        new DownloadFileTask(context, postData).execute(urlPDF);
+        new DownloadFileTask(context, postData).execute(pdfGastos);
     }
 
     private void VerGastosPorFecha(String ID_usuario, String fechaInicio, String fechaFin) {

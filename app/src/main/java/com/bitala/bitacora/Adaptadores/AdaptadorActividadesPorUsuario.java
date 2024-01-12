@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bitala.bitacora.DetallesActividadesFragment;
 import com.bitala.bitacora.R;
+import com.bitala.bitacora.Utils;
 
 import org.json.JSONObject;
 
@@ -46,13 +49,31 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     private List<JSONObject> data;
 
     String url;
+    String claveUsuario;
 
-    public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context) {
+
+     AdaptadorActividadesPorUsuario.OnActivityActionListener actionListener;
+
+    public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context,AdaptadorActividadesPorUsuario.OnActivityActionListener actionListener ) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
+        this.actionListener = actionListener;
 
         url = context.getResources().getString(R.string.urlApi);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+        String permisosUsuario = sharedPreferences.getString("permisos", "");
+        this.claveUsuario = sharedPreferences.getString("clave", "");
+    }
+
+
+
+    public interface OnActivityActionListener {
+
+        void onDeleteActivity(String ID_actividad);
+
+        void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
+
     }
 
     @NonNull
@@ -72,8 +93,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         int drawableResId = 0;
         int colorIcono = 0;
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-        String permisosUsuario = sharedPreferences.getString("permisos", "");
 
         try {
             JSONObject jsonObject2 = filteredData.get(position);
@@ -226,19 +245,151 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     LinearLayout LayoutEliminarActividad = customView.findViewById(R.id.LayoutEliminarActividad);
 
 
+
+                    if (estadoActividad.equalsIgnoreCase("Cancelado")) {
+                        LayoutCancelarActividad.setVisibility(View.GONE);
+
+                    }else {
+                        LayoutCancelarActividad.setVisibility(View.VISIBLE);
+                    }
+
+
+
                     LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_actividades_con_clave, null);
+                            builder.setView(ModalRedondeado(context, customView));
+                            AlertDialog dialogConfirmacionClave = builder.create();
+                            dialogConfirmacionClave.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogConfirmacionClave.show();
 
+
+                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                            EditText editTextMotivoCancelacion = customView.findViewById(R.id.editTextMotivoCancelacion);
+                            TextView labelCancelacion = customView.findViewById(R.id.labelCancelacion);
+
+                            editTextMotivoCancelacion.setVisibility(View.VISIBLE);
+                            labelCancelacion.setVisibility(View.VISIBLE);
+
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+
+                                    String motivoCancelacion = editTextMotivoCancelacion.getText().toString();
+                                    String claveEscrita = editTextClaveUsuario.getText().toString();
+
+                                    if (motivoCancelacion.isEmpty()) {
+                                        Utils.crearToastPersonalizado(context, "Debes ingresar un motivo de cancelacion");
+                                    } else {
+
+                                        if (claveEscrita.isEmpty()) {
+
+                                            Utils.crearToastPersonalizado(context, "Debes ingresar tu clave para realizar la cancelación");
+                                        } else {
+                                            if (!claveEscrita.equals(claveUsuario)) {
+
+                                                Utils.crearToastPersonalizado(context, "Debes ingresar la contraseña correcta ");
+                                            } else {
+
+                                                dialogConfirmacionClave.dismiss();
+                                                dialogOpcionesDeActividad.dismiss();
+                                                actionListener.onCancelarActividadesActivity(ID_actividad, "Cancelado", motivoCancelacion);
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+                            });
+
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogConfirmacionClave.dismiss();
+                                }
+                            });
 
 
                         }
                     });
 
+
+
+
+
                     LayoutEliminarActividad.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
+                            Utils.crearToastPersonalizado(context, "Recuerda que la eliminación es permanente");
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_actividades_con_clave, null);
+                            builder.setView(ModalRedondeado(context, customView));
+                            AlertDialog dialogConfirmacionClave = builder.create();
+                            dialogConfirmacionClave.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogConfirmacionClave.show();
+
+
+                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                            EditText editTextMotivoCancelacion = customView.findViewById(R.id.editTextMotivoCancelacion);
+                            TextView labelCancelacion = customView.findViewById(R.id.labelCancelacion);
+
+                            editTextMotivoCancelacion.setVisibility(View.GONE);
+                            labelCancelacion.setVisibility(View.GONE);
+
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    String claveEscrita= editTextClaveUsuario.getText().toString();
+
+
+                                    if (claveEscrita.isEmpty()) {
+
+                                        Utils.crearToastPersonalizado(context, "Debes ingresar tu clave para realizar la eliminación");
+                                    } else {
+                                        if (!claveEscrita.equals(claveUsuario)) {
+
+                                            Utils.crearToastPersonalizado(context, "Debes ingresar la contraseña correcta ");
+                                        } else {
+
+                                            dialogConfirmacionClave.dismiss();
+                                            dialogOpcionesDeActividad.dismiss();
+                                            actionListener.onDeleteActivity( ID_actividad);
+
+                                        }
+
+                                    }
+
+                                }
+                            });
+
+
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogConfirmacionClave.dismiss();
+                                }
+                            });
+
+
+
+
 
                         }
                     });
@@ -418,56 +569,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             textView.setText(text);
         }
     }
-
-/*
-    private void VerNombresActividades(Context context) {
-        nombresActividades.clear();
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                try {
-                    JSONArray jsonArray = new JSONArray(response);
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String ID_nombre_actividad = jsonObject.getString("ID_nombre_actividad");
-                        String nombre_actividad = jsonObject.getString("nombre_actividad");
-                        nombresActividades.add(ID_nombre_actividad + ": " + nombre_actividad);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(context, "Hubo un error", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "11");
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-
-    private String obtenerIDDesdeNombre(String nombreSeleccionado) {
-        for (String actividad : nombresActividades) {
-            if (actividad.equals(nombreSeleccionado)) {
-                String[] partes = actividad.split(":");
-                if (partes.length > 0) {
-                    return partes[0].trim();
-                }
-            }
-        }
-        return null;
-    }
-*/
 
 }
 

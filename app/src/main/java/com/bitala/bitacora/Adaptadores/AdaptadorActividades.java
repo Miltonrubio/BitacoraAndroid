@@ -237,6 +237,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         dialogOpcionesDeActividad.show();
 
+                        LayoutCancelarActividad.setVisibility(View.GONE);
 
                         LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -446,6 +447,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         LayoutVerDetalles.setVisibility(View.GONE);
                         LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+                        LayoutEliminar.setVisibility(View.GONE);
                         LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
                         LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
                         LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
@@ -453,12 +455,15 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
                         Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
 
+                        /*
                         if (ID_nombre_actividad.equalsIgnoreCase("45")) {
                             LayoutEliminar.setVisibility(View.GONE);
                         } else {
 
                             LayoutEliminar.setVisibility(View.VISIBLE);
                         }
+
+                         */
                         //Spinner de titulo de actividades
 
                         Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);

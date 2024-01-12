@@ -22,9 +22,10 @@
       -->
 
 
-    <string name="urlApi">http://192.168.16.114/bitacoraPHP/mostrar.php</string>
-    <string name="fotoUrl">http://192.168.16.114/bitacoraPHP/fotos/</string>
-    <string name="pdfUrl">http://192.168.16.114/bitacoraPHP/archivos/</string>
+    <string name="urlApi">http://192.168.1.20/bitacoraPHP//mostrar.php</string>
+    <string name="fotoUrl">http://192.168.1.20/bitacoraPHP/fotos/</string>
+    <string name="pdfUrl">http://192.168.1.20/bitacoraPHP/archivos/</string>
+    <string name="pdfGastos">http://192.168.1.20/bitacoraPHP/disenioPDF2.php</string>
 
 
 

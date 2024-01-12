@@ -828,7 +828,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                                             //          onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario);
 
-                                            DepositarMasSaldo(ID_saldo, deposito, nombre, tipocaja);
+                                            DepositarMasSaldo(ID_saldo, deposito, nombre, tipocaja, ID_usuario);
 
 
                                         }
@@ -1067,7 +1067,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    private void DepositarMasSaldo(String ID_saldo, String deposito, String nombre, String tipo_caja) {
+    private void DepositarMasSaldo(String ID_saldo, String deposito, String nombre, String tipo_caja, String ID_admin_asig) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -1093,6 +1093,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 params.put("ID_saldo", ID_saldo);
                 params.put("deposito", deposito);
                 params.put("tipo_caja", tipo_caja);
+                params.put("ID_admin_asig", ID_admin_asig);
                 return params;
             }
         };

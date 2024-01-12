@@ -74,6 +74,7 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
             String hora = jsonObject2.optString("hora", "");
             String ID_saldo = jsonObject2.optString("ID_saldo", "");
             String tipo_caja = jsonObject2.optString("tipo_caja", "");
+            String nombre_admin_asig = jsonObject2.optString("nombre_admin_asig", "");
 
 
             Bundle bundle = new Bundle();
@@ -99,6 +100,7 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
 
             holder.saldo_agregado.setText("Se agregó: + " + dinero_agregado + " $ de saldo");
 
+            holder.adminAsign.setText("Asignado por: " + nombre_admin_asig);
 
         } finally {
         }
@@ -135,13 +137,14 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
 
         TextView tipoCaja;
 
+        TextView adminAsign;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             saldo_agregado = itemView.findViewById(R.id.saldo_agregado);
             fecha = itemView.findViewById(R.id.fecha);
-
+            adminAsign= itemView.findViewById(R.id.adminAsign);
             tipoCaja = itemView.findViewById(R.id.tipoCaja);
         }
     }

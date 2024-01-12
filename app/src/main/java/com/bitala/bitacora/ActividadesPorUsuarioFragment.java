@@ -77,7 +77,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ActividadesPorUsuarioFragment extends Fragment {
+public class ActividadesPorUsuarioFragment extends Fragment implements AdaptadorActividadesPorUsuario.OnActivityActionListener {
 
     String ID_usuario, permisos, nombre, correo, telefono, foto_usuario;
 
@@ -161,7 +161,7 @@ public class ActividadesPorUsuarioFragment extends Fragment {
 
 
         rvActividadesUsuario.setLayoutManager(new LinearLayoutManager(getContext()));
-        adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context);
+        adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context,  this);
         rvActividadesUsuario.setAdapter(adaptadorActividades);
 
 
@@ -809,6 +809,73 @@ public class ActividadesPorUsuarioFragment extends Fragment {
             modalCargando.dismiss();
         }
     }
+
+
+
+
+    @Override
+    public void onDeleteActivity(String ID_actividad) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                ActividadesPorUsuario(ID_usuario);
+
+                Utils.crearToastPersonalizado(context, "Se eliminó la actividad");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "No se pudo eliminar, revisa tu conexión");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "18");
+                params.put("ID_actividad", ID_actividad);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+
+
+
+    @Override
+    public void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion) {
+
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                ActividadesPorUsuario(ID_usuario);
+                Utils.crearToastPersonalizado(context, "Cancelaste la actividad");
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "No se pudo cancelar la actividad, revisa tu conexión");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "29");
+                params.put("ID_actividad", ID_actividad);
+                params.put("nuevoEstado", nuevoEstado);
+                params.put("motivocancelacion", motivoCancelacion);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
 
 }
 
