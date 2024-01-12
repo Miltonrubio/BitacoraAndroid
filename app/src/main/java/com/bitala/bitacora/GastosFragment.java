@@ -107,7 +107,6 @@ public class GastosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_gastos, container, false);
 
 
-         pdfGastos= context.getResources().getString(R.string.pdfGastos);
         ContenedorSinContenido = view.findViewById(R.id.ContenedorSinContenido);
         ContenedorSinInternet = view.findViewById(R.id.ContenedorSinInternet);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -127,6 +126,7 @@ public class GastosFragment extends Fragment {
         builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
+        pdfGastos= context.getResources().getString(R.string.pdfGastos);
 
         adaptadorGastos = new AdaptadorGastos(listaGastos, context);
 
@@ -647,7 +647,6 @@ public class GastosFragment extends Fragment {
 
         String lista = convertirArrayListAJson(idSeleccionados);
 
-        Utils.crearToastPersonalizado(context, lista);
         Log.d("Lista: ", lista);
 
         Map<String, String> postData = new HashMap<>();
