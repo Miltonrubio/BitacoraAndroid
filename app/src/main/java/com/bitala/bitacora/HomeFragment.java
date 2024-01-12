@@ -7,23 +7,21 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -204,7 +202,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 RecyclerViewTituloActividades.setAdapter(adaptadorListaActividades);
 
 
-
                 dialogActividades.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -245,10 +242,34 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                         JSONObject jsonObject = jsonArray.getJSONObject(0);
 
                         ID_saldo = jsonObject.getString("ID_saldo");
-                        String saldo_actualizado = jsonObject.getString("saldo_actualizado");
+                        Double saldo_actualizado = jsonObject.getDouble("saldo_actualizado");
+                        String caja = jsonObject.getString("caja");
+                        Double saldo_inicial = jsonObject.getDouble("saldo_inicial");
+                        Double gastos_Cajagastos = jsonObject.getDouble("gastos_Cajagastos");
+                        Double gastos_CajaCapital = jsonObject.getDouble("gastos_CajaCapital");
+                        Double depositos_Cajagastos = jsonObject.getDouble("depositos_Cajagastos");
+                        Double depositos_CajaCapital = jsonObject.getDouble("depositos_CajaCapital");
 
-                        saldoActual.setText("Saldo actual: " + saldo_actualizado + "$");
-                        saldoActualSinCont.setText("Saldo actual: " + saldo_actualizado + "$");
+
+                        Double sumaGastos = 0.0;
+                        Double sumaCapital = 0.0;
+
+                        if (caja.equalsIgnoreCase("Gastos")) {
+                            sumaGastos = saldo_inicial + depositos_Cajagastos - gastos_Cajagastos;
+                            sumaCapital = depositos_CajaCapital - gastos_CajaCapital;
+
+                        } else {
+                            sumaCapital = saldo_inicial + depositos_CajaCapital - gastos_CajaCapital;
+                            sumaGastos = depositos_Cajagastos - gastos_Cajagastos;
+
+                        }
+
+                        //      saldoActual.setText("Saldo actual: " + saldo_actualizado + "$");
+                        //    saldoActualSinCont.setText("Saldo actual: " + saldo_actualizado + "$");
+
+
+                        saldoActual.setText("Saldo actual Gastos: " + sumaGastos + "$  \nSaldo actual Capital: " + sumaCapital + " $");
+                        saldoActualSinCont.setText("Saldo actual Gastos: " + sumaGastos + "$  \nSaldo actual Capital: " + sumaCapital + " $");
 
 
                     } catch (JSONException e) {

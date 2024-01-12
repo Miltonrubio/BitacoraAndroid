@@ -1,11 +1,10 @@
 package com.bitala.bitacora.Adaptadores;
 
 
-import static android.app.PendingIntent.getActivity;
-
 import static com.bitala.bitacora.Utils.ModalRedondeado;
 import static com.bitala.bitacora.Utils.crearToastPersonalizado;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -65,8 +64,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import android.Manifest;
 
 
 public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActividades.ViewHolder> {
@@ -1600,7 +1597,13 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         JSONObject jsonObject = jsonArray.getJSONObject(0);
 
                         String ID_saldo = jsonObject.getString("ID_saldo");
-                        String saldo_actualizado = jsonObject.getString("saldo_actualizado");
+                        Double saldo_actualizado = jsonObject.getDouble("saldo_actualizado");
+                        String caja = jsonObject.getString("caja");
+                        Double saldo_inicial = jsonObject.getDouble("saldo_inicial");
+                        Double gastos_Cajagastos = jsonObject.getDouble("gastos_Cajagastos");
+                        Double gastos_CajaCapital = jsonObject.getDouble("gastos_CajaCapital");
+                        Double depositos_Cajagastos = jsonObject.getDouble("depositos_Cajagastos");
+                        Double depositos_CajaCapital = jsonObject.getDouble("depositos_CajaCapital");
 
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -1705,8 +1708,45 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                                         try {
                                             double totalGastadoDob = Math.abs(Double.parseDouble(total_gastado));
-                                            double saldoActualizadoDob = Double.parseDouble(saldo_actualizado);
+                                            double saldoActualizadoDob = Double.parseDouble(saldo_actualizado.toString());
 
+
+                                            Double sumaGastos = 0.0;
+                                            Double sumaCapital = 0.0;
+
+
+                                            if (caja.equalsIgnoreCase("Gastos")) {
+                                                sumaGastos = saldo_inicial + depositos_Cajagastos - gastos_Cajagastos;
+                                                sumaCapital = depositos_CajaCapital - gastos_CajaCapital;
+
+                                            } else {
+                                                sumaCapital = saldo_inicial + depositos_CajaCapital - gastos_CajaCapital;
+                                                sumaGastos = depositos_Cajagastos - gastos_Cajagastos;
+
+                                            }
+
+                                            if (valorCheck.equalsIgnoreCase("Gastos")) {
+
+                                                if (totalGastadoDob > sumaGastos) {
+                                                    Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+                                                } else {
+                                                    dialogConfirmacion.dismiss();
+                                                    dialogOpcionesDeActividad.dismiss();
+                                                    actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
+                                                }
+
+
+                                            } else {
+                                                if (totalGastadoDob > sumaCapital) {
+                                                    Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+                                                } else {
+                                                    dialogConfirmacion.dismiss();
+                                                    dialogOpcionesDeActividad.dismiss();
+                                                    actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
+                                                }
+                                            }
+
+/*
                                             if (totalGastadoDob > saldoActualizadoDob) {
                                                 Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
                                             } else {
@@ -1714,6 +1754,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                                 dialogOpcionesDeActividad.dismiss();
                                                 actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
                                             }
+                                            */
+
+
                                         } catch (NumberFormatException e) {
                                             Utils.crearToastPersonalizado(context, "Debes ingresar un valor numérico válido");
                                         }
@@ -1793,7 +1836,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
 
-        void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad, String  valorCheck);
+        void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad, String valorCheck);
     }
 
     private AdaptadorActividades.OnActivityActionListener actionListener;
