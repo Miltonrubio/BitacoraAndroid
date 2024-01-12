@@ -1605,6 +1605,19 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         Double depositos_Cajagastos = jsonObject.getDouble("depositos_Cajagastos");
                         Double depositos_CajaCapital = jsonObject.getDouble("depositos_CajaCapital");
 
+                        Double sumaGastos = 0.0;
+                        Double sumaCapital = 0.0;
+
+                        if (caja.equalsIgnoreCase("Gastos")) {
+                            sumaGastos = saldo_inicial + depositos_Cajagastos - gastos_Cajagastos;
+                            sumaCapital = depositos_CajaCapital - gastos_CajaCapital;
+
+
+                        } else {
+                            sumaCapital = saldo_inicial + depositos_CajaCapital - gastos_CajaCapital;
+                            sumaGastos = depositos_Cajagastos - gastos_Cajagastos;
+
+                        }
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_con_clave, null);
@@ -1647,7 +1660,15 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                         TextView nuevomonto = customView.findViewById(R.id.nuevomonto);
                         nuevomonto.setVisibility(View.VISIBLE);
-                        nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado + " $");
+
+
+                    //    nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado + " $");
+
+
+                        nuevomonto.setText("Saldo actual Gastos: " + sumaGastos + "$  \nSaldo actual Capital: " + sumaCapital + " $");
+
+
+
 
                         TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
                         EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
@@ -1674,11 +1695,16 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                     textView4.setText("Vas a finalizar esta actividad sin agregar un monto");
                                     textInputLayout.setVisibility(View.GONE);
                                     nuevomonto.setVisibility(View.GONE);
+                                    radioCapital.setVisibility(View.GONE);
+                                    radioGastos.setVisibility(View.GONE);
+
                                 } else {
 
                                     textView4.setText("Para finalizar esta actividad debes ingresar el monto  \n \nNo olvides subir tu comprobante");
                                     textInputLayout.setVisibility(View.VISIBLE);
                                     nuevomonto.setVisibility(View.VISIBLE);
+                                    radioCapital.setVisibility(View.VISIBLE);
+                                    radioGastos.setVisibility(View.VISIBLE);
                                 }
 
                             }
@@ -1725,6 +1751,28 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                                             }
 
+
+        if  (radioGastos.isChecked()){
+
+            if (totalGastadoDob > sumaGastos) {
+                Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+            } else {
+                dialogConfirmacion.dismiss();
+                dialogOpcionesDeActividad.dismiss();
+                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, "Gastos");
+            }
+
+        } else {
+            if (totalGastadoDob > sumaCapital) {
+                Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+            } else {
+                dialogConfirmacion.dismiss();
+                dialogOpcionesDeActividad.dismiss();
+                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, "Capital");
+            }
+        }
+
+        /*
                                             if (valorCheck.equalsIgnoreCase("Gastos")) {
 
                                                 if (totalGastadoDob > sumaGastos) {
@@ -1745,6 +1793,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                                     actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
                                                 }
                                             }
+*/
+
 
 /*
                                             if (totalGastadoDob > saldoActualizadoDob) {

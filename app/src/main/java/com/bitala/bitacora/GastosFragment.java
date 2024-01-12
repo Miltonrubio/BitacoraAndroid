@@ -3,29 +3,25 @@ package com.bitala.bitacora;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,25 +29,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorGastos;
-import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
 import com.bitala.bitacora.Adaptadores.AdaptadorSeleccionarSaldos;
 import com.bitala.bitacora.Adaptadores.DownloadFileTask;
-import com.bitala.bitacora.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -116,6 +103,7 @@ public class GastosFragment extends Fragment {
         Button buttonTodos2 = view.findViewById(R.id.buttonTodos2);
 
         buttonTodos = view.findViewById(R.id.buttonTodos);
+
         buttonFiltrarPorFecha = view.findViewById(R.id.buttonFiltrarPorFecha);
         ImageView botonPDFGastos = view.findViewById(R.id.botonPDFGastos);
         RecyclerView recyclerViewGastos = view.findViewById(R.id.recyclerViewGastos);
@@ -130,7 +118,6 @@ public class GastosFragment extends Fragment {
 
         adaptadorGastos = new AdaptadorGastos(listaGastos, context);
 
-        adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos,context);
 
 
 
@@ -156,7 +143,7 @@ public class GastosFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-
+/*
                 View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_filtrado_caja, null);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -167,7 +154,7 @@ public class GastosFragment extends Fragment {
                 dialogOpcionesUsuarios.getWindow().setBackgroundDrawable(back);
                 dialogOpcionesUsuarios.getWindow().setDimAmount(0.8f);
                 dialogOpcionesUsuarios.show();
-
+*/
 
                 VerTodosLosGastos(ID_usuario);
             }
@@ -177,7 +164,7 @@ public class GastosFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-
+/*
                 View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_filtrado_caja, null);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -188,7 +175,7 @@ public class GastosFragment extends Fragment {
                 dialogOpcionesUsuarios.getWindow().setBackgroundDrawable(back);
                 dialogOpcionesUsuarios.getWindow().setDimAmount(0.8f);
                 dialogOpcionesUsuarios.show();
-
+*/
 
                 VerTodosLosGastos(ID_usuario);
             }
@@ -526,16 +513,15 @@ public class GastosFragment extends Fragment {
                 RecyclerView recyclerViewSelectorSaldos = customView.findViewById(R.id.recyclerViewSelectorSaldos);
                 TextView searchEditTextSelector = customView.findViewById(R.id.searchEditTextSelector);
 
+                adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos,view.getContext());
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(view.getContext(), 1);
+                recyclerViewSelectorSaldos.setLayoutManager(gridLayoutManager);
 
-
-
-
-                recyclerViewSelectorSaldos.setLayoutManager(new LinearLayoutManager(context));
                 recyclerViewSelectorSaldos.setAdapter(adaptadorSeleccionarSaldos);
-
                 adaptadorSeleccionarSaldos.setFilteredData(listaGastos);
                 adaptadorSeleccionarSaldos.filter("");
                 adaptadorSeleccionarSaldos.notifyDataSetChanged();
+
 
                 searchEditTextSelector.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -644,6 +630,7 @@ public class GastosFragment extends Fragment {
 
     private void enviarDatosPorPost() {
 
+        //Utils.crearToastPersonalizado(context, idSeleccionados.toString());
 
         String lista = convertirArrayListAJson(idSeleccionados);
 

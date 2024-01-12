@@ -17,12 +17,50 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:textColor="@color/vino"
             android:gravity="center"
             android:text="SELECCIONA TU ACTIVIDAD"
+            android:textColor="@color/vino"
             android:textSize="26dp"
             android:textStyle="bold" />
     </LinearLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/yourConstraintLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/vino"
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="Buscar"
+            android:padding="4dp"
+            app:tint="@color/white"
+            android:src="@drawable/baseline_search_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/searchEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginStart="8dp"
+            android:hint="Buscar actividad"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/gris"
+            android:textColorHint="@color/gris"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/searchButton"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,8 +89,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/LayoutSinInternet"
         android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="350dp">
+        android:layout_height="350dp"
+        android:visibility="gone">
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieNoInternet"

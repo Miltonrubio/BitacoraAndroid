@@ -4,18 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -30,14 +19,21 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bitala.bitacora.Adaptadores.AdaptadorListaAsignarActividades;
 import com.bitala.bitacora.Adaptadores.AdaptadorUsuarios;
-import com.bitala.bitacora.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -518,7 +514,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    public void onCorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre, String ID_usuario) {
+    public void onCorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre, String ID_usuario, String NuevaCaja) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -542,6 +538,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 params.put("opcion", "55");
                 params.put("nuevoSaldo", nuevoSaldo);
                 params.put("ID_saldo", ID_saldo);
+                params.put("NuevaCaja", NuevaCaja);
+
                 return params;
             }
         };
@@ -567,6 +565,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
     String tipocaja = "Gastos";
 
+    String correccionCaja = "Gastos";
 
     public void onConsultarSaldoActivo(String ID_saldo, View view, String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios) {
 
@@ -925,6 +924,40 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                             EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
 
+                            RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
+                            RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
+                            radioCapital.setVisibility(View.VISIBLE);
+                            radioGastos.setVisibility(View.VISIBLE);
+
+                            if (tipo_caja.equals("Capital")) {
+
+                                radioCapital.setChecked(true);
+                            } else {
+                                radioGastos.setChecked(true);
+                            }
+
+
+                            radioGastos.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    radioGastos.setChecked(true);
+                                    radioCapital.setChecked(false);
+                                    correccionCaja = "Gastos";
+                                }
+                            });
+
+                            radioCapital.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    radioGastos.setChecked(false);
+                                    radioCapital.setChecked(true);
+                                    correccionCaja = "Capital";
+                                }
+                            });
+
+//Aqui te qeudaste falta agregar la cajaaaaa
+
 
                             Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
                             Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
@@ -949,8 +982,16 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                                             dialogConsultarSaldo.dismiss();
 
-                                            onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario);
+                                            if (radioGastos.isChecked()) {
 
+                                                onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario, "Gastos");
+                                            } else if (radioCapital.isChecked()) {
+
+                                                onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario, "Capital");
+                                            } else {
+
+                                                onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario, "Prueba");
+                                            }
 
                                         }
 

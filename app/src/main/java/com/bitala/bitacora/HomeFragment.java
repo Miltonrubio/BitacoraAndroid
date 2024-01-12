@@ -7,9 +7,12 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -189,17 +192,37 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 LayoutSinInternet = customView.findViewById(R.id.LayoutSinInternet);
                 LayoutConInternet = customView.findViewById(R.id.LayoutConInternet);
 
+                EditText searchEditText = customView.findViewById(R.id.searchEditText);
+
                 /*
                 dialogActividades = builder.create();
                 dialogActividades.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialogActividades.show();
-
                 */
 
                 VerNombresActividades(customView.getContext());
 
                 RecyclerViewTituloActividades.setLayoutManager(new LinearLayoutManager(getContext()));
                 RecyclerViewTituloActividades.setAdapter(adaptadorListaActividades);
+
+
+                searchEditText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        adaptadorListaActividades.filter(s.toString().toLowerCase());
+                    }
+
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
 
 
                 dialogActividades.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -257,6 +280,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                         if (caja.equalsIgnoreCase("Gastos")) {
                             sumaGastos = saldo_inicial + depositos_Cajagastos - gastos_Cajagastos;
                             sumaCapital = depositos_CajaCapital - gastos_CajaCapital;
+
+
+
 
                         } else {
                             sumaCapital = saldo_inicial + depositos_CajaCapital - gastos_CajaCapital;
