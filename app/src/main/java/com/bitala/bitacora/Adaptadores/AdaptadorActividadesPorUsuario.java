@@ -52,9 +52,9 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     String claveUsuario;
 
 
-     AdaptadorActividadesPorUsuario.OnActivityActionListener actionListener;
+    AdaptadorActividadesPorUsuario.OnActivityActionListener actionListener;
 
-    public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context,AdaptadorActividadesPorUsuario.OnActivityActionListener actionListener ) {
+    public AdaptadorActividadesPorUsuario(List<JSONObject> data, Context context, AdaptadorActividadesPorUsuario.OnActivityActionListener actionListener) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
@@ -63,10 +63,11 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         url = context.getResources().getString(R.string.urlApi);
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         String permisosUsuario = sharedPreferences.getString("permisos", "");
+        this.ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
         this.claveUsuario = sharedPreferences.getString("clave", "");
     }
 
-
+    String ID_usuarioActual;
 
     public interface OnActivityActionListener {
 
@@ -81,7 +82,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_actividades, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_actividades_admin, parent, false);
         return new ViewHolder(view);
 
     }
@@ -110,26 +111,71 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             String telefono = jsonObject2.optString("telefono", "");
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
             String motivocancelacion = jsonObject2.optString("motivocancelacion", "");
+            String fecha_asignacion = jsonObject2.optString("fecha_asignacion", "");
+            String nombreQuienAsigno = jsonObject2.optString("nombreQuienAsigno", "");
+            String ID_admin_asig = jsonObject2.optString("ID_admin_asig", "");
+
+
+            if (ID_admin_asig.equalsIgnoreCase("") || ID_admin_asig.equalsIgnoreCase("null") || ID_admin_asig.equalsIgnoreCase(null) || ID_admin_asig.isEmpty()) {
+                holder.AsignadoPor.setVisibility(View.GONE);
+            } else {
+                holder.AsignadoPor.setVisibility(View.VISIBLE);
+            }
+
+
+            holder.AsignadoPor.setText("Asignadá por: " + nombreQuienAsigno);
 
             Bundle bundle = new Bundle();
             bundle.putString("ID_actividad", ID_actividad);
+            bundle.putString("nombreQuienAsigno", nombreQuienAsigno);
             bundle.putString("ID_usuario", ID_usuario);
             bundle.putString("estadoActividad", estadoActividad);
             bundle.putString("fecha_fin", fecha_fin);
             bundle.putString("fecha_inicio", fecha_inicio);
             bundle.putString("nombre_actividad", nombre_actividad);
             bundle.putString("descripcionActividad", descripcionActividad);
+
             bundle.putString("permisos", permisos);
             bundle.putString("nombre", nombre);
             bundle.putString("correo", correo);
             bundle.putString("telefono", telefono);
             bundle.putString("foto_usuario", foto_usuario);
             bundle.putString("motivocancelacion", motivocancelacion);
+            bundle.putString("fecha_asignacion", fecha_asignacion);
+            bundle.putString("nombreQuienAsigno", nombreQuienAsigno);
+            bundle.putString("ID_admin_asig", ID_admin_asig);
+            bundle.putString("ID_nombre_actividad", ID_nombre_actividad);
 
 
             setTextViewText(holder.textActividad, nombre_actividad.toUpperCase(), "Actividad no disponible");
             SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", Locale.getDefault());
+
+
+            try {
+                Date fechaAsig = formatoOriginal.parse(fecha_asignacion);
+                String fechafechaAsigFormateada = "Asignada: " + formatoDeseado.format(fechaAsig);
+
+
+                if (fecha_asignacion.isEmpty() || fecha_asignacion.equalsIgnoreCase("") || fecha_asignacion.equalsIgnoreCase("null") || fecha_asignacion.equalsIgnoreCase(null)) {
+
+                    holder.FechaAsignacion.setVisibility(View.GONE);
+                } else {
+
+
+                    if (ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42") || ID_usuarioActual.equalsIgnoreCase("45") || ID_usuarioActual.equalsIgnoreCase("30")) {
+                        holder.FechaAsignacion.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.FechaAsignacion.setVisibility(View.GONE);
+                    }
+
+                }
+
+                holder.FechaAsignacion.setText(fechafechaAsigFormateada);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             try {
                 Date fecha = formatoOriginal.parse(fecha_inicio);
@@ -238,21 +284,38 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     builder.setView(ModalRedondeado(context, customView));
                     AlertDialog dialogOpcionesDeActividad = builder.create();
                     dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dialogOpcionesDeActividad.show();
+
+
+                    if (!(ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42") || ID_usuarioActual.equalsIgnoreCase("45") || ID_usuarioActual.equalsIgnoreCase("30")) && estadoActividad.equalsIgnoreCase("Cancelado")) {
+
+
+                    } else {
+
+                        dialogOpcionesDeActividad.show();
+
+
+                    }
 
 
                     LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
                     LinearLayout LayoutEliminarActividad = customView.findViewById(R.id.LayoutEliminarActividad);
 
 
+                    if (ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42")) {
+
+                        LayoutEliminarActividad.setVisibility(View.VISIBLE);
+
+                    } else {
+                        LayoutEliminarActividad.setVisibility(View.GONE);
+                    }
+
 
                     if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                         LayoutCancelarActividad.setVisibility(View.GONE);
 
-                    }else {
+                    } else {
                         LayoutCancelarActividad.setVisibility(View.VISIBLE);
                     }
-
 
 
                     LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
@@ -324,9 +387,6 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     });
 
 
-
-
-
                     LayoutEliminarActividad.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -355,7 +415,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                                 @Override
                                 public void onClick(View view) {
 
-                                    String claveEscrita= editTextClaveUsuario.getText().toString();
+                                    String claveEscrita = editTextClaveUsuario.getText().toString();
 
 
                                     if (claveEscrita.isEmpty()) {
@@ -369,7 +429,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
                                             dialogConfirmacionClave.dismiss();
                                             dialogOpcionesDeActividad.dismiss();
-                                            actionListener.onDeleteActivity( ID_actividad);
+                                            actionListener.onDeleteActivity(ID_actividad);
 
                                         }
 
@@ -379,16 +439,12 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                             });
 
 
-
                             buttonCancelar.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     dialogConfirmacionClave.dismiss();
                                 }
                             });
-
-
-
 
 
                         }
@@ -488,13 +544,15 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
         FrameLayout FrameActividades;
 
         ImageView IMNoInternet; //, EstadoFinalizado, EstadoIniciado, EstadoPendiente, EstadoCancelado;
+        TextView FechaAsignacion;
 
         ImageView ImagenDeEstado;
 
+        TextView AsignadoPor;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            FechaAsignacion = itemView.findViewById(R.id.FechaAsignacion);
             textFechaActividad = itemView.findViewById(R.id.textFechaActividad);
             textStatus = itemView.findViewById(R.id.textStatus);
             textActividad = itemView.findViewById(R.id.textActividad);
@@ -510,7 +568,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             EstadoCancelado = itemView.findViewById(R.id.EstadoCancelado);
             */
             textMotivoCancelacion = itemView.findViewById(R.id.textMotivoCancelacion);
-
+            AsignadoPor = itemView.findViewById(R.id.AsignadoPor);
         }
     }
 

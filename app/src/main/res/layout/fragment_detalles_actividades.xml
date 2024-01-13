@@ -30,6 +30,21 @@
             android:padding="16dp"
             android:paddingBottom="15dp">
 
+
+            <TextView
+                android:id="@+id/AsignadoPor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="Asignado"
+                android:visibility="gone"
+                android:textColor="@color/rojo"
+                android:textSize="17dp"
+
+                android:textStyle="bold"
+
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,11 +151,11 @@
                 android:id="@+id/ContenedorArchivos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/redondeadoconbordevino"
-                android:padding="7dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="18dp"
+                android:background="@drawable/redondeadoconbordevino"
+                android:orientation="vertical"
+                android:padding="7dp"
                 android:visibility="visible"
                 android:weightSum="1">
 
@@ -155,10 +170,10 @@
 
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:layout_marginTop="7dp"
                     android:id="@+id/recyclerViewArchivos"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp" />
 
             </LinearLayout>
 
@@ -178,10 +193,10 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textColor="@color/naranja"
-                    android:textStyle="bold"
                     android:text="Evidencias de actividad:"
-                    android:textSize="19sp" />
+                    android:textColor="@color/naranja"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/ViewPagerImagenesEvidencia"
@@ -236,8 +251,8 @@
                 android:id="@+id/SinEvidenciasMapa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:background="@drawable/redondeadoconbordeverde"
+                android:orientation="vertical"
                 android:padding="12dp"
                 android:visibility="gone">
 

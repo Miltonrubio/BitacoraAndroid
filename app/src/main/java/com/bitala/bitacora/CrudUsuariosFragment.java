@@ -452,7 +452,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
 
     @Override
-    public void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token) {
+    public void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token, String ID_admin_asig) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -471,10 +471,12 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "4");
+                params.put("opcion", "71");
                 params.put("ID_nombre_actividad", idNombreActividad);
                 params.put("descripcionActividad", descripcion);
                 params.put("ID_usuario", ID_usuario);
+                params.put("ID_admin_asig", ID_admin_asig);
+
                 return params;
             }
         };

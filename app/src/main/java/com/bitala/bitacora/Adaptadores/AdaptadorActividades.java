@@ -115,6 +115,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
             String tipo_actividad = jsonObject2.optString("tipo_actividad", "");
 
+            String nombreQuienAsigno = jsonObject2.optString("nombreQuienAsigno", "");
+            String ID_admin_asig = jsonObject2.optString("ID_admin_asig", "");
 
             Bundle bundle = new Bundle();
             bundle.putString("ID_actividad", ID_actividad);
@@ -129,6 +131,15 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
             bundle.putString("correo", correo);
             bundle.putString("telefono", telefono);
             bundle.putString("foto_usuario", foto_usuario);
+
+
+            if (ID_admin_asig.equalsIgnoreCase("") || ID_admin_asig.equalsIgnoreCase("null") || ID_admin_asig.equalsIgnoreCase(null) || ID_admin_asig.isEmpty()) {
+                holder.AsignadoPor.setVisibility(View.GONE);
+            } else {
+                holder.AsignadoPor.setVisibility(View.VISIBLE);
+
+            }
+            holder.AsignadoPor.setText("Asignadá por: " + nombreQuienAsigno);
 
 
             if (!permisosUsuario.equals("SUPERADMIN")) {
@@ -1391,7 +1402,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textFechaActividad, textStatus, textActividad, textDetallesActividad, textIdActividad, textFechaFin;
         FrameLayout FrameActividades;
-
+        TextView AsignadoPor;
         TextView errorMessageTextView;
         Button myButton;
         ImageView ImagenDeEstado;
@@ -1400,7 +1411,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            AsignadoPor = itemView.findViewById(R.id.AsignadoPor);
             textFechaActividad = itemView.findViewById(R.id.textFechaActividad);
             textStatus = itemView.findViewById(R.id.textStatus);
             textActividad = itemView.findViewById(R.id.textActividad);
@@ -1662,12 +1673,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         nuevomonto.setVisibility(View.VISIBLE);
 
 
-                    //    nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado + " $");
+                        //    nuevomonto.setText("Tu saldo actual es de: " + saldo_actualizado + " $");
 
 
                         nuevomonto.setText("Saldo actual Gastos: " + sumaGastos + "$  \nSaldo actual Capital: " + sumaCapital + " $");
-
-
 
 
                         TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
@@ -1752,25 +1761,25 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                             }
 
 
-        if  (radioGastos.isChecked()){
+                                            if (radioGastos.isChecked()) {
 
-            if (totalGastadoDob > sumaGastos) {
-                Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
-            } else {
-                dialogConfirmacion.dismiss();
-                dialogOpcionesDeActividad.dismiss();
-                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, "Gastos");
-            }
+                                                if (totalGastadoDob > sumaGastos) {
+                                                    Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+                                                } else {
+                                                    dialogConfirmacion.dismiss();
+                                                    dialogOpcionesDeActividad.dismiss();
+                                                    actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, "Gastos");
+                                                }
 
-        } else {
-            if (totalGastadoDob > sumaCapital) {
-                Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
-            } else {
-                dialogConfirmacion.dismiss();
-                dialogOpcionesDeActividad.dismiss();
-                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, "Capital");
-            }
-        }
+                                            } else {
+                                                if (totalGastadoDob > sumaCapital) {
+                                                    Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
+                                                } else {
+                                                    dialogConfirmacion.dismiss();
+                                                    dialogOpcionesDeActividad.dismiss();
+                                                    actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, "Capital");
+                                                }
+                                            }
 
         /*
                                             if (valorCheck.equalsIgnoreCase("Gastos")) {

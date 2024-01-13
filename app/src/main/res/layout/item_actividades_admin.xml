@@ -15,6 +15,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/FechaAsignacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:textColor="@color/verdefuerte"
+            android:text="Fecha de asginacion"
+            android:gravity="center"
+            android:textStyle="bold"
+
+            />
+
 
         <LinearLayout
             android:layout_width="match_parent"

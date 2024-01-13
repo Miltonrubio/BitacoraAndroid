@@ -18,7 +18,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -514,8 +513,7 @@ public class GastosFragment extends Fragment {
                 TextView searchEditTextSelector = customView.findViewById(R.id.searchEditTextSelector);
 
                 adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos,view.getContext());
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(view.getContext(), 1);
-                recyclerViewSelectorSaldos.setLayoutManager(gridLayoutManager);
+                recyclerViewSelectorSaldos.setLayoutManager(new LinearLayoutManager(context));
 
                 recyclerViewSelectorSaldos.setAdapter(adaptadorSeleccionarSaldos);
                 adaptadorSeleccionarSaldos.setFilteredData(listaGastos);

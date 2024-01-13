@@ -19,15 +19,30 @@
     <string name="fotoUrl">http://192.168.16.114/bitacoraPHP/fotos/</string>
     <string name="pdfUrl">http://192.168.16.114/bitacoraPHP/archivos/</string>
 
-      -->
+
+
+
+    <string name="urlApi">http://192.168.16.162/bitacoraPHP/BitacoraPHP/mostrar.php</string>
+    <string name="fotoUrl">http://192.168.16.162/bitacoraPHP/BitacoraPHP/fotos/</string>
+    <string name="pdfUrl">http://192.168.16.162/bitacoraPHP/BitacoraPHP/archivos/</string>
+    <string name="pdfGastos">http://192.168.16.162/bitacoraPHP/BitacoraPHP/disenioPDF2.php/</string>
+
+
 
 
     <string name="urlApi">http://hidalgo.no-ip.info:5610/bitacora/mostrar.php</string>
     <string name="fotoUrl">http://hidalgo.no-ip.info:5610/bitacora/fotos/</string>
     <string name="pdfUrl">http://hidalgo.no-ip.info:5610/bitacora/archivos/</string>
     <string name="pdfGastos">http://hidalgo.no-ip.info:5610/bitacora/disenioPDF2.php</string>
+      -->
 
 
+
+
+    <string name="urlApi">http://hidalgo.no-ip.info:5610/bitacora/mostrar.php</string>
+    <string name="fotoUrl">http://hidalgo.no-ip.info:5610/bitacora/fotos/</string>
+    <string name="pdfUrl">http://hidalgo.no-ip.info:5610/bitacora/archivos/</string>
+    <string name="pdfGastos">http://hidalgo.no-ip.info:5610/bitacora/disenioPDF2.php</string>
 
 
 </resources>

@@ -1,8 +1,6 @@
 package com.bitala.bitacora.Adaptadores;
 
 
-import static android.app.PendingIntent.getActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,43 +20,27 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.ActividadesPorUsuarioFragment;
 import com.bitala.bitacora.GastosFragment;
+import com.bitala.bitacora.R;
 import com.bitala.bitacora.SubirFotoUsuarioActivity;
 import com.bitala.bitacora.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
-import com.bitala.bitacora.R;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.itextpdf.text.pdf.parser.Line;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import okhttp3.internal.Util;
 
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
@@ -491,7 +471,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                                         //  Utils.crearToastPersonalizado(context, "Asi se mandaria: " + descripcionActividad);
 
-                                        actionListener.onAsignarActividadAUsuario("45", descripcionActividad, ID_usuario, nombre, token);
+                                        actionListener.onAsignarActividadAUsuario("45", descripcionActividad, ID_usuario, nombre, token, ID_usuarioActual);
 
                                         //String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token);
 
@@ -890,7 +870,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
         void onFilterData(Boolean estado);
 
-        void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token);
+        void onAsignarActividadAUsuario(String idNombreActividad, String descripcion, String ID_usuario, String nombre, String token, String ID_admin_asig);
 
         //    void onCorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre);
 
@@ -898,6 +878,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
 
     }
+    String ID_usuarioActual;
 
     private AdaptadorUsuarios.OnActivityActionListener actionListener;
 
@@ -915,10 +896,9 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
         clave = sharedPreferences.getString("clave", "");
+        this.ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
 
     }
-
-
 
 
     /*

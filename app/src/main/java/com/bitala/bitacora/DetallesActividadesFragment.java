@@ -1,6 +1,7 @@
 package com.bitala.bitacora;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -99,6 +100,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
     AlertDialog modalCargando;
     AlertDialog.Builder builderCargando;
     LinearLayout ContenedorArchivos;
+
     public DetallesActividadesFragment() {
         // Required empty public constructor
     }
@@ -133,13 +135,13 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         ContenedorEvidencias = view.findViewById(R.id.ContenedorEvidencias);
         EvidenciaMapa = view.findViewById(R.id.EvidenciaMapa);
         SinEvidenciasMapa = view.findViewById(R.id.SinEvidenciasMapa);
-
+        TextView AsignadoPor = view.findViewById(R.id.AsignadoPor);
         builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);
         RecyclerViewUbicaciones = view.findViewById(R.id.RecyclerViewUbicaciones);
 
         RecyclerView recyclerViewArchivos = view.findViewById(R.id.recyclerViewArchivos);
-         ContenedorArchivos= view.findViewById(R.id.ContenedorArchivos);
+        ContenedorArchivos = view.findViewById(R.id.ContenedorArchivos);
 
 
         adaptadorUbicaciones = new AdaptadorUbicaciones(listaUbicaciones, context, this);
@@ -157,12 +159,9 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             public int getSpanSize(int position) {
                 int totalItems = recyclerViewArchivos.getAdapter().getItemCount();
 
-                // Si hay un único elemento, ocupa todo el contenedor
                 if (totalItems == 1) {
                     return 2;
                 } else {
-                    // Si el total de elementos es par, muestra 2 elementos por fila
-                    // Si es impar, el último elemento ocupa todo el contenedor
                     return (totalItems % 2 == 0 || position != totalItems - 1) ? 1 : 2;
                 }
             }
@@ -177,6 +176,9 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
         colorNegro = ContextCompat.getColor(context, R.color.black);
         colorGris = ContextCompat.getColor(context, R.color.gris);
 
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+
+        String ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -188,21 +190,47 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
             String nombre_actividad = bundle.getString("nombre_actividad", "");
             String descripcionActividad = bundle.getString("descripcionActividad", "");
             String motivocancelacion = bundle.getString("motivocancelacion", "");
-
-
             String nombre = bundle.getString("nombre", "");
             String correo = bundle.getString("correo", "");
             String telefono = bundle.getString("telefono", "");
             String foto_usuario = bundle.getString("foto_usuario", "");
+            String ID_nombre_actividad = bundle.getString("ID_nombre_actividad", "");
+
+
+            String nombreQuienAsigno = bundle.getString("nombreQuienAsigno", "");
+            String ID_admin_asig = bundle.getString("motivocancelacion", "");
+            String fecha_asignacion = bundle.getString("fecha_asignacion", "");
+
+
+            SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", Locale.getDefault());
+
+            if (!ID_nombre_actividad.equalsIgnoreCase("45")) {
+                AsignadoPor.setVisibility(View.GONE);
+            } else {
+                AsignadoPor.setVisibility(View.VISIBLE);
+            }
+
+            try {
+                Date fechaAsig = formatoOriginal.parse(fecha_asignacion);
+                String fechafechaAsigFormateada = "Asignada: " + formatoDeseado.format(fechaAsig);
+
+                if (ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42") || ID_usuarioActual.equalsIgnoreCase("45") || ID_usuarioActual.equalsIgnoreCase("30")) {
+                    AsignadoPor.setText("Actividad asignada por " + nombreQuienAsigno + " " + fechafechaAsigFormateada);
+
+                } else {
+                    AsignadoPor.setText("Actividad asignada por " + nombreQuienAsigno);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             MostrarArchivos();
             CargarImagenes(ID_actividad);
             CargarUbicaciones(ID_actividad);
             mapView = view.findViewById(R.id.mapView);
-
-            // Crear un objeto SimpleDateFormat para el formato deseado
-            SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy ' a las' HH:mm", Locale.getDefault());
 
             try {
                 Date fecha = formatoOriginal.parse(fecha_inicio);
