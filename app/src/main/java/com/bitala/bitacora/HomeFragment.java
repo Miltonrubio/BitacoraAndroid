@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -224,7 +225,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                 });
 
 
-
                 dialogActividades.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -253,10 +253,13 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                Log.d("Oa:", response);
 
-                if (response.equals("sin saldo activo")) {
+                if (response.equalsIgnoreCase("sin saldo activo")) {
+
                     saldoActual.setText("No tienes saldo asignado");
                     saldoActualSinCont.setText("No tienes saldo asignado");
+
                 } else {
 
                     try {
@@ -280,8 +283,6 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
                         if (caja.equalsIgnoreCase("Gastos")) {
                             sumaGastos = saldo_inicial + depositos_Cajagastos - gastos_Cajagastos;
                             sumaCapital = depositos_CajaCapital - gastos_CajaCapital;
-
-
 
 
                         } else {
@@ -463,7 +464,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "2");
+                params.put("opcion", "72");
                 params.put("ID_usuario", ID_usuario);
                 return params;
             }

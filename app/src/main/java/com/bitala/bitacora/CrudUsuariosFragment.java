@@ -13,11 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,19 +32,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorUsuarios;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
@@ -305,7 +297,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("opcion", "13");
+//                params.put("opcion", "13");
+                params.put("opcion", "82");
                 return params;
             }
         };
@@ -516,39 +509,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    public void onCorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre, String ID_usuario, String NuevaCaja) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                Utils.crearToastPersonalizado(context, "Se actualizó el saldo para " + nombre);
-                MostrarUsuarios();
-
-                onConsultarSaldoActivo(ID_saldo, view, nombre, ID_usuario, null);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Utils.crearToastPersonalizado(context, "No se pudo actualizar, revisa la conexión");
-
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "55");
-                params.put("nuevoSaldo", nuevoSaldo);
-                params.put("ID_saldo", ID_saldo);
-                params.put("NuevaCaja", NuevaCaja);
-
-                return params;
-            }
-        };
-        Volley.newRequestQueue(context).add(postrequest);
-
-    }
-
 
     private void CerrarModalCargando() {
         if (dialogCargando.isShowing() || dialogCargando != null) {
@@ -557,487 +517,27 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    String saldo_inicial;
-    String nuevo_saldo;
+    Double saldo_inicial;
+    Double nuevo_saldo;
+
+    String caja;
+    Double gastos_Cajagastos;
+    Double gastos_CajaCapital;
+    Double depositos_Cajagastos;
+    Double depositos_CajaCapital;
 
     AlertDialog dialogCargando;
 
 
     AlertDialog dialogOpcionesUsuarios;
 
-    String tipocaja = "Gastos";
 
     String correccionCaja = "Gastos";
 
-    public void onConsultarSaldoActivo(String ID_saldo, View view, String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios) {
 
-        this.dialogOpcionesUsuarios = dialogOpcionesUsuarios;
 
-        dialogCargando = Utils.ModalCargando(context, builderCargando);
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (response.equals("No se encontraron resultados")) {
 
-                    //EN CASO DE QUE NO TENGA SALDO:
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_asignar_saldo, null);
-                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                    AlertDialog dialogAsignarSaldo = builder.create();
-                    ColorDrawable back = new ColorDrawable(Color.BLACK);
-                    back.setAlpha(150);
-                    dialogAsignarSaldo.getWindow().setBackgroundDrawable(back);
-                    dialogAsignarSaldo.getWindow().setDimAmount(0.8f);
-                    dialogAsignarSaldo.show();
-
-
-                    Button btnAsignarSaldo = customView.findViewById(R.id.btnAsignarSaldo);
-                    TextView titulo = customView.findViewById(R.id.titulo);
-                    EditText monto = customView.findViewById(R.id.monto);
-
-                    RadioButton capital = customView.findViewById(R.id.capital);
-                    RadioButton gastos = customView.findViewById(R.id.gastos);
-
-                    gastos.setChecked(true);
-
-                    gastos.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-
-                            capital.setChecked(false);
-                            gastos.setChecked(true);
-
-                            tipocaja = "Gastos";
-                        }
-                    });
-
-                    capital.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            capital.setChecked(true);
-                            gastos.setChecked(false);
-
-                            tipocaja = "Capital";
-                        }
-                    });
-
-
-                    titulo.setText("Asigna un saldo a " + nombre);
-
-                    btnAsignarSaldo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
-                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                            dialogConfirmacion.show();
-
-
-                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
-                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-
-
-                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialogConfirmacion.dismiss();
-                                }
-                            });
-
-
-                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    String montoTotal = monto.getText().toString();
-                                    String claveIngresada = editTextClaveUsuario.getText().toString();
-
-                                    if (montoTotal.isEmpty() || montoTotal.equals("0")) {
-
-                                        Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
-                                    } else {
-
-
-                                        if (!claveIngresada.equals(clave)) {
-                                            Utils.crearToastPersonalizado(context, "Debes ingresar la clave correcta");
-                                        } else {
-
-                                            dialogConfirmacion.dismiss();
-                                            dialogAsignarSaldo.dismiss();
-
-                                            //AsignarSaldo(ID_usuario,  montoTotal, nombre);
-
-                                            AsignarSaldo(ID_usuario, montoTotal, nombre, tipocaja);
-                                        }
-
-                                        //    Utils.crearToastPersonalizado(context, montoTotal + " " +ID_usuario + " " + nombre );
-                                    }
-
-
-                                    //   Utils.crearToastPersonalizado(context, "Clave: " + claveIngresada + " Monto: " + montoTotal);
-
-
-                                }
-                            });
-
-                        }
-                    });
-
-                } else {
-                    //EN CASO DE QUE TENGA UN SALDO ACTIVO:
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_saldo, null);
-                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                    AlertDialog dialogConsultarSaldo = builder.create();
-                    ColorDrawable back = new ColorDrawable(Color.BLACK);
-                    back.setAlpha(150);
-                    dialogConsultarSaldo.getWindow().setBackgroundDrawable(back);
-                    dialogConsultarSaldo.getWindow().setDimAmount(0.8f);
-                    dialogConsultarSaldo.show();
-
-                    TextView tipo_caja = customView.findViewById(R.id.tipo_caja);
-                    TextView tvsaldo_inicial = customView.findViewById(R.id.tvsaldo_inicial);
-                    TextView textViewSaldoRestante = customView.findViewById(R.id.textViewSaldoRestante);
-                    ImageView buttonEditarSaldo = customView.findViewById(R.id.buttonEditarSaldo);
-                    TextView fecha_asign = customView.findViewById(R.id.fecha_asign);
-                    Button buttonFinalizarSaldo = customView.findViewById(R.id.buttonFinalizarSaldo);
-                    ImageView botonAgregarActividad = customView.findViewById(R.id.botonAgregarActividad);
-
-
-                    try {
-                        JSONObject jsonObject = new JSONObject(response);
-                        saldo_inicial = jsonObject.getString("saldo_inicial");
-                        nuevo_saldo = jsonObject.getString("nuevo_saldo");
-                        String fecha_asignacion = jsonObject.getString("fecha_asignacion");
-                        String caja = jsonObject.getString("caja");
-
-                        tvsaldo_inicial.setText("Saldo inicial: " + saldo_inicial + " $");
-                        textViewSaldoRestante.setText("SALDO ACTIVO: " + nuevo_saldo + " $");
-                        tipo_caja.setText("Caja: " + caja);
-                        //          fecha_asign.setText("Saldo asignado el: " +fecha_asignacion);
-
-
-                        try {
-                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                            Date date = inputFormat.parse(fecha_asignacion);
-                            SimpleDateFormat outputDayOfWeek = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
-                            String dayOfWeek = outputDayOfWeek.format(date);
-                            SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
-                            String formattedDate = outputFormat.format(date);
-
-                            fecha_asign.setText("Saldo asignado el: " + dayOfWeek.toLowerCase() + " " + formattedDate.toLowerCase());
-
-                        } catch (ParseException e) {
-                            fecha_asign.setText("No se encontro la fecha");
-                        }
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    botonAgregarActividad.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
-                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                            dialogConfirmacion.show();
-
-
-                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
-                            EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
-                            TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
-                            TextView textView4 = customView.findViewById(R.id.textView4);
-                            editTextClaveUsuario.setVisibility(View.VISIBLE);
-                            textInputLayout.setVisibility(View.VISIBLE);
-                            textView4.setText("Para agregarle saldo a " + nombre + " debes ingresar tu clave");
-
-                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-
-
-                            RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
-                            RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
-
-                            radioCapital.setVisibility(View.VISIBLE);
-                            radioGastos.setVisibility(View.VISIBLE);
-
-                            radioGastos.setChecked(true);
-
-
-                            radioGastos.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    radioGastos.setChecked(true);
-                                    radioCapital.setChecked(false);
-
-                                    tipocaja = "Gastos";
-
-                                }
-                            });
-
-
-                            radioCapital.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    radioGastos.setChecked(false);
-                                    radioCapital.setChecked(true);
-
-                                    tipocaja = "Capital";
-
-                                }
-                            });
-
-
-                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View vistaModal) {
-
-                                    String deposito = nuevoMonto.getText().toString();
-                                    String claveIngresada = editTextClaveUsuario.getText().toString();
-
-                                    if (deposito.isEmpty() || deposito.equals("0")) {
-                                        Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
-                                    } else {
-
-                                        if (!clave.equals(claveIngresada)) {
-                                            Utils.crearToastPersonalizado(context, "La contraseña ingresada es incorrecta");
-                                        } else {
-
-                                            dialogConfirmacion.dismiss();
-
-                                            dialogConsultarSaldo.dismiss();
-
-                                            //          onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario);
-
-                                            DepositarMasSaldo(ID_saldo, deposito, nombre, tipocaja, ID_usuario);
-
-
-                                        }
-
-                                    }
-
-                                }
-                            });
-
-
-                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-
-                                    dialogConfirmacion.dismiss();
-                                }
-                            });
-
-
-                        }
-                    });
-
-
-                    buttonFinalizarSaldo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View vistaModal) {
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
-                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                            dialogConfirmacion.show();
-
-
-                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
-                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-
-
-                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialogConfirmacion.dismiss();
-                                }
-                            });
-
-
-                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    String claveIngresada = editTextClaveUsuario.getText().toString();
-
-                                    if (!clave.equals(claveIngresada)) {
-                                        Utils.crearToastPersonalizado(context, "Debes ingresar la clave correcta");
-                                    } else {
-                                        dialogConfirmacion.dismiss();
-                                        dialogConsultarSaldo.dismiss();
-                                        dialogOpcionesUsuarios.dismiss();
-                                        FinalizarSaldo(ID_saldo, view, nombre, ID_usuario);
-
-                                    }
-
-                                }
-                            });
-                        }
-                    });
-
-                    buttonEditarSaldo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View vistaEditar) {
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(vistaEditar.getContext());
-                            View customView = LayoutInflater.from(vistaEditar.getContext()).inflate(R.layout.confirmacion_con_clave, null);
-                            builder.setView(Utils.ModalRedondeado(vistaEditar.getContext(), customView));
-                            AlertDialog dialogConfirmacion = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                            dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                            dialogConfirmacion.show();
-
-                            TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
-                            textInputLayout.setVisibility(View.VISIBLE);
-                            TextView nuevomonto = customView.findViewById(R.id.nuevomonto);
-                            nuevomonto.setVisibility(View.VISIBLE);
-                            EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
-                            nuevoMonto.setText(saldo_inicial);
-
-                            EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
-
-                            RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
-                            RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
-                            radioCapital.setVisibility(View.VISIBLE);
-                            radioGastos.setVisibility(View.VISIBLE);
-
-                            if (tipo_caja.equals("Capital")) {
-
-                                radioCapital.setChecked(true);
-                            } else {
-                                radioGastos.setChecked(true);
-                            }
-
-
-                            radioGastos.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    radioGastos.setChecked(true);
-                                    radioCapital.setChecked(false);
-                                    correccionCaja = "Gastos";
-                                }
-                            });
-
-                            radioCapital.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    radioGastos.setChecked(false);
-                                    radioCapital.setChecked(true);
-                                    correccionCaja = "Capital";
-                                }
-                            });
-
-//Aqui te qeudaste falta agregar la cajaaaaa
-
-
-                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-
-
-                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View vistaModal) {
-
-                                    String correccionSaldo = nuevoMonto.getText().toString();
-                                    String claveIngresada = editTextClaveUsuario.getText().toString();
-
-                                    if (correccionSaldo.isEmpty() || correccionSaldo.equals("0")) {
-                                        Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
-                                    } else {
-
-                                        if (!clave.equals(claveIngresada)) {
-                                            Utils.crearToastPersonalizado(context, "La contraseña ingresada es incorrecta");
-                                        } else {
-
-                                            dialogConfirmacion.dismiss();
-
-                                            dialogConsultarSaldo.dismiss();
-
-                                            if (radioGastos.isChecked()) {
-
-                                                onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario, "Gastos");
-                                            } else if (radioCapital.isChecked()) {
-
-                                                onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario, "Capital");
-                                            } else {
-
-                                                onCorregirSaldo(ID_saldo, correccionSaldo, view, nombre, ID_usuario, "Prueba");
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-                            });
-
-
-                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-
-                                    dialogConfirmacion.dismiss();
-                                }
-                            });
-
-                        }
-                    });
-
-
-                }
-                CerrarModalCargando();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Utils.crearToastPersonalizado(context, "No se pudo obtener la informacion, revisa la conexión");
-                CerrarModalCargando();
-
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "54");
-                params.put("ID_saldo", ID_saldo);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
 
 
     private void FinalizarSaldo(String ID_saldo, View view, String nombre, String ID_usuario) {
@@ -1073,7 +573,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-    private void AsignarSaldo(String ID_usuario, String saldo_asignado, String nombre, String tipo_caja) {
+    public void AsignarSaldo(String ID_usuario, String saldo_asignado, String nombre, String tipo_caja) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -1098,10 +598,20 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
+                /*
                 params.put("opcion", "62");
                 params.put("ID_usuario", ID_usuario);
                 params.put("saldo_asignado", saldo_asignado);
                 params.put("tipo_caja", tipo_caja);
+
+                 */
+
+                params.put("opcion", "73");
+                params.put("ID_usuario", ID_usuario);
+                params.put("ID_admin_asig", Sesion_UsuarioID);
+                params.put("nuevoSaldoAsignado", saldo_asignado);
+                params.put("nuevoTipoCaja", tipo_caja);
+
                 return params;
             }
         };
@@ -1109,40 +619,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
     }
 
-
-    private void DepositarMasSaldo(String ID_saldo, String deposito, String nombre, String tipo_caja, String ID_admin_asig) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                Utils.crearToastPersonalizado(context, "Aumento el saldo de " + nombre);
-
-                dialogOpcionesUsuarios.dismiss();
-                MostrarUsuarios();
-
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Utils.crearToastPersonalizado(context, "No se pudó actualizar, revisa la conexión");
-
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "64");
-                params.put("ID_saldo", ID_saldo);
-                params.put("deposito", deposito);
-                params.put("tipo_caja", tipo_caja);
-                params.put("ID_admin_asig", ID_admin_asig);
-                return params;
-            }
-        };
-        Volley.newRequestQueue(context).add(postrequest);
-
-    }
 
 
 }

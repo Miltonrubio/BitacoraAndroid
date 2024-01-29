@@ -285,7 +285,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                     AlertDialog dialogOpcionesDeActividad = builder.create();
                     dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-
+/*
                     if (!(ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42") || ID_usuarioActual.equalsIgnoreCase("45") || ID_usuarioActual.equalsIgnoreCase("30")) && estadoActividad.equalsIgnoreCase("Cancelado")) {
 
 
@@ -293,15 +293,16 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
                         dialogOpcionesDeActividad.show();
 
-
                     }
+                    */
 
+                    dialogOpcionesDeActividad.show();
 
                     LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
                     LinearLayout LayoutEliminarActividad = customView.findViewById(R.id.LayoutEliminarActividad);
 
 
-                    if (ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42")) {
+                    if (ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42")|| ID_usuarioActual.equalsIgnoreCase("45")) {
 
                         LayoutEliminarActividad.setVisibility(View.VISIBLE);
 

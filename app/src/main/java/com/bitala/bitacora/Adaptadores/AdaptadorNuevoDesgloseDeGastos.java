@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgloseGastos.ViewHolder> {
+public class AdaptadorNuevoDesgloseDeGastos extends RecyclerView.Adapter<AdaptadorNuevoDesgloseDeGastos.ViewHolder> {
 
     private Context context;
     private List<JSONObject> filteredData;
@@ -131,21 +131,20 @@ public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgl
                 @Override
                 public void onClick(View view) {
 
-                    if (tipo.equals("deposito")) {
+                    DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
+                    detallesActividadesFragment.setArguments(bundle);
 
-                    } else {
+                    FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
+                            .addToBackStack(null)
+                            .commit();
+                    dialogGestionarSaldo.dismiss();
+                    dialogSaldoAsignado.dismiss();
+                    dialogOpcionesUsuarios.dismiss();
 
-                        DetallesActividadesFragment detallesActividadesFragment = new DetallesActividadesFragment();
-                        detallesActividadesFragment.setArguments(bundle);
-
-                        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.frame_layouts_fragments, detallesActividadesFragment)
-                                .addToBackStack(null)
-                                .commit();
-
-                    }
                 }
+
             });
 
 
@@ -237,13 +236,21 @@ public class AdaptadorDesgloseGastos extends RecyclerView.Adapter<AdaptadorDesgl
         }
     }
 
+    AlertDialog dialogGestionarSaldo;
+    AlertDialog dialogSaldoAsignado;
 
-    public AdaptadorDesgloseGastos(List<JSONObject> data, Context context) {
+    AlertDialog dialogOpcionesUsuarios;
+
+    public AdaptadorNuevoDesgloseDeGastos(List<JSONObject> data, Context context, AlertDialog dialogGestionarSaldo, AlertDialog dialogSaldoAsignado, AlertDialog dialogOpcionesUsuarios) {
 
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
         url = context.getResources().getString(R.string.urlApi);
+        this.dialogGestionarSaldo = dialogGestionarSaldo;
+        this.dialogSaldoAsignado = dialogSaldoAsignado;
+        this.dialogOpcionesUsuarios = dialogOpcionesUsuarios;
+
     }
 
 

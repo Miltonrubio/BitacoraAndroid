@@ -1,8 +1,8 @@
 package com.bitala.bitacora.Adaptadores;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +16,11 @@ import com.bitala.bitacora.R;
 
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.ViewHolder> {
+
+public class AdaptadorMostrarNuevosSaldos extends RecyclerView.Adapter<AdaptadorMostrarNuevosSaldos.ViewHolder> {
 
     private Context context;
     private List<JSONObject> filteredData;
@@ -34,9 +31,8 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_desglose_depositos, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_nuevo_saldo_usuarios, parent, false);
         return new ViewHolder(view);
-
     }
 
     public void setFilteredData(List<JSONObject> filteredData) {
@@ -49,70 +45,73 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
 
         try {
             JSONObject jsonObject2 = filteredData.get(position);
-
-/*
-            String ID_deposito = jsonObject2.optString("ID_deposito", "");
-            String dinero_agregado = jsonObject2.optString("dinero_agregado", "");
-            String fecha = jsonObject2.optString("fecha", "");
-            String hora = jsonObject2.optString("hora", "");
+            Double saldo_asignado = jsonObject2.optDouble("saldo_asignado", 0);
             String ID_saldo = jsonObject2.optString("ID_saldo", "");
             String tipo_caja = jsonObject2.optString("tipo_caja", "");
-            String nombre_admin_asig = jsonObject2.optString("nombre_admin_asig", "");
-*/
+            String fecha_asignacion_saldo = jsonObject2.optString("fecha_asignacion_saldo", "");
+            String hora_asignacion_saldo = jsonObject2.optString("hora_asignacion_saldo", "");
+            String status_saldo = jsonObject2.optString("status_saldo", "");
+            String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
+            String saldo_restante = jsonObject2.optString("saldo_restante", "");
+            String total_consumos = jsonObject2.optString("total_consumos", "");
+            String total_adiciones = jsonObject2.optString("total_adiciones", "");
 
-            String ID_adicion = jsonObject2.optString("ID_adicion", "");
-            String saldo_agregado = jsonObject2.optString("saldo_agregado", "");
-            String fecha = jsonObject2.optString("fecha", "");
-            String hora = jsonObject2.optString("hora", "");
-            String nombre_admin_asig = jsonObject2.optString("nombre_admin_asig", "");
+            holder.textViewDineroRestante.setText(saldo_restante + " $");
+
+            holder.textViewCaja.setText(tipo_caja.toUpperCase());
 
 
-            Bundle bundle = new Bundle();
-            bundle.putString("ID_deposito", ID_adicion);
 
+/*
 
-            try {
+  try {
                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                Date date = inputFormat.parse(fecha);
+                Date date = inputFormat.parse(fecha_asignacion_saldo);
                 SimpleDateFormat outputDayOfWeek = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
                 String dayOfWeek = outputDayOfWeek.format(date);
                 SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
                 String formattedDate = outputFormat.format(date);
 
-                // holder.fecha.setText(dayOfWeek.toLowerCase() + " " + formattedDate.toLowerCase());
-                String horaFormateada = formatearHora(hora);
-                holder.fecha.setText(formattedDate.toLowerCase() + " a las " + horaFormateada);
+                holder.fecha.setText("Asignado el: " + dayOfWeek.toLowerCase() + " " + formattedDate.toLowerCase());
+
             } catch (ParseException e) {
+                e.printStackTrace();
                 holder.fecha.setText("No se encontro la fecha");
             }
 
-            //     holder.tipoCaja.setText("Caja: " + tipo_caja);
-            holder.tipoCaja.setVisibility(View.GONE);
+            try {
+                JSONArray jsonArray = new JSONArray(gastos);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    listaDesgloseGastos.add(jsonObject);
+                }
 
-            holder.saldo_agregado.setText("Se agregó: + " + saldo_agregado + " $ de saldo");
+                adaptadorDesgloseGastos.notifyDataSetChanged();
+                adaptadorDesgloseGastos.setFilteredData(listaDesgloseGastos);
+                adaptadorDesgloseGastos.filter("");
 
-            holder.adminAsign.setText("Asignado por: " + nombre_admin_asig);
+                if (listaDesgloseGastos.size() > 0) {
+
+                    holder.SaldosGastados.setVisibility(View.VISIBLE);
+                    holder.LayoutGastos.setVisibility(View.VISIBLE);
+                } else {
+                    holder.LayoutGastos.setVisibility(View.GONE);
+                    holder.SaldosGastados.setVisibility(View.GONE);
+
+                }
+
+            } catch (JSONException e) {
+                holder.LayoutGastos.setVisibility(View.GONE);
+                holder.SaldosGastados.setVisibility(View.GONE);
+
+            }
+*/
+
 
         } finally {
         }
     }
 
-    private String formatearHora(String horaDesdeAPI) {
-        SimpleDateFormat formatoEntrada = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat formatoSalida = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-
-        try {
-            // Parsea la hora desde la cadena de texto de la API
-            Date hora = formatoEntrada.parse(horaDesdeAPI);
-
-            // Formatea la hora al nuevo formato
-            return formatoSalida.format(hora);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            // Maneja la excepción si ocurre un error al parsear la hora
-            return horaDesdeAPI; // O podrías devolver un valor por defecto
-        }
-    }
 
     @Override
     public int getItemCount() {
@@ -122,21 +121,17 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView saldo_agregado;
 
-        TextView fecha;
+        TextView textViewCaja;
+        TextView textViewDineroRestante;
 
-        TextView tipoCaja;
-
-        TextView adminAsign;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            saldo_agregado = itemView.findViewById(R.id.saldo_agregado);
-            fecha = itemView.findViewById(R.id.fecha);
-            adminAsign = itemView.findViewById(R.id.adminAsign);
-            tipoCaja = itemView.findViewById(R.id.tipoCaja);
+            textViewCaja = itemView.findViewById(R.id.textViewCaja);
+            textViewDineroRestante = itemView.findViewById(R.id.textViewDineroRestante);
+
         }
     }
 
@@ -170,8 +165,7 @@ public class AdaptadorDepositos extends RecyclerView.Adapter<AdaptadorDepositos.
     }
 
 
-    public AdaptadorDepositos(List<JSONObject> data, Context context) {
-
+    public AdaptadorMostrarNuevosSaldos(List<JSONObject> data, Context context) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);

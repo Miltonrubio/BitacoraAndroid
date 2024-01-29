@@ -26,8 +26,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.ActividadesPorUsuarioFragment;
 import com.bitala.bitacora.GastosFragment;
 import com.bitala.bitacora.R;
@@ -37,10 +43,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolder> {
@@ -50,12 +60,17 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     private List<JSONObject> filteredData;
     private List<JSONObject> data;
 
+    List<JSONObject> listaDesgloseSaldos = new ArrayList<>();
+
+    AdaptadorMostrarNuevosSaldos adaptadorMostrarNuevosSaldos;
+
+
     String url;
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_usuarios, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_usuarios_nuevo, parent, false);
         return new ViewHolder(view);
     }
 
@@ -79,9 +94,14 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             String clave = jsonObject2.optString("clave", "");
             String foto_usuario = jsonObject2.optString("foto_usuario", "");
             String token = jsonObject2.optString("token", "");
+
+          /*
             String ID_saldo = jsonObject2.optString("ID_saldo", "");
             String saldo_restante = jsonObject2.optString("saldo_restante", "");
+           */
 
+            String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
+            String desglose_saldo_por_caja = jsonObject2.optString("desglose_saldo_por_caja", "");
 
             Bundle bundle = new Bundle();
             bundle.putString("ID_usuario", ID_usuario);
@@ -90,23 +110,50 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             bundle.putString("correo", correo);
             bundle.putString("telefono", telefono);
             bundle.putString("foto_usuario", foto_usuario);
-            bundle.putString("ID_saldo", ID_saldo);
-            bundle.putString("saldo_restante", saldo_restante);
+            //   bundle.putString("ID_saldo", ID_saldo);
+            // bundle.putString("saldo_restante", saldo_restante);
 
 
             //  setTextViewText(holder.textCorreoUsuario, correo, "Correo no disponible");
-            setTextViewText(holder.textRol, permisos.toLowerCase(), "Permisos no disponible");
+            setTextViewText(holder.textRol, permisos.toUpperCase(), "Permisos no disponible");
             setTextViewText(holder.textTelefonoUsuario, telefono, "Telefono no disponible");
             setTextViewText(holder.textNombreUsuario, nombre.toUpperCase(), "Nombre no disponible");
 
-            // setTextViewText(holder.saldo_restante, "Saldo actual: " + saldo_restante + "$", "No tiene saldo asignado");
 
-            if (saldo_restante.isEmpty() || saldo_restante.equals(null) || saldo_restante.equals("null") || saldo_restante.equals("")) {
+            adaptadorMostrarNuevosSaldos = new AdaptadorMostrarNuevosSaldos(listaDesgloseSaldos, context);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+            holder.recyclerViewSaldos.setLayoutManager(gridLayoutManager);
+            holder.recyclerViewSaldos.setAdapter(adaptadorMostrarNuevosSaldos);
 
-                holder.saldo_restante.setText("No tiene saldo activo");
-            } else {
-                holder.saldo_restante.setText("Saldo actual: " + saldo_restante + "$");
+            listaDesgloseSaldos.clear();
+            try {
+                JSONArray jsonArray = new JSONArray(desglose_saldo_por_caja);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String status_saldo = jsonObject.getString("status_saldo");
+                    if (status_saldo.equalsIgnoreCase("Activo")) {
+                        listaDesgloseSaldos.add(jsonObject);
+                    }
+                }
+
+                adaptadorMostrarNuevosSaldos.notifyDataSetChanged();
+                adaptadorMostrarNuevosSaldos.setFilteredData(listaDesgloseSaldos);
+                adaptadorMostrarNuevosSaldos.filter("");
+
+                if (listaDesgloseSaldos.size() > 0) {
+
+                    holder.recyclerViewSaldos.setVisibility(View.VISIBLE);
+                } else {
+                    holder.recyclerViewSaldos.setVisibility(View.INVISIBLE);
+
+                }
+
+            } catch (JSONException e) {
+                holder.recyclerViewSaldos.setVisibility(View.INVISIBLE);
             }
+
+
+            // setTextViewText(holder.saldo_restante, "Saldo actual: " + saldo_restante + "$", "No tiene saldo asignado");
 
 
             String image = "http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario" + ID_usuario + ".jpg";
@@ -122,6 +169,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     .placeholder(R.drawable.imagendefault)
                     .error(R.drawable.imagendefault)
                     .into(holder.fotoDeUsuario);
+
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -165,11 +213,20 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     }
 
 
-                    if (ID_saldo.equalsIgnoreCase("null") || ID_saldo.equalsIgnoreCase("") || ID_saldo.isEmpty() || ID_saldo.equalsIgnoreCase("0")) {
+                    if (ID_registro_saldo.equalsIgnoreCase("null") || ID_registro_saldo.equalsIgnoreCase("") || ID_registro_saldo.isEmpty() || ID_registro_saldo.equalsIgnoreCase("0")) {
                         textSaldo.setText("Asignar Salgo");
                     } else {
-                        textSaldo.setText("Consultar Saldo");
+                        textSaldo.setText("Gestionar Saldos");
                     }
+
+
+                    LayoutConsultarSaldo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ConsultarSaldoActivo(ID_usuario, nombre, dialogOpcionesUsuarios);
+
+                        }
+                    });
 
 
                     LayoutConsultarMovimiento.setOnClickListener(new View.OnClickListener() {
@@ -187,87 +244,6 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
                             dialogOpcionesUsuarios.dismiss();
                         }
-                    });
-
-
-                    LayoutConsultarSaldo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            //     dialogCargando = Utils.ModalCargando(context, builderCargando);
-                            actionListener.onConsultarSaldoActivo(ID_saldo, view, nombre, ID_usuario, dialogOpcionesUsuarios);
-
-
-                            /*
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.modal_saldo, null);
-                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                            AlertDialog dialogConsultarSaldo = builder.create();
-                            ColorDrawable back = new ColorDrawable(Color.BLACK);
-                            back.setAlpha(150);
-                            dialogConsultarSaldo.getWindow().setBackgroundDrawable(back);
-                            dialogConsultarSaldo.getWindow().setDimAmount(0.8f);
-                            dialogConsultarSaldo.show();
-
-
-                            Button btnAsignarSaldo = customView.findViewById(R.id.btnAsignarSaldo);
-                            TextView titulo = customView.findViewById(R.id.titulo);
-                            EditText monto = customView.findViewById(R.id.monto);
-
-                            titulo.setText("Asigna un saldo a " + nombre);
-
-                            btnAsignarSaldo.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
-                                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
-                                    AlertDialog dialogConfirmacion = builder.create();
-                                    ColorDrawable back = new ColorDrawable(Color.BLACK);
-                                    back.setAlpha(150);
-                                    dialogConfirmacion.getWindow().setBackgroundDrawable(back);
-                                    dialogConfirmacion.getWindow().setDimAmount(0.8f);
-                                    dialogConfirmacion.show();
-
-
-                                    EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
-                                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-
-
-                                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            dialogConfirmacion.dismiss();
-                                        }
-                                    });
-
-
-                                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            dialogConfirmacion.dismiss();
-                                            dialogConsultarSaldo.dismiss();
-
-                                            String montoTotal = monto.getText().toString();
-                                            String claveIngresada = editTextClaveUsuario.getText().toString();
-
-
-                                            Utils.crearToastPersonalizado(context, "Clave: " + claveIngresada + " Monto: " + montoTotal);
-
-
-                                        }
-                                    });
-
-                                }
-                            });
-
-    */
-                        }
-
-
                     });
 
 
@@ -779,6 +755,221 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     */
 
 
+    private void ConsultarSaldoActivo(String ID_usuario, String nombre, AlertDialog dialogOpcionesUsuarios) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (response.equalsIgnoreCase("No tiene saldo activo")) {
+                    AbrirModalAsignacionDeSaldo(nombre, ID_usuario);
+
+                } else {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String ID_registro_saldo = jsonObject.getString("ID_registro_saldo");
+                        String fecha_asignacion = jsonObject.getString("fecha_asignacion");
+                        String hora_asignacion = jsonObject.getString("hora_asignacion");
+                        String desglose_saldo_por_caja = jsonObject.getString("desglose_saldo_por_caja");
+
+                        AbrirModalDeSaldoAsignado(nombre, fecha_asignacion, hora_asignacion, desglose_saldo_por_caja, ID_registro_saldo, dialogOpcionesUsuarios);
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Utils.crearToastPersonalizado(context, "No se pudo actualizar, revisa la conexión");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "77");
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+        Volley.newRequestQueue(context).add(postrequest);
+
+    }
+
+    AdaptadorMostrarSaldosActivos adaptadorMostrarSaldosActivos;
+
+    List<JSONObject> listaSaldosActivos = new ArrayList<>();
+
+    private void AbrirModalDeSaldoAsignado(String nombreUsuario, String fecha_asignacion, String hora_asignacion, String desglose_saldo_por_caja, String ID_registro_saldo, AlertDialog dialogOpcionesUsuarios) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View customView = LayoutInflater.from(context).inflate(R.layout.modal_saldo_nuevo, null);
+        builder.setView(Utils.ModalRedondeado(context, customView));
+        AlertDialog dialogSaldoAsignado = builder.create();
+        ColorDrawable back = new ColorDrawable(Color.BLACK);
+        back.setAlpha(150);
+        dialogSaldoAsignado.getWindow().setBackgroundDrawable(back);
+        dialogSaldoAsignado.getWindow().setDimAmount(0.8f);
+        dialogSaldoAsignado.show();
+
+        RecyclerView recyclerViewSaldosActivos = customView.findViewById(R.id.recyclerViewSaldosActivos);
+        TextView textView12 = customView.findViewById(R.id.textView12);
+
+        textView12.setText("SALDO ACTIVO DE " + nombreUsuario.toUpperCase());
+
+
+        adaptadorMostrarSaldosActivos = new AdaptadorMostrarSaldosActivos(listaSaldosActivos, context, dialogSaldoAsignado, dialogOpcionesUsuarios);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 1);
+        recyclerViewSaldosActivos.setLayoutManager(gridLayoutManager);
+        recyclerViewSaldosActivos.setAdapter(adaptadorMostrarSaldosActivos);
+
+        listaSaldosActivos.clear();
+        try {
+            JSONArray jsonArray = new JSONArray(desglose_saldo_por_caja);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String status_saldo = jsonObject.getString("status_saldo");
+                if (status_saldo.equalsIgnoreCase("Activo")) {
+                    listaSaldosActivos.add(jsonObject);
+                }
+            }
+
+            adaptadorMostrarSaldosActivos.notifyDataSetChanged();
+            adaptadorMostrarSaldosActivos.setFilteredData(listaDesgloseSaldos);
+            adaptadorMostrarSaldosActivos.filter("");
+
+
+        } catch (JSONException e) {
+            Utils.crearToastPersonalizado(context, "Algo fallo");
+        }
+
+
+    }
+
+
+    private void AbrirModalAsignacionDeSaldo(String nombre, String ID_usuario) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View customView = LayoutInflater.from(context).inflate(R.layout.modal_asignar_saldo, null);
+        builder.setView(Utils.ModalRedondeado(context, customView));
+        AlertDialog dialogAsignarSaldo = builder.create();
+        ColorDrawable back = new ColorDrawable(Color.BLACK);
+        back.setAlpha(150);
+        dialogAsignarSaldo.getWindow().setBackgroundDrawable(back);
+        dialogAsignarSaldo.getWindow().setDimAmount(0.8f);
+        dialogAsignarSaldo.show();
+
+
+        Button btnAsignarSaldo = customView.findViewById(R.id.btnAsignarSaldo);
+        TextView titulo = customView.findViewById(R.id.titulo);
+        EditText monto = customView.findViewById(R.id.monto);
+
+        RadioButton capital = customView.findViewById(R.id.capital);
+        RadioButton gastos = customView.findViewById(R.id.gastos);
+
+        gastos.setChecked(true);
+
+        gastos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                capital.setChecked(false);
+                gastos.setChecked(true);
+
+            }
+        });
+
+        capital.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                capital.setChecked(true);
+                gastos.setChecked(false);
+
+            }
+        });
+
+
+        titulo.setText("Asigna un saldo a " + nombre);
+
+        btnAsignarSaldo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.confirmacion_con_clave, null);
+                builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                AlertDialog dialogConfirmacion = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                dialogConfirmacion.show();
+
+
+                EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogConfirmacion.dismiss();
+                    }
+                });
+
+
+                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String montoTotal = monto.getText().toString();
+                        String claveIngresada = editTextClaveUsuario.getText().toString();
+
+
+                        if (montoTotal.isEmpty() || montoTotal.equals("0")) {
+
+                            Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
+                        } else {
+
+
+                            if (!claveIngresada.equals(clave)) {
+                                Utils.crearToastPersonalizado(context, "Debes ingresar la clave correcta");
+                            } else {
+
+                                dialogConfirmacion.dismiss();
+                                dialogAsignarSaldo.dismiss();
+
+                                //AsignarSaldo(ID_usuario,  montoTotal, nombre);
+                                if (capital.isChecked()) {
+                                    actionListener.AsignarSaldo(ID_usuario, montoTotal, nombre, "Capital");
+                                } else if (gastos.isChecked()) {
+                                    actionListener.AsignarSaldo(ID_usuario, montoTotal, nombre, "Gastos");
+                                }
+                            }
+
+                            //    Utils.crearToastPersonalizado(context, montoTotal + " " +ID_usuario + " " + nombre );
+                        }
+
+
+                        //   Utils.crearToastPersonalizado(context, "Clave: " + claveIngresada + " Monto: " + montoTotal);
+
+
+                    }
+                });
+
+            }
+        });
+
+    }
+
+
     @Override
     public int getItemCount() {
         return filteredData.size();
@@ -787,8 +978,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textNombreUsuario, textCorreoUsuario, textRol, textTelefonoUsuario;
 
+        TextView sinSaldo;
         TextView saldo_restante;
         ImageView fotoDeUsuario;
+
+        RecyclerView recyclerViewSaldos;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -797,10 +991,11 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             textNombreUsuario = itemView.findViewById(R.id.textNombreUsuario);
             //  textCorreoUsuario = itemView.findViewById(R.id.textCorreoUsuario);
             textRol = itemView.findViewById(R.id.textRol);
+            sinSaldo = itemView.findViewById(R.id.sinSaldo);
             fotoDeUsuario = itemView.findViewById(R.id.fotoDeUsuario);
             saldo_restante = itemView.findViewById(R.id.saldo_restante);
             textTelefonoUsuario = itemView.findViewById(R.id.textTelefonoUsuario);
-
+            recyclerViewSaldos = itemView.findViewById(R.id.recyclerViewSaldos);
 
         }
     }
@@ -874,10 +1069,13 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
         //    void onCorregirSaldo(String ID_saldo, String nuevoSaldo, View view, String nombre);
 
-        void onConsultarSaldoActivo(String ID_saldo, View view, String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios);
+        //   void onConsultarSaldoActivo(String ID_saldo, View view, String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios);
 
+
+        void AsignarSaldo(String ID_usuario, String saldo_asignado, String nombre, String tipo_caja);
 
     }
+
     String ID_usuarioActual;
 
     private AdaptadorUsuarios.OnActivityActionListener actionListener;

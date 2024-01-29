@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DetallesActividadesFragment extends Fragment implements OnMapReadyCallback, AdaptadorUbicaciones.OnActivityActionListener, AdaptadorArchivos.OnActivityActionListener {
 
@@ -213,10 +214,10 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
 
             try {
                 Date fechaAsig = formatoOriginal.parse(fecha_asignacion);
-                String fechafechaAsigFormateada = "Asignada: " + formatoDeseado.format(fechaAsig);
+                String fechafechaAsigFormateada = "Asignación: " + formatoDeseado.format(fechaAsig);
 
                 if (ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42") || ID_usuarioActual.equalsIgnoreCase("45") || ID_usuarioActual.equalsIgnoreCase("30")) {
-                    AsignadoPor.setText("Actividad asignada por " + nombreQuienAsigno + " " + fechafechaAsigFormateada);
+                    AsignadoPor.setText("Actividad asignada por " + nombreQuienAsigno + " \n" + fechafechaAsigFormateada);
 
                 } else {
                     AsignadoPor.setText("Actividad asignada por " + nombreQuienAsigno);
@@ -241,6 +242,7 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 e.printStackTrace();
             }
 
+            /*
             try {
                 Date fechafin = formatoOriginal.parse(fecha_fin);
                 String fechaFormateadafin = formatoDeseado.format(fechafin);
@@ -248,16 +250,99 @@ public class DetallesActividadesFragment extends Fragment implements OnMapReadyC
                 if (estadoActividad.equalsIgnoreCase("Cancelado")) {
                     tvFechaFinalizado.setText("Cancelada el :" + fechaFormateadafin);
                     tvFechaFinalizado.setTextColor(colorRojo);
-                    tvFechaFinalizado.setVisibility(View.VISIBLE);
-                } else if ((estadoActividad.equalsIgnoreCase("Finalizada"))) {
+                   tvFechaFinalizado.setVisibility(View.VISIBLE);
+                } else if ((estadoActividad.equalsIgnoreCase("Finalizado"))) {
                     tvFechaFinalizado.setText("Finalizada el: " + fechaFormateadafin);
+
+
                     tvFechaFinalizado.setVisibility(View.VISIBLE);
                 } else {
                     tvFechaFinalizado.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
+
+
                 tvFechaFinalizado.setVisibility(View.GONE);
+            } */
+
+
+            if (ID_nombre_actividad.equalsIgnoreCase("45") && ((ID_usuarioActual.equalsIgnoreCase("23") || ID_usuarioActual.equalsIgnoreCase("64") || ID_usuarioActual.equalsIgnoreCase("42") || ID_usuarioActual.equalsIgnoreCase("45") || ID_usuarioActual.equalsIgnoreCase("30"))))
+            {
+
+                try {
+                    Date fechaFinaliz = formatoOriginal.parse(fecha_fin);
+                    Date fechaAsigna = formatoOriginal.parse(fecha_asignacion);
+                    long diferenciaMillis = fechaFinaliz.getTime() - fechaAsigna.getTime();
+
+                    long segundos = TimeUnit.MILLISECONDS.toSeconds(diferenciaMillis);
+                    long minutos = TimeUnit.MILLISECONDS.toMinutes(diferenciaMillis);
+                    long horas = TimeUnit.MILLISECONDS.toHours(diferenciaMillis);
+                    long dias = TimeUnit.MILLISECONDS.toDays(diferenciaMillis);
+
+                    StringBuilder diferenciaTexto = new StringBuilder();
+
+                    if (dias > 0) {
+                        diferenciaTexto.append(dias).append(" día(s) ");
+                    }
+                    if (horas > 0) {
+                        diferenciaTexto.append(horas % 24).append(" hora(s) ");
+                    }
+                    if (minutos > 0) {
+                        diferenciaTexto.append(minutos % 60).append(" minuto(s) ");
+                    }
+
+
+                    try {
+                        Date fechafin = formatoOriginal.parse(fecha_fin);
+                        String fechaFormateadafin = formatoDeseado.format(fechafin);
+
+
+                        if (estadoActividad.equalsIgnoreCase("Cancelado")) {
+                            tvFechaFinalizado.setText("Actividad cancelada el:\n" + fechaFormateadafin + "\n\nTiempo transcurrido desde la asignación: " + diferenciaTexto.toString());
+                            tvFechaFinalizado.setTextColor(colorRojo);
+                            tvFechaFinalizado.setVisibility(View.VISIBLE);
+                        } else if ((estadoActividad.equalsIgnoreCase("Finalizado"))) {
+                            tvFechaFinalizado.setText("Finalización de actividad: \n" + fechaFormateadafin + "\n\nTiempo transcurrido desde la asignación: " + diferenciaTexto.toString());
+                            tvFechaFinalizado.setVisibility(View.VISIBLE);
+                        } else {
+                            tvFechaFinalizado.setVisibility(View.GONE);
+                        }
+
+                    } catch (Exception e) {
+
+
+                        tvFechaFinalizado.setVisibility(View.GONE);
+                    }
+
+                } catch (Exception e) {
+                    tvFechaFinalizado.setVisibility(View.GONE);
+                }
+
+            } else{
+                try {
+                    Date fechafin = formatoOriginal.parse(fecha_fin);
+                    String fechaFormateadafin = formatoDeseado.format(fechafin);
+
+                    if (estadoActividad.equalsIgnoreCase("Cancelado")) {
+                        tvFechaFinalizado.setText("Actividad cancelada el: \n" + fechaFormateadafin);
+                        tvFechaFinalizado.setTextColor(colorRojo);
+                        tvFechaFinalizado.setVisibility(View.VISIBLE);
+                    } else if ((estadoActividad.equalsIgnoreCase("Finalizado"))) {
+                        tvFechaFinalizado.setText("Finalización de actividad: \n" + fechaFormateadafin);
+
+
+                        tvFechaFinalizado.setVisibility(View.VISIBLE);
+                    } else {
+                        tvFechaFinalizado.setVisibility(View.GONE);
+                    }
+                } catch (Exception e) {
+
+
+                    tvFechaFinalizado.setVisibility(View.GONE);
+                }
             }
+
+
             tvNombreActividad.setText(nombre_actividad);
 
 

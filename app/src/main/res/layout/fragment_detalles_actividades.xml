@@ -37,18 +37,17 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="Asignado"
-                android:visibility="gone"
                 android:textColor="@color/rojo"
                 android:textSize="17dp"
-
-                android:textStyle="bold"
+                android:visibility="gone"
 
                 />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginTop="6dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -68,12 +67,22 @@
                 android:id="@+id/tvNombreActividad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
                 android:gravity="center"
                 android:text="Nombre de actividad"
                 android:textColor="@color/vino"
-                android:textSize="25dp"
+                android:textSize="26dp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDetallesActividad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:gravity="center"
+                android:text="Detalles de actividad"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -87,22 +96,12 @@
                     android:layout_weight="1"
                     android:gravity="left"
                     android:text="Fecha inicial"
-                    android:textSize="18sp" />
-
+                    android:textColor="@color/naranjita"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
-
-            <TextView
-                android:id="@+id/tvDetallesActividad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="23dp"
-                android:layout_marginBottom="12dp"
-                android:gravity="left"
-                android:text="Detalles de actividad"
-                android:textSize="19dp"
-                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/Cancelacion"
@@ -139,8 +138,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
                 android:layout_weight="1"
                 android:gravity="left"
                 android:text="Aun no se ha finalizado"

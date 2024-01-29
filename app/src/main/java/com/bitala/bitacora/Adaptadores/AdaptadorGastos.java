@@ -1,11 +1,8 @@
 package com.bitala.bitacora.Adaptadores;
 
 
-import static android.app.PendingIntent.getActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,9 +10,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,9 +21,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bitala.bitacora.Utils;
 import com.bitala.bitacora.R;
-import com.itextpdf.text.pdf.parser.Line;
+import com.bitala.bitacora.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -202,7 +195,7 @@ public class AdaptadorGastos extends RecyclerView.Adapter<AdaptadorGastos.ViewHo
             }
 
 
-            // Aqui ira la logica pa los depositos
+
 
 
             adaptadorDesgloseGastos = new AdaptadorDesgloseGastos(listaDesgloseGastos, context);

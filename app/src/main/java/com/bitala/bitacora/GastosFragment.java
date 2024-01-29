@@ -1,6 +1,7 @@
 package com.bitala.bitacora;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -85,7 +87,10 @@ public class GastosFragment extends Fragment {
     AdaptadorSeleccionarSaldos adaptadorSeleccionarSaldos;
 
     ArrayList<String> idSeleccionados = new ArrayList<>();
-    String pdfGastos;
+    String pdfGastosCarta;
+    String pdfGastosTicket;
+    String ID_sesionIniciada;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -113,15 +118,19 @@ public class GastosFragment extends Fragment {
         builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
-        pdfGastos= context.getResources().getString(R.string.pdfGastos);
+        pdfGastosCarta = context.getResources().getString(R.string.pdfGastosCarta);
+        pdfGastosTicket = context.getResources().getString(R.string.pdfGastosTicket);
 
         adaptadorGastos = new AdaptadorGastos(listaGastos, context);
 
 
-
-
         recyclerViewGastos.setLayoutManager(new LinearLayoutManager(context));
         recyclerViewGastos.setAdapter(adaptadorGastos);
+
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+
+        ID_sesionIniciada = sharedPreferences.getString("ID_usuario", "");
 
 
         Bundle bundle = getArguments();
@@ -506,13 +515,12 @@ public class GastosFragment extends Fragment {
                 dialogSelectorSaldos.show();
 
 
-
                 Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
                 Button butonImprimirPDF = customView.findViewById(R.id.butonImprimirPDF);
                 RecyclerView recyclerViewSelectorSaldos = customView.findViewById(R.id.recyclerViewSelectorSaldos);
                 TextView searchEditTextSelector = customView.findViewById(R.id.searchEditTextSelector);
 
-                adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos,view.getContext());
+                adaptadorSeleccionarSaldos = new AdaptadorSeleccionarSaldos(listaGastos, view.getContext());
                 recyclerViewSelectorSaldos.setLayoutManager(new LinearLayoutManager(context));
 
                 recyclerViewSelectorSaldos.setAdapter(adaptadorSeleccionarSaldos);
@@ -535,9 +543,6 @@ public class GastosFragment extends Fragment {
                     public void afterTextChanged(Editable s) {
                     }
                 });
-
-
-
 
 
                 adaptadorSeleccionarSaldos.setOnItemClickListener(new AdaptadorSeleccionarSaldos.OnItemClickListener() {
@@ -581,10 +586,43 @@ public class GastosFragment extends Fragment {
 
                         if (idSeleccionados.size() > 0) {
 
-                            enviarDatosPorPost();
+                            //         enviarDatosPorPost();
+
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            View customView = LayoutInflater.from(context).inflate(R.layout.opciones_imprimir_pdf_saldos, null);
+
+                            builder.setView(Utils.ModalRedondeado(context, customView));
+                            AlertDialog dialogSelectorSaldos = builder.create();
+                            dialogSelectorSaldos.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogSelectorSaldos.show();
+
+
+                            LinearLayout LayoutPDFcarta = customView.findViewById(R.id.LayoutPDFcarta);
+                            LinearLayout LayoutTicket = customView.findViewById(R.id.LayoutTicket);
+
+                            LayoutTicket.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    modalCargando = Utils.ModalCargando(context, builder);
+                                    enviarDatosPDFTicket();
+                                }
+                            });
+
+
+                            LayoutPDFcarta.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    modalCargando = Utils.ModalCargando(context, builder);
+                                    enviarDatosPorPostTamCarta();
+                                }
+                            });
+
+
                         } else {
                             Utils.crearToastPersonalizado(context, "No hay elementos seleccionados");
                         }
+
 
                     }
                 });
@@ -625,8 +663,7 @@ public class GastosFragment extends Fragment {
     }
 
 
-
-    private void enviarDatosPorPost() {
+    private void enviarDatosPorPostTamCarta() {
 
         //Utils.crearToastPersonalizado(context, idSeleccionados.toString());
 
@@ -639,8 +676,26 @@ public class GastosFragment extends Fragment {
 
         // Convertir el ArrayList a JSON
         postData.put("listaSeleccion", lista);
-        new DownloadFileTask(context, postData).execute(pdfGastos);
+        new DownloadFileTask(context, postData).execute(pdfGastosCarta);
+        modalCargando.dismiss();
     }
+
+
+    private void enviarDatosPDFTicket() {
+        //Utils.crearToastPersonalizado(context, idSeleccionados.toString());
+
+        String lista = convertirArrayListAJson(idSeleccionados);
+
+        Log.d("Lista: ", lista);
+
+        Map<String, String> postData = new HashMap<>();
+        postData.put("ID_usuario", ID_usuario);
+        postData.put("ID_encargado", ID_sesionIniciada);
+        postData.put("listaSeleccion", lista);
+        new DownloadFileTask(context, postData).execute(pdfGastosTicket);
+        modalCargando.dismiss();
+    }
+
 
     private void VerGastosPorFecha(String ID_usuario, String fechaInicio, String fechaFin) {
         listaGastos.clear();
