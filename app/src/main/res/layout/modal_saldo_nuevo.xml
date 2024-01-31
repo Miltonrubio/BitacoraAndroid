@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="6dp"
-    android:paddingTop="2dp"
-    android:paddingVertical="26dp">
+    android:paddingVertical="26dp"
+    android:paddingTop="2dp">
 
 
     <TextView
@@ -19,21 +19,155 @@
         android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewSaldosActivos"
         android:layout_width="match_parent"
-        android:layout_height="390dp"
-
+        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
+    <!--
+
+    <Button
+        android:id="@+id/btnFinalizarAmbosSaldos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Finalizar todos los saldos"
+        android:textColor="@color/white"
+        android:textSize="19dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSaldosActivos" />
+
+    -->
+
+
+    <Button
+        android:id="@+id/btnFinalizarAmbosSaldos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:drawableLeft="@drawable/flag_checkered_solid"
+        android:drawableTint="@color/white"
+        android:text="Finalizar"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSaldosActivos" />
+
+    <Button
+        android:id="@+id/btnAgregarOtraCaja"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/verdefuerte"
+        android:drawableRight="@drawable/cash_register_solid"
+        android:drawableTint="@color/white"
+        android:text="Agregar"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSaldosActivos" />
+
+
+    <!--
+    <LinearLayout
+        android:id="@+id/btnFinalizarAmbosSaldos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="136dp"
+        android:background="@color/vino"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSaldosActivos">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Finalizar \nSaldos"
+            android:textColor="@color/white"
+            android:textSize="19dp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/flag_checkered_solid"
+            app:tint="@color/white"
+            tools:layout_editor_absoluteX="335dp"
+            tools:layout_editor_absoluteY="517dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btnAgregarOtraCaja"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/verdefuerte"
+        android:orientation="vertical"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSaldosActivos">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Agregar Saldo \nde otra caja"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+
+                <Button
+                    android:id="@+id/btnAgregarOtraCaja"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="@color/verdefuerte"
+                    android:text="Agregar Saldo de otra caja"
+                    android:layout_weight="3"
+                    android:textColor="@color/white"
+                    android:textSize="19dp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.268"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnFinalizarAmbosSaldos" />
+        -->
+    <!--
+           <ImageView
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:layout_gravity="center"
+               android:layout_marginTop="8dp"
+               android:src="@drawable/cash_register_solid"
+               app:tint="@color/white"
+               tools:layout_editor_absoluteX="335dp"
+               tools:layout_editor_absoluteY="517dp" />
+
+       </LinearLayout>
+       -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

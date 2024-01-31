@@ -36,7 +36,12 @@
 
     <color name="verdefuerte">#3d656a</color>
 
+
+    <color name="vino">#98261E</color>
+    <!--
     <color name="vino">#A5172A</color>
+    -->
+
     <color name="rosapastel">#ECC8FF</color>
     <color name="amarillopastel">#FFFEC8</color>
     <color name="rojitopastel">#FA9A9A</color>

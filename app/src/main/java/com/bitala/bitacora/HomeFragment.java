@@ -1,5 +1,7 @@
 package com.bitala.bitacora;
 
+import static com.bitala.bitacora.Utils.ModalRedondeado;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -9,12 +11,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,6 +37,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorActividades;
 import com.bitala.bitacora.Adaptadores.AdaptadorListaActividades;
+import com.bitala.bitacora.Adaptadores.AdaptadorMostrarSaldoParaUsuarios;
+import com.bitala.bitacora.Adaptadores.AdaptadorSeleccionarCaja;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,10 +49,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFragment extends Fragment implements AdaptadorActividades.OnActivityActionListener, AdaptadorListaActividades.OnActivityActionListener {
+public class HomeFragment extends Fragment implements AdaptadorActividades.OnActivityActionListener, AdaptadorListaActividades.OnActivityActionListener, AdaptadorSeleccionarCaja.OnActivityActionListener {
 
     List<JSONObject> nombresActividades = new ArrayList<>();
     String permisos;
+
+    AdaptadorSeleccionarCaja.OnActivityActionListener actionListenerSeleccionarCaja;
     String ID_usuario;
     String url;
     private RecyclerView recyclerViewActividades;
@@ -84,6 +91,11 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     String ID_saldo;
     TextView saldoActualSinCont;
 
+    RecyclerView recyclerViewSaldosActivos2;
+    TextView SinSaldoActivoSinCont;
+
+    TextView SinSaldoActivo;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,9 +107,9 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);
 
-        saldoActual = view.findViewById(R.id.saldoActual);
+        //   saldoActual = view.findViewById(R.id.saldoActual);
 
-
+        actionListenerSeleccionarCaja = this;
         botonAgregarActividad = view.findViewById(R.id.botonAgregarActividad);
         textViewBienvenida = view.findViewById(R.id.textViewBienvenida);
         recyclerViewActividades = view.findViewById(R.id.recyclerViewActividades);
@@ -106,7 +118,15 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         SinActividades = view.findViewById(R.id.SinActividades);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         ContenedorCompleto = view.findViewById(R.id.ContenedorCompleto);
-        saldoActualSinCont = view.findViewById(R.id.saldoActualSinCont);
+
+
+        SinSaldoActivo = view.findViewById(R.id.SinSaldoActivo);
+
+
+        SinSaldoActivoSinCont = view.findViewById(R.id.SinSaldoActivoSinCont);
+
+
+        //   recyclerViewSaldosActivos2 = view.findViewById(R.id.recyclerViewSaldosActivos2);
         return view;
     }
 
@@ -121,14 +141,28 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         permisos = sharedPreferences.getString("permisos", "");
         nombreSesionIniciada = sharedPreferences.getString("nombre", "");
 
-
         ActividadesPorUsuario(ID_usuario);
+
+
+        RecyclerView recyclerViewSaldosActivosUsuario = view.findViewById(R.id.recyclerViewSaldosActivosUsuario);
+
+        RecyclerView recyclerViewSaldosActivosUsuarioSinCont = view.findViewById(R.id.recyclerViewSaldosActivosUsuarioSinCont);
+
+
+        adaptadorMostrarSaldoParaUsuarios = new AdaptadorMostrarSaldoParaUsuarios(saldoDeUsuarios, context);
+        recyclerViewSaldosActivosUsuario.setLayoutManager(new LinearLayoutManager(context));
+        recyclerViewSaldosActivosUsuario.setAdapter(adaptadorMostrarSaldoParaUsuarios);
+
+        recyclerViewSaldosActivosUsuarioSinCont.setLayoutManager(new LinearLayoutManager(context));
+        recyclerViewSaldosActivosUsuarioSinCont.setAdapter(adaptadorMostrarSaldoParaUsuarios);
+
 
         //Adaptadores
         adaptadorActividades = new AdaptadorActividades(dataList, context, this);
         adaptadorListaActividades = new AdaptadorListaActividades(nombresActividades, context, this);
         recyclerViewActividades.setLayoutManager(new LinearLayoutManager(context));
         recyclerViewActividades.setAdapter(adaptadorActividades);
+
 
         int colorRes;
         Drawable drawable;
@@ -249,6 +283,252 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
+    public void onSeleccionarTipoFin(String ID_actividad, AlertDialog dialogOpcionesDeActividad, String tituloActividad) {
+
+
+        if (saldoDeUsuarios.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            View customView = LayoutInflater.from(context).inflate(R.layout.modal_seleccionar_forma_fin, null);
+            builder.setView(ModalRedondeado(context, customView));
+            AlertDialog dialogSeleccionTipoFin = builder.create();
+            dialogSeleccionTipoFin.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialogSeleccionTipoFin.show();
+
+
+            LinearLayout btnConGastos = customView.findViewById(R.id.btnConGastos);
+            LinearLayout btnSinGastos = customView.findViewById(R.id.btnSinGastos);
+
+
+            btnConGastos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    //    VerSaldos(ID_usuario);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.modal_seleccion_caja, null);
+                    builder.setView(ModalRedondeado(context, customView));
+                    AlertDialog dialogSeleccionarCaja = builder.create();
+                    dialogSeleccionarCaja.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogSeleccionarCaja.show();
+
+
+                    AdaptadorSeleccionarCaja adaptadorSeleccionarCaja;
+                    RecyclerView recyclerSeleccionCaja = customView.findViewById(R.id.recyclerSeleccionCaja);
+                    adaptadorSeleccionarCaja = new AdaptadorSeleccionarCaja(saldoDeUsuarios, context, ID_actividad,tituloActividad, actionListenerSeleccionarCaja, dialogSeleccionarCaja, dialogSeleccionTipoFin, dialogOpcionesDeActividad);
+                    recyclerSeleccionCaja.setLayoutManager(new LinearLayoutManager(context));
+                    recyclerSeleccionCaja.setAdapter(adaptadorSeleccionarCaja);
+
+
+                    adaptadorSeleccionarCaja.notifyDataSetChanged();
+                    adaptadorSeleccionarCaja.setFilteredData(saldoDeUsuarios);
+                    adaptadorSeleccionarCaja.filter("");
+
+
+                }
+            });
+
+
+            btnSinGastos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                    builder.setView(ModalRedondeado(context, customView));
+                    AlertDialog dialogConfirmacion = builder.create();
+                    dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogConfirmacion.show();
+
+                    TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                    textViewTituloConfirmacion.setText("¿Seguro deseas finalizar esta actividad? \nrecuerda que una vez hecho esto ya no podras mandar evidencias");
+                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String selectedEstado = "Finalizado";
+                            onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                            dialogConfirmacion.dismiss();
+                            dialogOpcionesDeActividad.dismiss();
+                            dialogSeleccionTipoFin.dismiss();
+                        }
+                    });
+
+                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            dialogConfirmacion.dismiss();
+                        }
+                    });
+
+
+                }
+            });
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+            builder.setView(ModalRedondeado(context, customView));
+            AlertDialog dialogConfirmacion = builder.create();
+            dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialogConfirmacion.show();
+
+            TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+            textViewTituloConfirmacion.setText("¿Seguro deseas finalizar esta actividad? \nrecuerda que una vez hecho esto ya no podras mandar evidencias");
+            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String selectedEstado = "Finalizado";
+                    onActualizarEstadoActivity(ID_actividad, selectedEstado);
+                    dialogConfirmacion.dismiss();
+                    dialogOpcionesDeActividad.dismiss();
+                }
+            });
+
+            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    dialogConfirmacion.dismiss();
+                }
+            });
+
+        }
+
+    }
+
+
+    List<JSONObject> saldoDeUsuarios = new ArrayList<>();
+    AdaptadorMostrarSaldoParaUsuarios adaptadorMostrarSaldoParaUsuarios;
+
+    private void VerSaldos(String ID_usuario) {
+        saldoDeUsuarios.clear();
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+
+                    // Accede al array desglose_saldo_por_caja dentro del objeto principal
+                    JSONArray jsonArray = jsonResponse.getJSONArray("desglose_saldo_por_caja");
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String status_saldo = jsonObject.getString("status_saldo");
+                        if (status_saldo.equalsIgnoreCase("Activo")) {
+                            saldoDeUsuarios.add(jsonObject);
+                        }
+                    }
+
+                    adaptadorMostrarSaldoParaUsuarios.notifyDataSetChanged();
+                    adaptadorMostrarSaldoParaUsuarios.setFilteredData(saldoDeUsuarios);
+                    adaptadorMostrarSaldoParaUsuarios.filter("");
+
+                    SinSaldoActivoSinCont.setVisibility(View.GONE);
+                    SinSaldoActivo.setVisibility(View.GONE);
+
+
+                } catch (JSONException e) {
+                    //  Utils.crearToastPersonalizado(context, "Datos: " + e.getMessage());
+                    SinSaldoActivoSinCont.setVisibility(View.VISIBLE);
+                    SinSaldoActivo.setVisibility(View.VISIBLE);
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Algo fallo al cargar, revisa la conexion");
+                SinSaldoActivoSinCont.setVisibility(View.VISIBLE);
+                SinSaldoActivo.setVisibility(View.VISIBLE);
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "77");
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+
+
+
+
+
+    /*
+    private void MostrarSaldoActivo(String ID_usuario) {
+        listaSaldosActivos.clear();
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                adaptadorNuevosSaldos = new AdaptadorNuevosSaldos(dataList, context);
+                recyclerViewSaldosActivos2.setLayoutManager(new LinearLayoutManager(context));
+                recyclerViewSaldosActivos2.setAdapter(adaptadorNuevosSaldos);
+
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        listaSaldosActivos.add(jsonObject);
+                    }
+
+                    adaptadorNuevosSaldos.notifyDataSetChanged();
+                    adaptadorNuevosSaldos.setFilteredData(dataList);
+                    adaptadorNuevosSaldos.filter("");
+
+                    if (listaSaldosActivos.size() > 0) {
+                        recyclerViewSaldosActivos2.setVisibility(View.VISIBLE);
+
+                    } else {
+                        recyclerViewSaldosActivos2.setVisibility(View.GONE);
+
+                    }
+
+
+                } catch (JSONException e) {
+                    recyclerViewSaldosActivos2.setVisibility(View.GONE);
+
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                recyclerViewSaldosActivos2.setVisibility(View.GONE);
+
+                Utils.crearToastPersonalizado(context, "No se pudieron cargar los datos");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "77");
+                params.put("ID_usuario", ID_usuario);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+    */
+
+/*
     private void MostrarSaldoActivo(String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -326,6 +606,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
         Volley.newRequestQueue(context).add(postrequest);
     }
+*/
 
 
     private void VerNombresActividades(Context contextModal) {
@@ -416,7 +697,7 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     private void ActividadesPorUsuario(String ID_usuario) {
 
-        MostrarSaldoActivo(ID_usuario);
+        VerSaldos(ID_usuario);
         dataList.clear();
         modalCargando = Utils.ModalCargando(context, builderCargando);
         SinInternet.setVisibility(View.GONE);
@@ -499,11 +780,13 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
 
     @Override
-    public void onEditActivity(String ID_actividad, String ID_nombre_actividad, String descripcionActividad) {
+    public void onEditActivity(String ID_actividad, String ID_nombre_actividad, String
+            descripcionActividad) {
         EditarActividad(ID_actividad, ID_nombre_actividad, descripcionActividad);
     }
 
-    public void onMandarUbicacionActicity(String ID_usuario, String ID_actividad, Double longitud, Double latitud) {
+    public void onMandarUbicacionActicity(String ID_usuario, String ID_actividad, Double
+            longitud, Double latitud) {
         MandarUbicacion(ID_usuario, ID_actividad, longitud, latitud);
     }
 
@@ -517,7 +800,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         ActualizarEstado(ID_actividad, nuevoEstado);
     }
 
-    public void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion) {
+    public void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String
+            motivoCancelacion) {
         CancelarActividades(ID_actividad, nuevoEstado, motivoCancelacion);
     }
 
@@ -531,7 +815,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
 
     @Override
-    public void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad, String valorCheck) {
+    public void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String
+            ID_actividad, String valorCheck) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -562,7 +847,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
 
     }
 
-    private void AgregarActividad(String ID_nombre_actividad, String descripcionActividad, String ID_usuario) {
+    private void AgregarActividad(String ID_nombre_actividad, String
+            descripcionActividad, String ID_usuario) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -617,7 +903,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
     }
 
 
-    private void EditarActividad(String ID_actividad, String ID_nombre_actividad, String descripcionActividad) {
+    private void EditarActividad(String ID_actividad, String ID_nombre_actividad, String
+            descripcionActividad) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -643,7 +930,8 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         Volley.newRequestQueue(context).add(postrequest);
     }
 
-    private void MandarUbicacion(String ID_usuario, String ID_actividad, Double longitud, Double latitud) {
+    private void MandarUbicacion(String ID_usuario, String ID_actividad, Double
+            longitud, Double latitud) {
 
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -737,5 +1025,35 @@ public class HomeFragment extends Fragment implements AdaptadorActividades.OnAct
         }
     }
 
+    @Override
+    public void onAsignarGastoAActividad(String ID_actividad, String ID_saldo, String dinero_gastado) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                ActividadesPorUsuario(ID_usuario);
+                Utils.crearToastPersonalizado(context, "Finalizaste correctamente la actividad");
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "No se pudo actualizar la actividad, revisa tu conexión");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "79");
+                params.put("ID_actividad", ID_actividad);
+                params.put("dinero_gastado", dinero_gastado);
+                params.put("ID_saldo", ID_saldo);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+
+
+    }
 }
 

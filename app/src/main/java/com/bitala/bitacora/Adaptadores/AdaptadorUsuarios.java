@@ -35,13 +35,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.ActividadesPorUsuarioFragment;
-import com.bitala.bitacora.GastosFragment;
+import com.bitala.bitacora.NuevoGastosFragment;
 import com.bitala.bitacora.R;
 import com.bitala.bitacora.SubirFotoUsuarioActivity;
 import com.bitala.bitacora.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,7 +80,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     ConstraintLayout LayoutConInternet;
     ConstraintLayout LayoutSinInternet;
 
-    String clave;
+    String claveSesionIniciada;
 
     @SuppressLint("ResourceAsColor")
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
@@ -101,6 +102,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
            */
 
             String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
+            String mensaje = jsonObject2.optString("mensaje", "");
             String desglose_saldo_por_caja = jsonObject2.optString("desglose_saldo_por_caja", "");
 
             Bundle bundle = new Bundle();
@@ -120,11 +122,24 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             setTextViewText(holder.textNombreUsuario, nombre.toUpperCase(), "Nombre no disponible");
 
 
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+            holder.recyclerViewSaldos.setLayoutManager(gridLayoutManager);
+            adaptadorMostrarNuevosSaldos = new AdaptadorMostrarNuevosSaldos(listaDesgloseSaldos, context);
+            holder.recyclerViewSaldos.setAdapter(adaptadorMostrarNuevosSaldos);
+
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    return (adaptadorMostrarNuevosSaldos.getItemCount() == 1) ? 2 : 1;
+                }
+            });
+
+/*
             adaptadorMostrarNuevosSaldos = new AdaptadorMostrarNuevosSaldos(listaDesgloseSaldos, context);
             GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
             holder.recyclerViewSaldos.setLayoutManager(gridLayoutManager);
             holder.recyclerViewSaldos.setAdapter(adaptadorMostrarNuevosSaldos);
-
+*/
             listaDesgloseSaldos.clear();
             try {
                 JSONArray jsonArray = new JSONArray(desglose_saldo_por_caja);
@@ -213,8 +228,8 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                     }
 
 
-                    if (ID_registro_saldo.equalsIgnoreCase("null") || ID_registro_saldo.equalsIgnoreCase("") || ID_registro_saldo.isEmpty() || ID_registro_saldo.equalsIgnoreCase("0")) {
-                        textSaldo.setText("Asignar Salgo");
+                    if (mensaje.equals("Sin saldo activo")) {
+                        textSaldo.setText("Asignar Saldo");
                     } else {
                         textSaldo.setText("Gestionar Saldos");
                     }
@@ -233,7 +248,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         @Override
                         public void onClick(View view) {
 
-                            GastosFragment gastosFragment = new GastosFragment();
+                            NuevoGastosFragment gastosFragment = new NuevoGastosFragment();
                             gastosFragment.setArguments(bundle);
 
                             FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
@@ -760,7 +775,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             @Override
             public void onResponse(String response) {
                 if (response.equalsIgnoreCase("No tiene saldo activo")) {
-                    AbrirModalAsignacionDeSaldo(nombre, ID_usuario);
+                    AbrirModalAsignacionDeSaldo(nombre, ID_usuario, dialogOpcionesUsuarios);
 
                 } else {
                     try {
@@ -822,7 +837,162 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
         textView12.setText("SALDO ACTIVO DE " + nombreUsuario.toUpperCase());
 
 
-        adaptadorMostrarSaldosActivos = new AdaptadorMostrarSaldosActivos(listaSaldosActivos, context, dialogSaldoAsignado, dialogOpcionesUsuarios);
+        Button btnFinalizarAmbosSaldos = customView.findViewById(R.id.btnFinalizarAmbosSaldos);
+        Button btnAgregarOtraCaja = customView.findViewById(R.id.btnAgregarOtraCaja);
+
+
+        btnFinalizarAmbosSaldos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_con_clave, null);
+                builder.setView(Utils.ModalRedondeado(context, customView));
+                AlertDialog dialogFinalizarAmbosSaldos = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogFinalizarAmbosSaldos.getWindow().setBackgroundDrawable(back);
+                dialogFinalizarAmbosSaldos.getWindow().setDimAmount(0.8f);
+                dialogFinalizarAmbosSaldos.show();
+
+                TextView textView4 = customView.findViewById(R.id.textView4);
+                textView4.setText("PARA FINALIZAR LOS SALDOS ACTIVOS DEBES INGRESAR TU CLAVE");
+
+                EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+
+                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String claveIngresada = editTextClaveUsuario.getText().toString();
+
+                        if (claveIngresada.isEmpty() || !claveIngresada.equals(claveSesionIniciada)) {
+                            Utils.crearToastPersonalizado(context, "Debes ingresar la clave correcta");
+                        } else {
+                            dialogFinalizarAmbosSaldos.dismiss();
+                            dialogSaldoAsignado.dismiss();
+                            dialogOpcionesUsuarios.dismiss();
+                            actionListener.onFinalizarAmbosSaldos(ID_registro_saldo, nombreUsuario);
+                        }
+
+                    }
+                });
+
+
+                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogFinalizarAmbosSaldos.dismiss();
+                    }
+                });
+
+
+            }
+        });
+
+
+        btnAgregarOtraCaja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_con_clave, null);
+                builder.setView(Utils.ModalRedondeado(context, customView));
+                AlertDialog dialogAgregarSaldoDeOtraCaja = builder.create();
+                ColorDrawable back = new ColorDrawable(Color.BLACK);
+                back.setAlpha(150);
+                dialogAgregarSaldoDeOtraCaja.getWindow().setBackgroundDrawable(back);
+                dialogAgregarSaldoDeOtraCaja.getWindow().setDimAmount(0.8f);
+                dialogAgregarSaldoDeOtraCaja.show();
+
+                RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
+                RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
+                TextInputLayout textInputLayout = customView.findViewById(R.id.textInputLayout);
+                TextView textView4 = customView.findViewById(R.id.textView4);
+                textView4.setText("AGREGAR OTRO SALDO");
+                EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+                EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+
+
+                radioGastos.setVisibility(View.VISIBLE);
+                radioCapital.setVisibility(View.VISIBLE);
+                textInputLayout.setVisibility(View.VISIBLE);
+
+                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                radioGastos.setChecked(true);
+                radioGastos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        radioGastos.setChecked(true);
+                        radioCapital.setChecked(false);
+                    }
+                });
+
+                radioCapital.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        radioGastos.setChecked(false);
+                        radioCapital.setChecked(true);
+                    }
+                });
+
+                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                  /*      76
+                        nuevoSaldoAsignado */
+                        String saldoAAsignar = nuevoMonto.getText().toString();
+                        String claveIngresada = editTextClaveUsuario.getText().toString();
+
+
+                        if (saldoAAsignar.isEmpty()) {
+                            Utils.crearToastPersonalizado(context, "Debes ingresar un monto");
+
+                        } else {
+                            if (claveIngresada.isEmpty() || !claveIngresada.equals(claveSesionIniciada)) {
+                                Utils.crearToastPersonalizado(context, "Debes ingresar la contraseña correcta");
+
+                            } else {
+
+
+                                modalCargando = Utils.ModalCargando(context, builder);
+
+                                if (radioGastos.isChecked()) {
+
+                                    actionListener.onAgregarSaldoDeOtraCaja(ID_usuarioActual, ID_registro_saldo, "Gastos", saldoAAsignar, dialogAgregarSaldoDeOtraCaja, dialogSaldoAsignado, modalCargando, dialogOpcionesUsuarios);
+                                } else {
+                                    actionListener.onAgregarSaldoDeOtraCaja(ID_usuarioActual, ID_registro_saldo, "Capital", saldoAAsignar, dialogAgregarSaldoDeOtraCaja, dialogSaldoAsignado, modalCargando, dialogOpcionesUsuarios);
+                                }
+
+                            }
+                        }
+
+                    }
+                });
+
+
+                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogAgregarSaldoDeOtraCaja.dismiss();
+                    }
+                });
+            }
+        });
+
+
+        adaptadorMostrarSaldosActivos = new AdaptadorMostrarSaldosActivos(listaSaldosActivos, context, dialogSaldoAsignado, dialogOpcionesUsuarios, actionListenerMostrarSaldosActivos);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 1);
         recyclerViewSaldosActivos.setLayoutManager(gridLayoutManager);
         recyclerViewSaldosActivos.setAdapter(adaptadorMostrarSaldosActivos);
@@ -843,7 +1013,8 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
             adaptadorMostrarSaldosActivos.filter("");
 
 
-        } catch (JSONException e) {
+        } catch (
+                JSONException e) {
             Utils.crearToastPersonalizado(context, "Algo fallo");
         }
 
@@ -851,7 +1022,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     }
 
 
-    private void AbrirModalAsignacionDeSaldo(String nombre, String ID_usuario) {
+    private void AbrirModalAsignacionDeSaldo(String nombre, String ID_usuario, AlertDialog dialogOpcionesUsuarios) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View customView = LayoutInflater.from(context).inflate(R.layout.modal_asignar_saldo, null);
@@ -939,13 +1110,13 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
                         } else {
 
 
-                            if (!claveIngresada.equals(clave)) {
+                            if (!claveIngresada.equals(claveSesionIniciada)) {
                                 Utils.crearToastPersonalizado(context, "Debes ingresar la clave correcta");
                             } else {
 
                                 dialogConfirmacion.dismiss();
                                 dialogAsignarSaldo.dismiss();
-
+                                dialogOpcionesUsuarios.dismiss();
                                 //AsignarSaldo(ID_usuario,  montoTotal, nombre);
                                 if (capital.isChecked()) {
                                     actionListener.AsignarSaldo(ID_usuario, montoTotal, nombre, "Capital");
@@ -976,7 +1147,7 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textNombreUsuario, textCorreoUsuario, textRol, textTelefonoUsuario;
+        TextView textNombreUsuario, textRol, textTelefonoUsuario;
 
         TextView sinSaldo;
         TextView saldo_restante;
@@ -1074,30 +1245,105 @@ public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.Vi
 
         void AsignarSaldo(String ID_usuario, String saldo_asignado, String nombre, String tipo_caja);
 
+        void onAgregarSaldoDeOtraCaja(String ID_admin_asig, String ID_registro_saldo, String nuevoTipoCaja, String nuevoSaldoAsignado, AlertDialog dialogAgregarSaldoDeOtraCaja, AlertDialog dialogSaldoAsignado, AlertDialog modalCargando, AlertDialog dialogOpcionesUsuarios);
+
+        void onFinalizarAmbosSaldos(String ID_registro_saldo, String nombre);
+
     }
 
     String ID_usuarioActual;
+    AlertDialog.Builder builderCargando;
+    AlertDialog modalCargando;
+
 
     private AdaptadorUsuarios.OnActivityActionListener actionListener;
 
+    private AdaptadorMostrarSaldosActivos.OnActivityActionListener actionListenerMostrarSaldosActivos;
 
-    public AdaptadorUsuarios(List<JSONObject> data, Context context, AdaptadorUsuarios.OnActivityActionListener actionListener) {
+
+    public AdaptadorUsuarios(List<JSONObject> data, Context context, AdaptadorUsuarios.OnActivityActionListener actionListener, AdaptadorMostrarSaldosActivos.OnActivityActionListener actionListenerMostrarSaldosActivos) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
         this.actionListener = actionListener;
-
+        this.actionListenerMostrarSaldosActivos = actionListenerMostrarSaldosActivos;
         url = context.getResources().getString(R.string.urlApi);
-        //     builderCargando = new AlertDialog.Builder(context);
-        //   builderCargando.setCancelable(false);
-
-
+        builderCargando = new AlertDialog.Builder(context);
+        builderCargando.setCancelable(false);
         SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
-        clave = sharedPreferences.getString("clave", "");
+        this.claveSesionIniciada = sharedPreferences.getString("clave", "");
         this.ID_usuarioActual = sharedPreferences.getString("ID_usuario", "");
 
     }
+/*
+    private void FinalizarAmbosSaldos(String ID_registro_saldo, String nombre) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
 
+                Utils.crearToastPersonalizado(context, "Se finalizo el saldo de "+ nombre);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Algo fallo, revisa la conexion");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "74");
+                params.put("ID_registro_saldo", ID_registro_saldo);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+    */
+/*
+    private void AgregarSaldoDeOtraCaja(String ID_admin_asig, String ID_registro_saldo, String nuevoTipoCaja, String nuevoSaldoAsignado, AlertDialog dialogAgregarSaldoDeOtraCaja, AlertDialog dialogSaldoAsignado) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                modalCargando.dismiss();
+                if (response.equalsIgnoreCase("Se asignó saldo a esta caja")) {
+
+                    dialogAgregarSaldoDeOtraCaja.dismiss();
+                    dialogSaldoAsignado.dismiss();
+                } else {
+
+                    Utils.crearToastPersonalizado(context, response);
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Algo fallo, revisa la conexion");
+
+                modalCargando.dismiss();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "76");
+                params.put("ID_admin_asig", ID_admin_asig);
+                params.put("ID_registro_saldo", ID_registro_saldo);
+                params.put("nuevoSaldoAsignado", nuevoSaldoAsignado);
+                params.put("nuevoTipoCaja", nuevoTipoCaja);
+
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+*/
 
     /*
 

@@ -208,9 +208,9 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
             if (estadoActividad.equalsIgnoreCase("Cancelado")) {
 
                 setTextViewText(holder.textMotivoCancelacion, motivocancelacion, "No se agrego motivo");
-                holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.rojo));
                 holder.textMotivoCancelacion.setVisibility(View.VISIBLE);
                 holder.FrameActividades.setBackgroundResource(R.drawable.roundedbackgroundgris);
+                holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.rojo));
                 colorIcono = ContextCompat.getColor(context, R.color.rojo);
                 drawableResId = R.drawable.baseline_cancel_24;
 

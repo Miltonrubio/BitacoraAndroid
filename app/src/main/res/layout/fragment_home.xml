@@ -19,8 +19,8 @@
             android:layout_marginHorizontal="9dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/modal_redondeado"
-            android:visibility="gone">
-
+            android:visibility="visible">
+            <!--
             <TextView
                 android:id="@+id/saldoActual"
                 android:layout_width="match_parent"
@@ -35,7 +35,40 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+                -->
 
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewSaldosActivosUsuario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/SinSaldoActivo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="No tienes saldo activo"
+                    android:textSize="22dp"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewActividades"
@@ -45,13 +78,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginHorizontal="7dp"
-                android:layout_marginTop="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saldoActual"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -96,7 +127,7 @@
             android:layout_marginHorizontal="9dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/modal_redondeado"
-            android:visibility="visible">
+            android:visibility="gone">
 
 
             <com.airbnb.lottie.LottieAnimationView
@@ -150,6 +181,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/lottieNoActividades"
                 app:layout_constraintVertical_bias="0.043" />
 
+            <!--
             <TextView
                 android:id="@+id/saldoActualSinCont"
                 android:layout_width="match_parent"
@@ -165,6 +197,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView5"
                 app:layout_constraintVertical_bias="0.038" />
+            -->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewSaldosActivosUsuarioSinCont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+
+            <TextView
+                android:id="@+id/SinSaldoActivoSinCont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="No tienes saldo activo"
+                android:textSize="22dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="gone"
+                android:gravity="center"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

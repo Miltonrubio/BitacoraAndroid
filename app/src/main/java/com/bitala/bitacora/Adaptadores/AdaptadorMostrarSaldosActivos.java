@@ -3,6 +3,7 @@ package com.bitala.bitacora.Adaptadores;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,14 +19,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.R;
 import com.bitala.bitacora.Utils;
 
@@ -33,9 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<AdaptadorMostrarSaldosActivos.ViewHolder> {
@@ -78,9 +74,51 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
             String fecha_asignacion_saldo = jsonObject2.optString("fecha_asignacion_saldo", "");
             String desglose_gastos = jsonObject2.optString("desglose_gastos", "");
             String desglose_adiciones = jsonObject2.optString("desglose_adiciones", "");
+            String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
 
 
-            holder.TextViewsaldo_asignado.setText("Saldo inicial: " + saldo_asignado + " $");
+            if (total_consumos.equalsIgnoreCase("0")) {
+                holder.TextViewtotal_consumos.setVisibility(View.GONE);
+            } else {
+
+                holder.TextViewtotal_consumos.setVisibility(View.VISIBLE);
+            }
+
+            if (total_adiciones.equalsIgnoreCase("0")) {
+                holder.TextViewtotal_adiciones.setVisibility(View.GONE);
+            } else {
+
+                holder.TextViewtotal_adiciones.setVisibility(View.VISIBLE);
+            }
+
+
+            if (tipo_caja.equalsIgnoreCase("Capital")) {
+
+                holder.ContenedorSaldoActivo.setBackgroundResource(R.drawable.rounded_amarillo);
+                holder.TextViewtipo_caja.setTextColor(ContextCompat.getColor(context, R.color.amarillo));
+            } else {
+
+                holder.ContenedorSaldoActivo.setBackgroundResource(R.drawable.roundedbackground_nombre_actividad);
+                holder.TextViewtipo_caja.setTextColor(ContextCompat.getColor(context, R.color.naranjita));
+            }
+
+
+            try {
+                double saldoAsignadoDouble = Double.parseDouble(saldo_asignado);
+                double totalAdicionesDouble = Double.parseDouble(total_adiciones);
+
+                double resultado = saldoAsignadoDouble + totalAdicionesDouble;
+
+                String resultadoComoCadena = String.valueOf(resultado);
+
+                holder.TextViewsaldo_asignado.setText("Saldo total: " + resultadoComoCadena + " $  \nSaldo inicial: " + saldo_asignado + "$");
+
+            } catch (NumberFormatException e) {
+                holder.TextViewsaldo_asignado.setText("Saldo inicial: " + saldo_asignado + " $");
+
+            }
+
+
             holder.TextViewtotal_adiciones.setText("Total agregado: +" + total_adiciones + " $");
             holder.TextViewtotal_consumos.setText("Total gastado: -" + total_consumos + " $");
             holder.TextViewsaldo_restante.setText("Saldo restante: " + saldo_restante + " $");
@@ -90,11 +128,118 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
             holder.FechaAsignacion.setText(fecha_asignacion_saldo);
 
 
+            holder.btnEditar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.agregar_mas_saldo_confirmacion, null);
+                    builder.setView(Utils.ModalRedondeado(context, customView));
+                    AlertDialog dialogCorregirSaldo = builder.create();
+                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                    back.setAlpha(150);
+                    dialogCorregirSaldo.getWindow().setBackgroundDrawable(back);
+                    dialogCorregirSaldo.getWindow().setDimAmount(0.8f);
+                    dialogCorregirSaldo.show();
+
+                    TextView Labelnuevomonto = customView.findViewById(R.id.Labelnuevomonto);
+                    EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+                    Labelnuevomonto.setText("Este es tu saldo anterior, agrega el saldo corregido");
+                    TextView textView4 = customView.findViewById(R.id.textView4);
+                    textView4.setText("CORRIGIENDO EL SALDO DE CAJA " + tipo_caja.toUpperCase());
+
+                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                    EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+                    nuevoMonto.setText(saldo_asignado);
+
+
+                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String saldoCorregido = nuevoMonto.getText().toString();
+                            String claveIngresada = editTextClaveUsuario.getText().toString();
+
+                            if (saldoCorregido.isEmpty()) {
+                                Utils.crearToastPersonalizado(context, "Debes llenar los campos");
+                            } else {
+                                if (!claveIngresada.equals(claveSesionIniciada) || claveIngresada.isEmpty()) {
+                                    Utils.crearToastPersonalizado(context, "Debes ingresar la contraseña correcta");
+
+                                } else {
+                                    dialogCorregirSaldo.dismiss();
+                                    dialogSaldoAsignado.dismiss();
+                                    dialogOpcionesUsuarios.dismiss();
+
+                                    actionListener.onCorregirSaldo(ID_saldo, saldoCorregido, tipo_caja);
+
+                                }
+                            }
+                        }
+                    });
+
+
+                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogCorregirSaldo.dismiss();
+                        }
+                    });
+
+
+                }
+            });
+
+
             holder.butonFinalizar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                    asfgasfasf
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.confirmacion_con_clave, null);
+                    builder.setView(Utils.ModalRedondeado(context, customView));
+                    AlertDialog dialogConfirmacion = builder.create();
+                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                    back.setAlpha(150);
+                    dialogConfirmacion.getWindow().setBackgroundDrawable(back);
+                    dialogConfirmacion.getWindow().setDimAmount(0.8f);
+                    dialogConfirmacion.show();
+
+                    EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String claveIngresada = editTextClaveUsuario.getText().toString();
+
+                            if (!claveIngresada.equals(claveSesionIniciada) || claveIngresada.isEmpty()) {
+                                Utils.crearToastPersonalizado(context, "Debes ingresar la contraseña correcta");
+
+                            } else {
+                                dialogConfirmacion.dismiss();
+                                dialogOpcionesUsuarios.dismiss();
+                                dialogSaldoAsignado.dismiss();
+
+                                actionListener.onFinalizarUnSaldo(ID_registro_saldo, tipo_caja);
+                            }
+                        }
+                    });
+
+                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogConfirmacion.dismiss();
+                        }
+                    });
 
 
                 }
@@ -104,6 +249,66 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
             holder.botonAgregarMasSaldo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.agregar_mas_saldo_confirmacion, null);
+                    builder.setView(Utils.ModalRedondeado(context, customView));
+                    AlertDialog dialogAgregarSaldo = builder.create();
+                    ColorDrawable back = new ColorDrawable(Color.BLACK);
+                    back.setAlpha(150);
+                    dialogAgregarSaldo.getWindow().setBackgroundDrawable(back);
+                    dialogAgregarSaldo.getWindow().setDimAmount(0.8f);
+                    dialogAgregarSaldo.show();
+/*
+                    RadioButton radioGastos = customView.findViewById(R.id.radioGastos);
+                    RadioButton radioCapital = customView.findViewById(R.id.radioCapital);
+                    radioCapital.setVisibility(View.GONE);
+                    radioGastos.setVisibility(View.GONE);
+
+ */
+
+
+                    TextView textView4 = customView.findViewById(R.id.textView4);
+                    textView4.setText("AGREGAR MAS SALDO A CAJA " + tipo_caja.toUpperCase());
+
+                    EditText nuevoMonto = customView.findViewById(R.id.nuevoMonto);
+                    EditText editTextClaveUsuario = customView.findViewById(R.id.editTextClaveUsuario);
+
+                    Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                    Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+
+                    buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String SaldoAAgregar = nuevoMonto.getText().toString();
+                            String ClaveIngresada = editTextClaveUsuario.getText().toString();
+
+
+                            if (SaldoAAgregar.isEmpty()) {
+                                Utils.crearToastPersonalizado(context, "Debes llenar los campos");
+                            } else {
+                                if (!ClaveIngresada.equals(claveSesionIniciada) || ClaveIngresada.isEmpty()) {
+                                    Utils.crearToastPersonalizado(context, "Debes ingresar la contraseña correcta");
+
+                                } else {
+                                    dialogAgregarSaldo.dismiss();
+                                    dialogSaldoAsignado.dismiss();
+                                    dialogOpcionesUsuarios.dismiss();
+                                    actionListener.onAgregarMasSaldo(SaldoAAgregar, ID_saldo, ID_usuarioSesionIniciada, tipo_caja);
+                                }
+                            }
+                        }
+                    });
+
+                    buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogAgregarSaldo.dismiss();
+                        }
+                    });
+
 
                 }
             });
@@ -196,36 +401,6 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
     }
 
 
-    AlertDialog modalCargando;
-    AlertDialog.Builder builder;
-
-
-    private void FinalizarUnSaldo(String ID_usuario) {
-        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("opcion", "75");
-                params.put("ID_usuario", ID_usuario);
-                return params;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(postrequest);
-    }
-
-
-    List<JSONObject> listaDesgloses = new ArrayList<>();
-
     @Override
     public int getItemCount() {
 
@@ -300,14 +475,33 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
     AlertDialog dialogSaldoAsignado;
     AlertDialog dialogOpcionesUsuarios;
 
-    public AdaptadorMostrarSaldosActivos(List<JSONObject> data, Context context, AlertDialog dialogSaldoAsignado, AlertDialog dialogOpcionesUsuarios) {
+
+    public interface OnActivityActionListener {
+        void onFinalizarUnSaldo(String ID_registro_saldo, String nuevoTipoCaja);
+
+        void onAgregarMasSaldo(String saldoAgregado, String ID_saldo, String ID_admin_asig, String tipo_caja);
+
+        void onCorregirSaldo(String ID_saldo, String montoCorregido, String tipo_caja);
+    }
+
+    private AdaptadorMostrarSaldosActivos.OnActivityActionListener actionListener;
+
+    String claveSesionIniciada;
+    String ID_usuarioSesionIniciada;
+
+
+    public AdaptadorMostrarSaldosActivos(List<JSONObject> data, Context context, AlertDialog dialogSaldoAsignado, AlertDialog dialogOpcionesUsuarios, AdaptadorMostrarSaldosActivos.OnActivityActionListener actionListener) {
         this.data = data;
         this.context = context;
         this.filteredData = new ArrayList<>(data);
         url = context.getResources().getString(R.string.urlApi);
         this.dialogSaldoAsignado = dialogSaldoAsignado;
         this.dialogOpcionesUsuarios = dialogOpcionesUsuarios;
+        this.actionListener = actionListener;
 
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Credenciales", Context.MODE_PRIVATE);
+        this.ID_usuarioSesionIniciada = sharedPreferences.getString("ID_usuario", "");
+        this.claveSesionIniciada = sharedPreferences.getString("clave", "");
 /*
         builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);

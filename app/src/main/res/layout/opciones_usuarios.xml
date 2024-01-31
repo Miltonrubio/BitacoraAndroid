@@ -294,6 +294,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:gravity="center"
                 android:text="Ver Saldo"
+                android:textStyle="bold"
                 android:textColor="@color/verdefuerte"
                 android:textSize="30dp" />
         </LinearLayout>

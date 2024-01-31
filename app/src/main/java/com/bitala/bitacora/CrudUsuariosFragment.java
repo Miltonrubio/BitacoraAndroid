@@ -30,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bitala.bitacora.Adaptadores.AdaptadorMostrarSaldosActivos;
 import com.bitala.bitacora.Adaptadores.AdaptadorUsuarios;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -42,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener {
+public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.OnActivityActionListener, AdaptadorMostrarSaldosActivos.OnActivityActionListener {
 
     String url;
     private RecyclerView recyclerViewUsuarios;
@@ -59,6 +60,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     ConstraintLayout LayoutSinInternet;
 
 
+    AdaptadorMostrarSaldosActivos.OnActivityActionListener actionListenerMostrarSaldosActivos;
     AlertDialog.Builder builderCargando;
 
     AlertDialog modalCargando;
@@ -85,7 +87,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
 
-
+        actionListenerMostrarSaldosActivos = this;
         builderCargando = new AlertDialog.Builder(context);
         builderCargando.setCancelable(false);
         return view;
@@ -100,7 +102,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
         GridLayoutManager gridLayoutManagerDelantero = new GridLayoutManager(context, 2);
         recyclerViewUsuarios.setLayoutManager(gridLayoutManagerDelantero);
-        adaptadorUsuarios = new AdaptadorUsuarios(dataList, context, this);
+        adaptadorUsuarios = new AdaptadorUsuarios(dataList, context, this, actionListenerMostrarSaldosActivos);
         recyclerViewUsuarios.setAdapter(adaptadorUsuarios);
 
 
@@ -509,7 +511,6 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     }
 
 
-
     private void CerrarModalCargando() {
         if (dialogCargando.isShowing() || dialogCargando != null) {
             dialogCargando.dismiss();
@@ -529,15 +530,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
     AlertDialog dialogCargando;
 
 
-    AlertDialog dialogOpcionesUsuarios;
-
-
     String correccionCaja = "Gastos";
-
-
-
-
-
 
 
     private void FinalizarSaldo(String ID_saldo, View view, String nombre, String ID_usuario) {
@@ -580,7 +573,7 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                 Utils.crearToastPersonalizado(context, "Se le asigno el saldo a " + nombre);
 
-                dialogOpcionesUsuarios.dismiss();
+                //    dialogOpcionesUsuarios.dismiss();
                 MostrarUsuarios();
 
 
@@ -619,6 +612,158 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
     }
 
+    @Override
+    public void onAgregarSaldoDeOtraCaja(String ID_admin_asig, String ID_registro_saldo, String nuevoTipoCaja, String nuevoSaldoAsignado, AlertDialog dialogAgregarSaldoDeOtraCaja, AlertDialog dialogSaldoAsignado, AlertDialog modalCargando, AlertDialog dialogOpcionesUsuarios) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
 
+                modalCargando.dismiss();
+                if (response.equalsIgnoreCase("Se asignó saldo a esta caja")) {
+
+                    MostrarUsuarios();
+                    dialogAgregarSaldoDeOtraCaja.dismiss();
+                    dialogSaldoAsignado.dismiss();
+                    dialogOpcionesUsuarios.dismiss();
+                } else {
+
+                    Utils.crearToastPersonalizado(context, response);
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Algo fallo, revisa la conexion");
+
+                modalCargando.dismiss();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "76");
+                params.put("ID_admin_asig", ID_admin_asig);
+                params.put("ID_registro_saldo", ID_registro_saldo);
+                params.put("nuevoSaldoAsignado", nuevoSaldoAsignado);
+                params.put("nuevoTipoCaja", nuevoTipoCaja);
+
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+    @Override
+    public void onFinalizarAmbosSaldos(String ID_registro_saldo, String nombre) {
+
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                MostrarUsuarios();
+                Utils.crearToastPersonalizado(context, "Se finalizo el saldo de " + nombre);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Algo fallo, revisa la conexion");
+
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "74");
+                params.put("ID_registro_saldo", ID_registro_saldo);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+    @Override
+    public void onFinalizarUnSaldo(String ID_registro_saldo, String nuevoTipoCaja) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                MostrarUsuarios();
+                Utils.crearToastPersonalizado(context, "Se finalizó el saldo de " + nuevoTipoCaja);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Error al finalizar un saldo");
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "75");
+                params.put("ID_registro_saldo", ID_registro_saldo);
+                params.put("nuevoTipoCaja", nuevoTipoCaja);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+    @Override
+    public void onAgregarMasSaldo(String saldoAgregado, String ID_saldo, String ID_admin_asig, String tipo_caja) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                MostrarUsuarios();
+                Utils.crearToastPersonalizado(context, "Se agregò mas saldo a la caja " + tipo_caja);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Error al finalizar un saldo");
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "78");
+                params.put("saldoAgregado", saldoAgregado);
+                params.put("ID_saldo", ID_saldo);
+                params.put("ID_admin_asig", ID_admin_asig);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
+
+
+    @Override
+    public void onCorregirSaldo(String ID_saldo, String montoCorregido, String tipo_caja) {
+        StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                MostrarUsuarios();
+                Utils.crearToastPersonalizado(context, "Se corrigio el saldo de la caja " + tipo_caja);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.crearToastPersonalizado(context, "Error al finalizar un saldo");
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("opcion", "84");
+                params.put("ID_saldo", ID_saldo);
+                params.put("montoCorregido", montoCorregido);
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(postrequest);
+    }
 
 }

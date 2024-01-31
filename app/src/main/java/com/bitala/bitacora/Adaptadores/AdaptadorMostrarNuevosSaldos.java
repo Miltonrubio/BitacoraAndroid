@@ -62,51 +62,6 @@ public class AdaptadorMostrarNuevosSaldos extends RecyclerView.Adapter<Adaptador
 
 
 
-/*
-
-  try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                Date date = inputFormat.parse(fecha_asignacion_saldo);
-                SimpleDateFormat outputDayOfWeek = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
-                String dayOfWeek = outputDayOfWeek.format(date);
-                SimpleDateFormat outputFormat = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
-                String formattedDate = outputFormat.format(date);
-
-                holder.fecha.setText("Asignado el: " + dayOfWeek.toLowerCase() + " " + formattedDate.toLowerCase());
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-                holder.fecha.setText("No se encontro la fecha");
-            }
-
-            try {
-                JSONArray jsonArray = new JSONArray(gastos);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    listaDesgloseGastos.add(jsonObject);
-                }
-
-                adaptadorDesgloseGastos.notifyDataSetChanged();
-                adaptadorDesgloseGastos.setFilteredData(listaDesgloseGastos);
-                adaptadorDesgloseGastos.filter("");
-
-                if (listaDesgloseGastos.size() > 0) {
-
-                    holder.SaldosGastados.setVisibility(View.VISIBLE);
-                    holder.LayoutGastos.setVisibility(View.VISIBLE);
-                } else {
-                    holder.LayoutGastos.setVisibility(View.GONE);
-                    holder.SaldosGastados.setVisibility(View.GONE);
-
-                }
-
-            } catch (JSONException e) {
-                holder.LayoutGastos.setVisibility(View.GONE);
-                holder.SaldosGastados.setVisibility(View.GONE);
-
-            }
-*/
-
 
         } finally {
         }

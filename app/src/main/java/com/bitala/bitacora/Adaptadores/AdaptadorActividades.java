@@ -22,12 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -51,7 +49,6 @@ import com.bitala.bitacora.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -316,7 +313,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             @Override
                             public void onClick(View v) {
 
-                                consultarSaldoActivo(ID_usuario, ID_actividad, dialogOpcionesDeActividad);
+                                //       consultarSaldoActivo(ID_usuario, ID_actividad, dialogOpcionesDeActividad);
+
+
+                                actionListener.onSeleccionarTipoFin(ID_actividad, dialogOpcionesDeActividad, nombre_actividad);
 
 /*
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -463,15 +463,14 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
                         Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
 
-                        /*
+
                         if (ID_nombre_actividad.equalsIgnoreCase("45")) {
-                            LayoutEliminar.setVisibility(View.GONE);
+                            LayoutEditar.setVisibility(View.GONE);
                         } else {
 
-                            LayoutEliminar.setVisibility(View.VISIBLE);
+                            LayoutEditar.setVisibility(View.VISIBLE);
                         }
 
-                         */
                         //Spinner de titulo de actividades
 
                         Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
@@ -1556,6 +1555,10 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
     String valorCheck = "Gastos";
 
+
+
+    /*
+
     private void consultarSaldoActivo(String ID_usuario, String ID_actividad, AlertDialog dialogOpcionesDeActividad) {
 
 
@@ -1802,18 +1805,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                                     actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
                                                 }
                                             }
-*/
 
 
-/*
-                                            if (totalGastadoDob > saldoActualizadoDob) {
-                                                Utils.crearToastPersonalizado(context, "No puedes ingresar un monto mayor al saldo que tienes asignado");
-                                            } else {
-                                                dialogConfirmacion.dismiss();
-                                                dialogOpcionesDeActividad.dismiss();
-                                                actionListener.onAsignarMontoAActividad(String.valueOf(totalGastadoDob), ID_saldo, ID_actividad, valorCheck);
-                                            }
-                                            */
 
 
                                         } catch (NumberFormatException e) {
@@ -1860,7 +1853,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
         Volley.newRequestQueue(context).add(postrequest);
     }
-
+*/
 
     private void CerrarModalCargando() {
         if (dialogCargando.isShowing() || dialogCargando != null) {
@@ -1896,6 +1889,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
         void onCancelarActividadesActivity(String ID_actividad, String nuevoEstado, String motivoCancelacion);
 
         void onAsignarMontoAActividad(String total_gastado, String ID_saldo, String ID_actividad, String valorCheck);
+
+        void onSeleccionarTipoFin(String ID_actividad, AlertDialog dialogOpcionesDeActividad, String tituloActividad);
     }
 
     private AdaptadorActividades.OnActivityActionListener actionListener;
