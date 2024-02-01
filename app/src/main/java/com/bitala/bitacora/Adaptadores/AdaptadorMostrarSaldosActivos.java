@@ -30,8 +30,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<AdaptadorMostrarSaldosActivos.ViewHolder> {
@@ -72,9 +76,27 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
             String total_adiciones = jsonObject2.optString("total_adiciones", "");
             String total_consumos = jsonObject2.optString("total_consumos", "");
             String fecha_asignacion_saldo = jsonObject2.optString("fecha_asignacion_saldo", "");
+            String hora_asignacion_saldo = jsonObject2.optString("hora_asignacion_saldo", "");
             String desglose_gastos = jsonObject2.optString("desglose_gastos", "");
             String desglose_adiciones = jsonObject2.optString("desglose_adiciones", "");
             String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
+
+
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+            SimpleDateFormat sdfInputHora = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+            try {
+                Date dateInicio = sdfInput.parse(fecha_asignacion_saldo);
+                Date horaInicio = sdfInputHora.parse(hora_asignacion_saldo);
+                Date dateTime = new Date(dateInicio.getTime() + horaInicio.getTime());
+                String fechaFormateada = sdfOutput.format(dateTime);
+
+                holder.FechaAsignacion.setText("Asignado el " + fechaFormateada);
+
+            } catch (ParseException e) {
+                holder.FechaAsignacion.setText("No se encontro la fecha");
+            }
 
 
             if (total_consumos.equalsIgnoreCase("0")) {
@@ -125,13 +147,10 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
 
             holder.TextViewtipo_caja.setText(tipo_caja.toUpperCase());
 
-            holder.FechaAsignacion.setText(fecha_asignacion_saldo);
-
 
             holder.btnEditar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     View customView = LayoutInflater.from(context).inflate(R.layout.agregar_mas_saldo_confirmacion, null);
@@ -336,6 +355,9 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
                     LinearLayout layoutAdiciones = customView.findViewById(R.id.layoutAdiciones);
                     LinearLayout LayoutGastos = customView.findViewById(R.id.LayoutGastos);
 
+                    ConstraintLayout ContenedorSinContenido = customView.findViewById(R.id.ContenedorSinContenido);
+                    ConstraintLayout ContenedorConContenido = customView.findViewById(R.id.ContenedorConContenido);
+
 
                     adaptadorDesgloseGastos = new AdaptadorNuevoDesgloseDeGastos(listaGastos, context, dialogGestionarSaldo, dialogSaldoAsignado, dialogOpcionesUsuarios);
                     recyclerViewGastos.setLayoutManager(new LinearLayoutManager(context));
@@ -391,7 +413,14 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
 
                     }
 
+                    if (listaAdiciones.size()>0 ||  listaGastos.size()>0 ){
 
+                        ContenedorConContenido.setVisibility(View.VISIBLE);
+                        ContenedorSinContenido.setVisibility(View.GONE);
+                    }else{
+                        ContenedorConContenido.setVisibility(View.GONE);
+                        ContenedorSinContenido.setVisibility(View.VISIBLE);
+                    }
                 }
             });
 

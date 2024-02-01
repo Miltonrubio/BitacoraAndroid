@@ -239,9 +239,9 @@ public class NuevoGastosFragment extends Fragment {
                             View customView = LayoutInflater.from(context).inflate(R.layout.opciones_imprimir_pdf_saldos, null);
 
                             builder.setView(Utils.ModalRedondeado(context, customView));
-                            AlertDialog dialogSelectorSaldos = builder.create();
-                            dialogSelectorSaldos.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                            dialogSelectorSaldos.show();
+                            AlertDialog dialogTipoPDF = builder.create();
+                            dialogTipoPDF.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogTipoPDF.show();
 
 
                             LinearLayout LayoutPDFcarta = customView.findViewById(R.id.LayoutPDFcarta);
@@ -251,6 +251,8 @@ public class NuevoGastosFragment extends Fragment {
                                 @Override
                                 public void onClick(View view) {
                                     modalCargando = Utils.ModalCargando(context, builder);
+                                    dialogSelectorSaldos.dismiss();
+                                    dialogTipoPDF.dismiss();
                                     enviarDatosPDFTicket();
                                 }
                             });
@@ -260,7 +262,11 @@ public class NuevoGastosFragment extends Fragment {
                                 @Override
                                 public void onClick(View view) {
                                     modalCargando = Utils.ModalCargando(context, builder);
+                                    dialogSelectorSaldos.dismiss();
+                                    dialogTipoPDF.dismiss();
                                     enviarDatosPorPostTamCarta();
+
+
                                 }
                             });
 

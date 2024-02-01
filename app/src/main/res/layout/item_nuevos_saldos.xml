@@ -18,7 +18,7 @@
         android:layout_marginTop="4dp"
         android:gravity="center"
         android:text="Status"
-        android:textSize="22dp"
+        android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -46,7 +46,7 @@
         android:layout_marginHorizontal="8dp"
         android:gravity="end"
         android:text="    fecha_asignacion_saldo"
-        android:textSize="19dp"
+        android:textSize="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
         android:layout_weight="3"
         android:gravity="center"
         android:text="saldo_asignado $"
-        android:textSize="22dp"
+        android:textSize="19dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -80,7 +80,7 @@
         android:layout_weight="3"
         android:gravity="center"
         android:text="total_adiciones $"
-        android:textSize="22dp"
+        android:textSize="19dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TextViewsaldo_asignado" />
@@ -96,7 +96,7 @@
         android:layout_weight="3"
         android:gravity="center"
         android:text="- total_consumos $"
-        android:textSize="22dp"
+        android:textSize="19dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TextViewtotal_adiciones" />
@@ -114,11 +114,27 @@
         android:textStyle="bold"
         android:textColor="@color/black"
         android:text="saldo_restante $"
-        android:textSize="22dp"
+        android:textSize="19dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TextViewtotal_consumos" />
 
+
+
+    <TextView
+        android:id="@+id/FechaFinalizacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="start"
+        android:layout_marginHorizontal="10dp"
+        android:text="    fecha_asignacion_saldo"
+        android:textColor="@color/vino"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextViewsaldo_restante" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

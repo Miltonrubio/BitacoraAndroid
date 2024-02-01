@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,6 +100,9 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
 
     SwipeRefreshLayout swipeRefreshLayout;
 
+    TextView searchEditTextBusqueda;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -117,7 +122,7 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
         lottieNoActividades = view.findViewById(R.id.lottieNoActividades);
         lottieNoInternet = view.findViewById(R.id.lottieNoInternet);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-
+        searchEditTextBusqueda = view.findViewById(R.id.searchEditTextBusqueda);
 
         context = requireContext();
         url = context.getResources().getString(R.string.urlApi);
@@ -134,7 +139,7 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
 
 
         rvActividadesUsuario.setLayoutManager(new LinearLayoutManager(getContext()));
-        adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context,  this);
+        adaptadorActividades = new AdaptadorActividadesPorUsuario(dataList, context, this);
         rvActividadesUsuario.setAdapter(adaptadorActividades);
 
 
@@ -170,16 +175,39 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
             ActividadesPorUsuario(ID_usuario);
 
 
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
 
-                    ActividadesPorUsuario(ID_usuario);
-
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            });
         }
+
+
+        searchEditTextBusqueda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adaptadorActividades.filter(s.toString().toLowerCase());
+            }
+
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+
+
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                ActividadesPorUsuario(ID_usuario);
+
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
 
         fabBotonFlotante.setOnClickListener(new View.OnClickListener() {
@@ -216,6 +244,8 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
             @Override
             public void onClick(View view) {
                 mostrarDatosDelMesActual();
+                searchEditTextBusqueda.setText("");
+
             }
         });
 
@@ -223,6 +253,7 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
         btnFiltrarDeHOY.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                searchEditTextBusqueda.setText("");
                 mostrarDatosDelDiaDeHoy();
             }
         });
@@ -230,6 +261,7 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
         btnFiltrarDelAnio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                searchEditTextBusqueda.setText("");
                 mostrarDatosDelAnioActual();
             }
         });
@@ -237,6 +269,7 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
         btnFiltrarDeLaSemana.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                searchEditTextBusqueda.setText("");
                 MostrarDatosPorSemana();
             }
         });
@@ -784,8 +817,6 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
     }
 
 
-
-
     @Override
     public void onDeleteActivity(String ID_actividad) {
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -812,9 +843,6 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
 
         Volley.newRequestQueue(context).add(postrequest);
     }
-
-
-
 
 
     @Override
@@ -847,7 +875,6 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
 
         Volley.newRequestQueue(context).add(postrequest);
     }
-
 
 
 }

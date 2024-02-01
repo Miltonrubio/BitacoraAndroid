@@ -27,8 +27,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosSaldos.ViewHolder> {
@@ -71,10 +75,14 @@ public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosS
             String total_adiciones = jsonObject2.optString("total_adiciones", "");
             String total_consumos = jsonObject2.optString("total_consumos", "");
             String fecha_asignacion_saldo = jsonObject2.optString("fecha_asignacion_saldo", "");
+            String hora_asignacion_saldo = jsonObject2.optString("hora_asignacion_saldo", "");
+
             String consumos = jsonObject2.optString("consumos", "");
             String adiciones = jsonObject2.optString("adiciones", "");
             String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
             String status_saldo = jsonObject2.optString("status_saldo", "");
+            String fecha_fin = jsonObject2.optString("fecha_fin", "");
+            String hora_fin = jsonObject2.optString("hora_fin", "");
 
 
             holder.TextViewStatus.setText(status_saldo.toUpperCase());
@@ -83,7 +91,7 @@ public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosS
 
                 holder.TextViewStatus.setTextColor(ContextCompat.getColor(context, R.color.verde));
             } else {
-                holder.TextViewStatus.setTextColor(ContextCompat.getColor(context, R.color.grisOscuro));
+                holder.TextViewStatus.setTextColor(ContextCompat.getColor(context, R.color.vino));
 
             }
 
@@ -122,7 +130,7 @@ public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosS
 
                 String resultadoComoCadena = String.valueOf(resultado);
 
-                holder.TextViewsaldo_asignado.setText("Saldo total: " + resultadoComoCadena + " $  \n\nSaldo inicial: " + saldo_asignado + "$");
+                holder.TextViewsaldo_asignado.setText("Saldo total: " + resultadoComoCadena + " $  \nSaldo inicial: " + saldo_asignado + "$");
 
             } catch (NumberFormatException e) {
                 holder.TextViewsaldo_asignado.setText("Saldo inicial: " + saldo_asignado + " $");
@@ -136,7 +144,45 @@ public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosS
 
             holder.TextViewtipo_caja.setText(tipo_caja.toUpperCase());
 
-            holder.FechaAsignacion.setText(fecha_asignacion_saldo);
+
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+            SimpleDateFormat sdfInputHora = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+            try {
+                Date dateInicio = sdfInput.parse(fecha_asignacion_saldo);
+
+                Date horaInicio = sdfInputHora.parse(hora_asignacion_saldo);
+                Date dateTime = new Date(dateInicio.getTime() + horaInicio.getTime());
+                String fechaFormateada = sdfOutput.format(dateTime);
+
+                holder.FechaAsignacion.setText("Asignado el " + fechaFormateada);
+
+            } catch (ParseException e) {
+                holder.FechaAsignacion.setText("No se encontro la fecha");
+            }
+
+
+
+            if (status_saldo.equalsIgnoreCase("Finalizado")){
+                holder.FechaFinalizacion.setVisibility(View.VISIBLE);
+            }else {
+                holder.FechaFinalizacion.setVisibility(View.GONE);
+            }
+
+            try {
+                Date fechaFin = sdfInput.parse(fecha_fin);
+                Date horaFin = sdfInputHora.parse(hora_fin);
+                Date dateTime = new Date(fechaFin.getTime() + horaFin.getTime());
+                String fechaFormateada = sdfOutput.format(dateTime);
+
+                holder.FechaFinalizacion.setText("Finalizado el " + fechaFormateada);
+
+            } catch (ParseException e) {
+                holder.FechaFinalizacion.setText("No se encontro la fecha");
+            }
+
+
 
 
             holder.ContenedorSaldoActivo.setOnClickListener(new View.OnClickListener() {
@@ -273,6 +319,7 @@ public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosS
         TextView TextViewtotal_consumos;
         TextView TextViewStatus;
 
+        TextView FechaFinalizacion;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -285,6 +332,7 @@ public class AdaptadorNuevosSaldos extends RecyclerView.Adapter<AdaptadorNuevosS
             TextViewtipo_caja = itemView.findViewById(R.id.TextViewtipo_caja);
             TextViewsaldo_asignado = itemView.findViewById(R.id.TextViewsaldo_asignado);
             ContenedorSaldoActivo = itemView.findViewById(R.id.ContenedorSaldoActivo);
+            FechaFinalizacion = itemView.findViewById(R.id.FechaFinalizacion);
         }
     }
 

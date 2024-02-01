@@ -590,17 +590,14 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
                 String fecha_fin = item.optString("fecha_fin", "").toLowerCase();
 
 
-                String ID_usuario = item.optString("ID_usuario", "").toLowerCase();
-                String ID_nombre_actividad = item.optString("ID_nombre_actividad", "").toLowerCase();
-                String permisos = item.optString("permisos", "").toLowerCase();
-                String correo = item.optString("correo", "").toLowerCase();
-                String telefono = item.optString("telefono", "").toLowerCase();
 
                 boolean matchesAllKeywords = true;
 
                 for (String keyword : keywords) {
                     if (!(estadoActividad.contains(keyword) || descripcionActividad.contains(keyword) || nombre_actividad.contains(keyword) || ID_actividad.contains(keyword) ||
-                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword) || ID_usuario.contains(keyword) || ID_nombre_actividad.contains(keyword) || permisos.contains(keyword) || telefono.contains(keyword) || correo.contains(keyword))) {
+                            fecha_inicio.contains(keyword) || fecha_fin.contains(keyword)
+
+                          )) {
                         matchesAllKeywords = false;
                         break;
                     }

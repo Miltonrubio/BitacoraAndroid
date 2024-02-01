@@ -20,8 +20,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class AdaptadorRegistrosSaldos extends RecyclerView.Adapter<AdaptadorRegistrosSaldos.ViewHolder> {
@@ -62,7 +66,23 @@ public class AdaptadorRegistrosSaldos extends RecyclerView.Adapter<AdaptadorRegi
 
 
             holder.textView12.setText("SALDO ID #" + ID_registro_saldo);
-            holder.textViewFecha.setText("Asignado el " + fecha_asignacion);
+
+
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+            SimpleDateFormat sdfInputHora = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+            try {
+                Date dateInicio = sdfInput.parse(fecha_asignacion);
+                Date horaInicio = sdfInputHora.parse(hora_asignacion);
+                Date dateTime = new Date(dateInicio.getTime() + horaInicio.getTime());
+                String fechaFormateada = sdfOutput.format(dateTime);
+
+                holder.textViewFecha.setText("Asignado el " + fechaFormateada);
+
+            } catch (ParseException e) {
+                holder.textViewFecha.setText("No se encontro la fecha");
+            }
 
 
             adaptadorNuevosSaldos = new AdaptadorNuevosSaldos(listaDesgloseDeSaldos, context);
@@ -111,7 +131,6 @@ public class AdaptadorRegistrosSaldos extends RecyclerView.Adapter<AdaptadorRegi
         RecyclerView recyclerViewSaldosActivos;
 
         TextView textView12;
-
 
 
         public ViewHolder(@NonNull View itemView) {

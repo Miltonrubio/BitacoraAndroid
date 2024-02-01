@@ -41,8 +41,8 @@
     <string name="urlApi">http://192.168.16.162/bitacoraPHP/BitacoraPHP/mostrar.php</string>
     <string name="fotoUrl">http://192.168.16.162/bitacoraPHP/BitacoraPHP/fotos/</string>
     <string name="pdfUrl">http://192.168.16.162/bitacoraPHP/BitacoraPHP/archivos/</string>
-    <string name="pdfGastosCarta">http://192.168.16.162/bitacoraPHP/BitacoraPHP/disenioPDF2.php/</string>
-    <string name="pdfGastosTicket">http://hidalgo.no-ip.info:5610/bitacora/ticket.php</string>
+    <string name="pdfGastosCarta">http://192.168.16.162/bitacoraPHP/BitacoraPHP/disenioPDF.php/</string>
+    <string name="pdfGastosTicket">http://192.168.16.162/bitacoraphp/BitacoraPHP/ticket.php</string>
 
 </resources>
 
