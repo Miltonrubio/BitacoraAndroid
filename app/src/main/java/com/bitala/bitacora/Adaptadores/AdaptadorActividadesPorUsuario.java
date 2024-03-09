@@ -280,7 +280,7 @@ public class AdaptadorActividadesPorUsuario extends RecyclerView.Adapter<Adaptad
 
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    View customView = LayoutInflater.from(context).inflate(R.layout.opciones_actividades_administrativos, null);
+                    View customView = LayoutInflater.from(context).inflate(R.layout.nuevas_opciones_actividades_admin, null);
                     builder.setView(ModalRedondeado(context, customView));
                     AlertDialog dialogOpcionesDeActividad = builder.create();
                     dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

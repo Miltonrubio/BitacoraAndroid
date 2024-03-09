@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:padding="4dp">
 
+        <!--
         <Spinner
             android:id="@+id/spinnerRolUsuario"
             style="@style/editTexts"
@@ -23,6 +24,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewCorreo2" />
+        -->
+        <TextView
+            android:id="@+id/RolUsuario"
+            style="@style/editTexts"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="7dp"
+            android:layout_marginTop="23dp"
+            android:gravity="center"
+            android:textColor="@color/vino"
+            android:textStyle="bold"
+            android:text="Selecciona el tipo"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCorreo2" />
+
 
         <TextView
             android:id="@+id/textViewCorreo2"
@@ -49,7 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.106"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerRolUsuario"></Button>
+            app:layout_constraintTop_toBottomOf="@+id/RolUsuario"></Button>
 
         <TextView
             android:id="@+id/textViewCorreo"
@@ -194,7 +212,7 @@
                 android:layout_height="match_parent"
                 android:autofillHints="id"
                 android:hint="Clave"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -211,7 +229,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.903"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerRolUsuario"></Button>
+            app:layout_constraintTop_toBottomOf="@+id/RolUsuario"></Button>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

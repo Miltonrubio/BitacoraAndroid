@@ -16,25 +16,24 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -42,7 +41,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bitala.bitacora.DetallesActividadesFragment;
 import com.bitala.bitacora.R;
 import com.bitala.bitacora.SubirFotoActivity;
 import com.bitala.bitacora.Utils;
@@ -229,12 +227,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                     if (estadoActividad.equalsIgnoreCase("Iniciado")) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        View customView = LayoutInflater.from(context).inflate(R.layout.spinner_dropdown_item, null);
+                        View customView = LayoutInflater.from(context).inflate(R.layout.nuevas_opciones_actividades, null);
                         builder.setView(ModalRedondeado(context, customView));
 
                         LinearLayout LayoutMandarUbicacion = customView.findViewById(R.id.LayoutMandarUbicacion);
                         LinearLayout LayoutMandarFoto = customView.findViewById(R.id.LayoutMandarFoto);
-                        LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                        //  LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
                         LinearLayout LayoutFinalizarActividad = customView.findViewById(R.id.LayoutFinalizarActividad);
                         LinearLayout LayoutCancelarActividad = customView.findViewById(R.id.LayoutCancelarActividad);
 
@@ -242,7 +240,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         dialogOpcionesDeActividad.show();
 
-                        LayoutCancelarActividad.setVisibility(View.GONE);
+                        LayoutCancelarActividad.setVisibility(View.INVISIBLE);
 
                         LayoutMandarUbicacion.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -290,6 +288,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             }
                         });
 
+                        /*
 
                         LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -307,7 +306,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 dialogOpcionesDeActividad.dismiss();
                             }
                         });
-
+*/
 
                         LayoutFinalizarActividad.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -368,10 +367,12 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             }
                         });
 
+                                /*
                         LayoutCancelarActividad.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 // Inflar el diseño personalizado del diálogo
+
                                 View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.opcion_cancelar, null);
 
                                 EditText editText = dialogView.findViewById(R.id.editText);
@@ -439,29 +440,37 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         dialogCancelacion.dismiss();
                                     }
                                 });
-
-
                             }
                         });
 
+*/
 
                     } else if (estadoActividad.equalsIgnoreCase("Pendiente")) {
 
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        View customView = LayoutInflater.from(context).inflate(R.layout.opciones_actividades, null);
+                        View customView = LayoutInflater.from(context).inflate(R.layout.nuevas_opciones_actividades_pendientes, null);
                         builder.setView(ModalRedondeado(context, customView));
-                        LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
-                        LayoutVerDetalles.setVisibility(View.GONE);
+                        AlertDialog dialogOpcionesDeActividad = builder.create();
+                        dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialogOpcionesDeActividad.show();
+
+                        //      LinearLayout LayoutVerDetalles = customView.findViewById(R.id.LayoutVerDetalles);
+                        //    LayoutVerDetalles.setVisibility(View.GONE);
                         LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
                         LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
                         LayoutEliminar.setVisibility(View.GONE);
                         LinearLayout LayoutActualizarEstado = customView.findViewById(R.id.LayoutActualizarEstado);
+
+                        /*
                         LinearLayout LayoutPendiente = customView.findViewById(R.id.LayoutPendiente);
                         LinearLayout LayoutIniciado = customView.findViewById(R.id.LayoutIniciado);
                         LinearLayout LayoutFinalizado = customView.findViewById(R.id.LayoutFinalizado);
+
                         EditText editextDescripcionActividad = customView.findViewById(R.id.editextDescripcionActividad);
                         Button BotonActualizarActividad = customView.findViewById(R.id.BotonActualizarActividad);
+
+                         */
 
 
                         if (ID_nombre_actividad.equalsIgnoreCase("45")) {
@@ -471,6 +480,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                             LayoutEditar.setVisibility(View.VISIBLE);
                         }
 
+
+                        /*
                         //Spinner de titulo de actividades
 
                         Spinner SpinnerNombreActividad = customView.findViewById(R.id.SpinnerNombreActividad);
@@ -480,11 +491,8 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         SpinnerNombreActividad.setAdapter(spinnerAdapter);
                         SpinnerNombreActividad.setSelection(0);
 
-
-                        AlertDialog dialogOpcionesDeActividad = builder.create();
-                        dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        dialogOpcionesDeActividad.show();
-
+*/
+                        /*
                         LayoutVerDetalles.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -501,13 +509,119 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                 dialogOpcionesDeActividad.dismiss();
                             }
                         });
+*/
 
-
-                        VerNombresActividades(context);
                         LayoutEditar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
+                                ID_nombre_actividadSeleccionado = "";
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                View customView = LayoutInflater.from(context).inflate(R.layout.modal_corregir_actividad, null);
+                                builder.setView(ModalRedondeado(context, customView));
+                                AlertDialog dialogCorregirActividad = builder.create();
+                                dialogCorregirActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialogCorregirActividad.show();
+
+                                Button botonCancelar = customView.findViewById(R.id.botonCancelar);
+                                Button botonCorregirActividad = customView.findViewById(R.id.botonCorregirActividad);
+                                TextView SeleccionActividades = customView.findViewById(R.id.SeleccionActividades);
+                                EditText textViewDescripcionActividad = customView.findViewById(R.id.textViewDescripcionActividad);
+
+
+                                textViewDescripcionActividad.setText(descripcionActividad);
+                                SeleccionActividades.setText(nombre_actividad);
+
+
+                                SeleccionActividades.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                        View customView = LayoutInflater.from(context).inflate(R.layout.opciones_titulo_actividad, null);
+                                        builder.setView(ModalRedondeado(context, customView));
+                                        AlertDialog dialogOpcionesDeActividad = builder.create();
+                                        dialogOpcionesDeActividad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                        dialogOpcionesDeActividad.show();
+
+                                        RecyclerView RecyclerViewTituloActividades = customView.findViewById(R.id.RecyclerViewTituloActividades);
+                                        EditText searchEditText = customView.findViewById(R.id.searchEditText);
+
+
+                                        VerNombresActividades();
+
+                                        adaptadorCorregirListaActividades = new AdaptadorCorregirListaActividades(listaActividades, context);
+
+                                        RecyclerViewTituloActividades.setLayoutManager(new LinearLayoutManager(context));
+
+
+                                        searchEditText.addTextChangedListener(new TextWatcher() {
+                                            @Override
+                                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                            }
+
+                                            @Override
+                                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                                adaptadorCorregirListaActividades.filter(s.toString().toLowerCase());
+                                            }
+
+
+                                            @Override
+                                            public void afterTextChanged(Editable s) {
+                                            }
+                                        });
+
+
+                                        adaptadorCorregirListaActividades.setOnItemClickListener(new AdaptadorCorregirListaActividades.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(String ID_nombre_actividad, String nombre_actividad) {
+                                                dialogOpcionesDeActividad.dismiss();
+                                                SeleccionActividades.setText(nombre_actividad.toUpperCase());
+                                                ID_nombre_actividadSeleccionado = ID_nombre_actividad;
+                                            }
+                                        });
+
+                                        RecyclerViewTituloActividades.setAdapter(adaptadorCorregirListaActividades);
+
+
+                                    }
+                                });
+
+
+                                botonCorregirActividad.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        //     dialogCorregirActividad.dismiss();
+                                        String descripcionCorregida = textViewDescripcionActividad.getText().toString();
+                                        String actividadSeleccionada = SeleccionActividades.getText().toString();
+
+
+                                        if (descripcionCorregida.isEmpty()) {
+
+                                            Utils.crearToastPersonalizado(context, "Debes ingresar una descripción para tu actividad.");
+                                        } else {
+
+                                            if (actividadSeleccionada.equalsIgnoreCase("Selecciona la actividad")) {
+
+                                                Utils.crearToastPersonalizado(context, "Debes selecciona una actividad");
+                                            } else {
+                                                dialogCorregirActividad.dismiss();
+                                                dialogOpcionesDeActividad.dismiss();
+                                                actionListener.onEditActivity(ID_actividad, ID_nombre_actividadSeleccionado, descripcionCorregida);
+                                            }
+                                        }
+                                    }
+                                });
+
+                                botonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialogCorregirActividad.dismiss();
+                                    }
+                                });
+/*
                                 LayoutVerDetalles.setVisibility(View.GONE);
                                 editextDescripcionActividad.setText(descripcionActividad);
                                 LayoutEditar.setVisibility(View.GONE);
@@ -531,7 +645,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         }
                                     }
                                 });
-
+*/
                             }
                         });
 
@@ -541,13 +655,13 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
 
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
-                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
-                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
-
                                 builder.setView(ModalRedondeado(context, customView));
                                 AlertDialog dialogConfirmacion = builder.create();
                                 dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                 dialogConfirmacion.show();
+
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
 
                                 buttonAceptar.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -575,6 +689,41 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                         LayoutActualizarEstado.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                                builder.setView(ModalRedondeado(context, customView));
+                                AlertDialog dialogConfirmacion = builder.create();
+                                dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialogConfirmacion.show();
+
+                                TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                                Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                                Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+
+                                textViewTituloConfirmacion.setText("¿Deseas empezar la actividad " + nombre_actividad + "? ");
+                                buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        actionListener.onActualizarEstadoActivity(ID_actividad, "Iniciado");
+                                        dialogConfirmacion.dismiss();
+                                        dialogOpcionesDeActividad.dismiss();
+
+                                    }
+                                });
+
+
+                                buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialogOpcionesDeActividad.dismiss();
+                                    }
+                                });
+
+
+                                /*
                                 LayoutVerDetalles.setVisibility(View.GONE);
                                 LayoutActualizarEstado.setVisibility(View.GONE);
                                 LayoutEditar.setVisibility(View.GONE);
@@ -618,9 +767,9 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                                         dialogOpcionesDeActividad.dismiss();
                                     }
                                 });
+*/
                             }
                         });
-
 
                     }
                 }
@@ -1513,11 +1662,33 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 });
     }
 
-    private void VerNombresActividades(Context context) {
+
+    List<JSONObject> listaActividades = new ArrayList<>();
+    AdaptadorCorregirListaActividades adaptadorCorregirListaActividades;
+    String ID_nombre_actividadSeleccionado;
+
+    private void VerNombresActividades() {
+        listaActividades.clear();
         StringRequest postrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        listaActividades.add(jsonObject);
+
+                    }
+                    adaptadorCorregirListaActividades.notifyDataSetChanged();
+                    adaptadorCorregirListaActividades.setFilteredData(listaActividades);
+                    adaptadorCorregirListaActividades.filter("");
+
+                } catch (JSONException e) {
+                    crearToastPersonalizado(context, "No se pudieron obtener los datos. Revisa la conexión");
+                }
+
+/*
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     nombresActividades.clear();
@@ -1530,7 +1701,7 @@ public class AdaptadorActividades extends RecyclerView.Adapter<AdaptadorActivida
                 } catch (JSONException e) {
                     crearToastPersonalizado(context, "No se pudieron obtener los datos. Revisa la conexión");
                 }
-
+*/
             }
         }, new Response.ErrorListener() {
             @Override

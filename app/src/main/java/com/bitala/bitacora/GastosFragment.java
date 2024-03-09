@@ -31,7 +31,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorGastos;
 import com.bitala.bitacora.Adaptadores.AdaptadorSeleccionarSaldos;
-import com.bitala.bitacora.Adaptadores.DownloadFileTask;
+import com.bitala.bitacora.Adaptadores.NuevoDownloadFileTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -604,7 +604,7 @@ public class GastosFragment extends Fragment {
                             LayoutTicket.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    modalCargando = Utils.ModalCargando(context, builder);
+                                 //   modalCargando = Utils.ModalCargando(context, builder);
                                     enviarDatosPDFTicket();
                                 }
                             });
@@ -613,7 +613,7 @@ public class GastosFragment extends Fragment {
                             LayoutPDFcarta.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    modalCargando = Utils.ModalCargando(context, builder);
+                                 //   modalCargando = Utils.ModalCargando(context, builder);
                                     enviarDatosPorPostTamCarta();
                                 }
                             });
@@ -676,8 +676,8 @@ public class GastosFragment extends Fragment {
 
         // Convertir el ArrayList a JSON
         postData.put("listaSeleccion", lista);
-        new DownloadFileTask(context, postData).execute(pdfGastosCarta);
-        modalCargando.dismiss();
+        //  new DownloadFileTask(context, postData).execute(url);
+        new NuevoDownloadFileTask(context, postData).execute(url);
     }
 
 
@@ -692,8 +692,8 @@ public class GastosFragment extends Fragment {
         postData.put("ID_usuario", ID_usuario);
         postData.put("ID_encargado", ID_sesionIniciada);
         postData.put("listaSeleccion", lista);
-        new DownloadFileTask(context, postData).execute(pdfGastosTicket);
-        modalCargando.dismiss();
+        //  new DownloadFileTask(context, postData).execute(url);
+        new NuevoDownloadFileTask(context, postData).execute(url);
     }
 
 

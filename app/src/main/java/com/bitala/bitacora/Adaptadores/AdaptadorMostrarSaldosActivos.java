@@ -75,27 +75,30 @@ public class AdaptadorMostrarSaldosActivos extends RecyclerView.Adapter<Adaptado
             String saldo_restante = jsonObject2.optString("saldo_restante", "");
             String total_adiciones = jsonObject2.optString("total_adiciones", "");
             String total_consumos = jsonObject2.optString("total_consumos", "");
-            String fecha_asignacion_saldo = jsonObject2.optString("fecha_asignacion_saldo", "");
-            String hora_asignacion_saldo = jsonObject2.optString("hora_asignacion_saldo", "");
             String desglose_gastos = jsonObject2.optString("desglose_gastos", "");
             String desglose_adiciones = jsonObject2.optString("desglose_adiciones", "");
             String ID_registro_saldo = jsonObject2.optString("ID_registro_saldo", "");
 
 
-            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String fecha_asignacion_saldo = jsonObject2.optString("fecha_asignacion_saldo", "");
+            String hora_asignacion_saldo = jsonObject2.optString("hora_asignacion_saldo", "");
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             SimpleDateFormat sdfOutput = new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
-            SimpleDateFormat sdfInputHora = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
             try {
-                Date dateInicio = sdfInput.parse(fecha_asignacion_saldo);
-                Date horaInicio = sdfInputHora.parse(hora_asignacion_saldo);
-                Date dateTime = new Date(dateInicio.getTime() + horaInicio.getTime());
-                String fechaFormateada = sdfOutput.format(dateTime);
+                // Combina fecha y hora en un solo formato
+                String fechaHoraString = fecha_asignacion_saldo + " " + hora_asignacion_saldo;
+
+                // Parsea la fecha y la hora combinadas
+                Date fechaHora = sdfInput.parse(fechaHoraString);
+
+                // Formatea la fecha y hora combinadas en el nuevo formato
+                String fechaFormateada = sdfOutput.format(fechaHora);
 
                 holder.FechaAsignacion.setText("Asignado el " + fechaFormateada);
 
             } catch (ParseException e) {
-                holder.FechaAsignacion.setText("No se encontro la fecha");
+                holder.FechaAsignacion.setText("No se encontró la fecha");
             }
 
 

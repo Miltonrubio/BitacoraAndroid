@@ -35,7 +35,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bitala.bitacora.Adaptadores.AdaptadorActividadesPorUsuario;
-import com.bitala.bitacora.Adaptadores.DownloadFileTask;
+import com.bitala.bitacora.Adaptadores.NuevoDownloadFileTask;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -284,8 +284,8 @@ public class ActividadesPorUsuarioFragment extends Fragment implements Adaptador
         postData.put("opcion", "61");
         postData.put("ID_usuario", ID_usuario);
         postData.put("rango", rango);
-        new DownloadFileTask(context, postData).execute(url);
-
+      //  new DownloadFileTask(context, postData).execute(url);
+        new NuevoDownloadFileTask(context, postData).execute(url);
     }
 
 

@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="50dp"
@@ -40,9 +41,8 @@
         android:background="@drawable/redondeadoconbordevino"
         android:hint="Ingrese texto"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="18dp"
-        android:textSize="28dp"
-        android:visibility="gone" />
+        android:paddingVertical="12dp"
+        android:textSize="23dp" />
 
     <LinearLayout
         android:id="@+id/ContenedorRadios"
@@ -50,8 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/radioButtonGENERAL"
@@ -75,7 +74,6 @@
     </LinearLayout>
 
     <Button
-
         android:id="@+id/BotonActualizarNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,19 +84,17 @@
         android:paddingHorizontal="35dp"
         android:paddingVertical="8dp"
         android:text="Editar"
-        android:textSize="25dp"
-        android:visibility="gone" />
+        android:textSize="25dp" />
 
     <LinearLayout
         android:id="@+id/LayoutEliminar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-
-
         android:layout_marginBottom="25dp"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="50dp"

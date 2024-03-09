@@ -10,11 +10,11 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -146,20 +146,186 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                 EditText textViewCorreoUsuario = customView.findViewById(R.id.textViewCorreoUsuario);
                 EditText TextViewClaveUsuario = customView.findViewById(R.id.TextViewClaveUsuario);
                 EditText TextViewTelefonoUsuario = customView.findViewById(R.id.TextViewTelefonoUsuario);
-                Spinner spinnerRolUsuario = customView.findViewById(R.id.spinnerRolUsuario);
+                //   Spinner spinnerRolUsuario = customView.findViewById(R.id.spinnerRolUsuario);
+                TextView RolUsuario = customView.findViewById(R.id.RolUsuario);
+
+
+                RolUsuario.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        View customView = LayoutInflater.from(context).inflate(R.layout.modal_seleccionar_rol, null);
+                        builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                        AlertDialog dialogSeleccionarRol = builder.create();
+                        dialogSeleccionarRol.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialogSeleccionarRol.show();
+                        LinearLayout LayoutVENDEDOR = customView.findViewById(R.id.LayoutVENDEDOR);
+                        LinearLayout LayoutCAJERO = customView.findViewById(R.id.LayoutCAJERO);
+                        LinearLayout LayoutBECARIO = customView.findViewById(R.id.LayoutBECARIO);
+                        LinearLayout LayoutChofer = customView.findViewById(R.id.LayoutChofer);
+                        LinearLayout LayoutPOLICIA = customView.findViewById(R.id.LayoutPOLICIA);
+                        LinearLayout LayoutOFICINISTA = customView.findViewById(R.id.LayoutOFICINISTA);
+                        LinearLayout LayoutCARGADOR = customView.findViewById(R.id.LayoutCARGADOR);
+                        LinearLayout LayoutVIGILANTE = customView.findViewById(R.id.LayoutVIGILANTE);
+                        LinearLayout LayoutREPARTIDOR = customView.findViewById(R.id.LayoutREPARTIDOR);
+                        LinearLayout LayoutVELADOR = customView.findViewById(R.id.LayoutVELADOR);
+                        LinearLayout LayoutJEFEUNIDADES = customView.findViewById(R.id.LayoutJEFEUNIDADES);
+                        LinearLayout LayoutBodeguero = customView.findViewById(R.id.LayoutBodeguero);
+                        LinearLayout LayoutJefeSeguridad = customView.findViewById(R.id.LayoutJefeSeguridad);
+                        LinearLayout LayoutSUPERADMIN = customView.findViewById(R.id.LayoutSUPERADMIN);
+
+                        LayoutVENDEDOR.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("VENDEDOR");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+
+                        LayoutCAJERO.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("CAJERO");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+
+                        LayoutBECARIO.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("BECARIO");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+                        LayoutChofer.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("CHOFER");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+
+                        LayoutPOLICIA.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("POLICIA");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+                        LayoutOFICINISTA.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("OFICINISTA");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+                        LayoutCARGADOR.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("CARGADOR");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutVIGILANTE.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("VIGILANTE");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutREPARTIDOR.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("REPARTIDOR");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutVELADOR.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("VELADOR");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutJEFEUNIDADES.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("JEFE DE UNIDADES");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutBodeguero.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("BODEGUERO");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutJefeSeguridad.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("JEFE DE SEGURIDAD");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+                        LayoutSUPERADMIN.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                RolUsuario.setText("SUPERADMIN");
+                                dialogSeleccionarRol.dismiss();
+                            }
+                        });
+
+
+                    }
+                });
 
 
                 Button botonCancelar = customView.findViewById(R.id.botonCancelar);
                 Button botonAgregarCliente = customView.findViewById(R.id.botonAgregarCliente);
 
-
+/*
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
                         R.array.opciones_rol, android.R.layout.simple_spinner_item);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 // Establece el ArrayAdapter en el Spinner
                 spinnerRolUsuario.setAdapter(adapter);
-
+*/
 
                 botonCancelar.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -176,7 +342,8 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
                         String correoUsuario = textViewCorreoUsuario.getText().toString();
                         String ClaveUsuario = TextViewClaveUsuario.getText().toString();
                         String TelefonoUsuario = TextViewTelefonoUsuario.getText().toString().replaceAll(" ", "");
-                        String RolUsuario = spinnerRolUsuario.getSelectedItem().toString();
+                        // String RolUsuario = spinnerRolUsuario.getSelectedItem().toString();
+                        String RolUsuarioSeleccionado = RolUsuario.getText().toString();
 
                         if (nombreUsuario.isEmpty() || correoUsuario.isEmpty() || ClaveUsuario.isEmpty() || TelefonoUsuario.isEmpty()) {
 
@@ -185,7 +352,16 @@ public class CrudUsuariosFragment extends Fragment implements AdaptadorUsuarios.
 
                         } else {
 
-                            AgregarNuevoUsuario(nombreUsuario, correoUsuario, ClaveUsuario, TelefonoUsuario, RolUsuario, dialogActividades);
+
+                            if(RolUsuarioSeleccionado.equalsIgnoreCase("Selecciona el tipo")){
+
+                                Utils.crearToastPersonalizado(context, "Debes seleccionar el Rol");
+                            }else {
+
+                                AgregarNuevoUsuario(nombreUsuario, correoUsuario, ClaveUsuario, TelefonoUsuario, RolUsuarioSeleccionado, dialogActividades);
+                            }
+
+
                         }
                     }
                 });

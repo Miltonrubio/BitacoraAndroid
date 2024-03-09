@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:paddingHorizontal="15dp"
+    android:paddingHorizontal="19dp"
     android:layout_height="wrap_content"
-    android:paddingVertical="25dp">
+    android:paddingVertical="28dp">
 
     <Button
         android:id="@+id/buttonCancelar"
         android:layout_width="120dp"
         android:layout_height="52dp"
-        android:layout_marginStart="16dp"
-        android:textSize="16dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="28dp"
         android:backgroundTint="@color/grisMuyOscuro"
         android:text="Cancelar"
+        android:textSize="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextClaveUsuario" />
 
@@ -23,10 +23,10 @@
         android:id="@+id/buttonAceptar"
         android:layout_width="120dp"
         android:layout_height="52dp"
-        android:layout_marginEnd="16dp"
-        android:textSize="16dp"
+        android:layout_marginEnd="4dp"
         android:backgroundTint="@color/vino"
         android:text="Aceptar"
+        android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/buttonCancelar" />
 

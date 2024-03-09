@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="15dp">
+    android:background="@color/vino"
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -14,16 +13,16 @@
         android:layout_centerInParent="true"
         android:contentDescription="Logo"
         android:padding="25dp"
-        android:src="@drawable/logo" />
+        android:src="@drawable/nuevologo" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:text="Version 6.3 powered by Bitala 2024"
-        android:textColor="@color/black"
-        android:textSize="15dp"
+        android:text="Bitacora de actividades version 7.0 (Cambios de diseño) powered by Bitala 2024"
+        android:textColor="@color/white"
+        android:textSize="14dp"
         android:textStyle="bold"
         android:paddingHorizontal="12dp"
         app:layout_constraintBottom_toBottomOf="parent"

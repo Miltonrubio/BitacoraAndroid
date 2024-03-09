@@ -1,11 +1,9 @@
 package com.bitala.bitacora.Adaptadores;
 
 
-import static android.app.PendingIntent.getActivity;
-
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,12 +20,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bitala.bitacora.Utils;
 import com.bitala.bitacora.R;
+import com.bitala.bitacora.Utils;
 
 import org.json.JSONObject;
 
@@ -97,6 +94,130 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                 @Override
                 public void onClick(View view) {
 
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.nuevas_opciones_nombres_actividades, null);
+
+                    builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                    AlertDialog dialogConBotones = builder.create();
+                    dialogConBotones.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogConBotones.show();
+
+
+                    LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
+                    LinearLayout LayoutEliminar = customView.findViewById(R.id.LayoutEliminar);
+
+
+                    LayoutEditar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_nombre_acitividad, null);
+
+                            builder.setView(Utils.ModalRedondeado(view.getContext(), customView));
+                            AlertDialog dialogEditar = builder.create();
+                            dialogEditar.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogEditar.show();
+
+
+                            LinearLayout ContenedorRadios = customView.findViewById(R.id.ContenedorRadios);
+                            EditText editTextNombreActividad = customView.findViewById(R.id.editTextNombreActividad);
+                            RadioButton radioButtonGENERAL = customView.findViewById(R.id.radioButtonGENERAL);
+                            RadioButton radioButtonOFICINAS = customView.findViewById(R.id.radioButtonOFICINAS);
+                            Button BotonActualizarNombre = customView.findViewById(R.id.BotonActualizarNombre);
+                            editTextNombreActividad.setText(nombre_actividad);
+
+
+                            if (tipo_actividad.equalsIgnoreCase("OFICINAS")) {
+                                radioButtonOFICINAS.setChecked(true);
+                                radioButtonGENERAL.setChecked(false);
+
+                            } else {
+                                radioButtonGENERAL.setChecked(true);
+                                radioButtonOFICINAS.setChecked(false);
+                            }
+
+
+                            radioButtonGENERAL.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    radioButtonGENERAL.setChecked(true);
+                                    radioButtonOFICINAS.setChecked(false);
+                                }
+                            });
+
+                            radioButtonOFICINAS.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    radioButtonGENERAL.setChecked(false);
+                                    radioButtonOFICINAS.setChecked(true);
+                                }
+                            });
+
+
+                            BotonActualizarNombre.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String nuevoNombreActividad = editTextNombreActividad.getText().toString();
+
+
+                                    if (radioButtonOFICINAS.isChecked()) {
+
+                                        actionListener.onEditActivity(ID_nombre_actividad, nuevoNombreActividad, "OFICINAS");
+                                        dialogEditar.dismiss();
+                                        dialogConBotones.dismiss();
+
+                                    } else {
+
+                                        actionListener.onEditActivity(ID_nombre_actividad, nuevoNombreActividad, "GENERAL");
+                                        dialogEditar.dismiss();
+                                        dialogConBotones.dismiss();
+                                    }
+
+
+                                }
+                            });
+
+                        }
+                    });
+
+
+                    LayoutEliminar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            View customView = LayoutInflater.from(context).inflate(R.layout.opciones_confirmacion, null);
+                            TextView textViewTituloConfirmacion = customView.findViewById(R.id.textViewTituloConfirmacion);
+                            Button buttonCancelar = customView.findViewById(R.id.buttonCancelar);
+                            Button buttonAceptar = customView.findViewById(R.id.buttonAceptar);
+                            textViewTituloConfirmacion.setText("¿Estas seguro que deseas eliminar la actividad " + nombre_actividad + " ?");
+                            builder.setView(Utils.ModalRedondeado(context, customView));
+                            AlertDialog dialogConfirmacion = builder.create();
+                            dialogConfirmacion.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialogConfirmacion.show();
+
+                            buttonAceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    actionListener.onDeleteActivity(ID_nombre_actividad);
+                                    dialogConBotones.dismiss();
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+                            buttonCancelar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogConfirmacion.dismiss();
+                                }
+                            });
+
+                        }
+                    });
+
+                    /*
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     View customView = LayoutInflater.from(view.getContext()).inflate(R.layout.opciones_nombre_acitividad, null);
@@ -105,6 +226,7 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                     AlertDialog dialogConBotones = builder.create();
                     dialogConBotones.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialogConBotones.show();
+
 
 
                     LinearLayout LayoutEditar = customView.findViewById(R.id.LayoutEditar);
@@ -217,9 +339,9 @@ public class AdaptadorNombreActividades extends RecyclerView.Adapter<AdaptadorNo
                                 }
                             });
 
-
                         }
                     });
+*/
                 }
             });
 

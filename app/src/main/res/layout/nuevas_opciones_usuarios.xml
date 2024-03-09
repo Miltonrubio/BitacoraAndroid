@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="4dp"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/LayoutEditar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp">
+
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/baseline_edit_24"
+                    app:tint="@color/amarillo" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="EDITAR"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/LayoutEliminar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="232dp">
+
+
+                <ImageView
+                    android:id="@+id/iconoCheckIngreso"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/eliminar_usuario"
+                    app:tint="@color/rojo" />
+
+
+                <TextView
+                    android:id="@+id/tvCheckIngreso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="ELIMINAR"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+            <LinearLayout
+                android:id="@+id/LayoutActualizarFoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp">
+
+
+                <ImageView
+                    android:id="@+id/iconoCheckTecnico"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/baseline_photo_camera_24"
+                    app:tint="@color/azulito" />
+
+
+                <TextView
+                    android:id="@+id/textCheckTecnico"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="CAMBIAR FOTO \nDE PERFIL"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/LayoutVerActividades"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="232dp">
+
+
+                <ImageView
+                    android:id="@+id/iconoCheckSalida"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/actividades"
+                    app:tint="@color/verde" />
+
+
+                <TextView
+                    android:id="@+id/textCheckSalida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="REGISTRO DE \nACTIVIDADES"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+            <LinearLayout
+                android:id="@+id/LayoutAsignarActividad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp">
+
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/baseline_workspace_premium_24"
+                    app:tint="@color/amarillo" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="ASIGNAR \nACTIVIDAD"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/LayoutConsultarMovimiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="232dp">
+
+
+                <ImageView
+                    android:id="@+id/iconoMecanico"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/piggy_bank_solid"
+                    app:tint="@color/amarillo" />
+
+
+                <TextView
+                    android:id="@+id/TextoASIGNARMECANICOS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="CONSULTAR \nGASTOS"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="invisible">
+
+
+                <ImageView
+                    android:id="@+id/iconoCamara"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    app:tint="@color/azulito" />
+
+
+                <TextView
+                    android:id="@+id/TextoSUBIRFOTOS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:textColor="@color/azulito"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/LayoutConsultarSaldo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/modal_redondeado"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="8dp"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="232dp">
+
+
+                <ImageView
+                    android:id="@+id/iconoPago"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/money_bill_wave_solid"
+                    app:tint="@color/verdefuerte" />
+
+
+                <TextView
+                    android:id="@+id/textSaldo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="VER SALDO"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
